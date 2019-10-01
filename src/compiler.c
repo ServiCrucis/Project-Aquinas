@@ -45,7 +45,7 @@ struct symbol** mdu_match_symbol_subset(/* const enum cardinality cardinality, *
 	size_t i = 1;
 	while(i < length) {
 		// continuity
-		bool continuity = symbol.symbol_info == node.symbol_info;
+		bool continuity = symbol.symbol_info->id == node.symbol_info->id;
 		if (continuity) {
 			stack[next + offset] = &symbol;
 			next++;
