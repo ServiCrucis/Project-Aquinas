@@ -1,0 +1,12 @@
+This license inherits from PARENT-LICENSE.txt.
+
+1. You may view these files.
+
+2. You may distribute these files.
+
+3. You may modify the original files to create unique derivatives of these files.
+
+4. You may modify the original files themselves with approval from the creator(s) of these files (see CREDITS.txt).
+
+Note: this license is a temporary license for the project "Modulus".
+For permission or clarification, please email <caritasdedeus@gmail.com> addressed to the creator(s) of these files (see CREDITS.txt).
