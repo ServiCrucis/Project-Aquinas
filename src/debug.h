@@ -2,7 +2,7 @@
  * modulus.h
  *
  *  Created on: Aug 19, 2019
- *      Author: Andrew Porter (AMDG)
+ *      Author: Andrew Thomas Porter (AMDG)
  */
 
 #ifndef DEBUG_H_

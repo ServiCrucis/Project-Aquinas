@@ -1,7 +1,7 @@
 /*
  ============================================================================
  Name        : Modulus.c
- Author      : Andrew Porter (AMDG)
+ Author      : Andrew Thomas Porter (AMDG)
  Version     : 0.0.1
  Copyright   : License
  Description : Modulus language compiler

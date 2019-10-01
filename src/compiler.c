@@ -2,7 +2,7 @@
  * compiler.c
  *
  *  Created on: Jul 22, 2019
- *      Author: AMDG
+ *      Author: Andrew Thomas Porter (AMDG)
  */
 
 #include <stdlib.h>

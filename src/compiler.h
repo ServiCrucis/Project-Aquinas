@@ -2,7 +2,7 @@
  * compiler.h
  *
  *  Created on: Jul 22, 2019
- *      Author: Andrew Porter (AMDG)
+ *      Author: Andrew Thomas Porter (AMDG)
  */
 
 #ifndef COMPILER_H_

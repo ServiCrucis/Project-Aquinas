@@ -2,7 +2,7 @@
  * debug.c
  *
  *  Created on: Sep 23, 2019
- *      Author: Andrew Porter (AMDG)
+ *      Author: Andrew Thomas Porter (AMDG)
  */
 
 #include <stdio.h>
