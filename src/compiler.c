@@ -17,6 +17,7 @@ void mdu_compile__handler(struct symbol** symbols, size_t offset, size_t positio
 	if (!errpos) {
 		mdu_debug_fatal(MDU_ALLOCATION_FAILURE, "[%s] failed to allocate memory for error string (required memory: %d bytes)", __func__, offset + position + 1);
 	}
+	errpos[offset + position] = '\0';
 	memset(errpos, ' ', offset + position - 1);
 	mdu_debug_fatal(MDU_INCOMPLETE_RESULT, "[%s] unexpected symbol:\n\n\toffset:%d\n\tposition:%d\n%s\n%s\n%s%s\n", __func__, offset, position, mdu_cat_symbols(symbols, length), errpos, "|");
 }
