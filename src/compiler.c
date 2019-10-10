@@ -62,7 +62,7 @@ struct symbol* mdu_match_symbol_subset(struct node* const origin, struct node* (
 	if (!stack) {
 		mdu_debug_fatal(MDU_ALLOCATION_FAILURE, "[%s] failed to shrink stack size to %d bytes from %d bytes", __func__, offset * sizeof(struct symbol*), input->length * sizeof(struct symbol*));
 	}
-	return &((struct symbol) { stack, offset, input->dimensions + 1 });
+	return mdu_wrap(stack, offset, input->dimensions + 1);
 }
 
 struct symbol* mdu_wrap(struct symbol** symbols, size_t length, size_t dimensions) {
