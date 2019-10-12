@@ -28,7 +28,7 @@ struct node* mdu_ab_lang(struct node* origin, struct symbol* input) {
 	char x = (char)(intptr_t) origin->x->y;
 	char y = (char)(intptr_t) input->y;
 
-	if (x == y) { // a -> a or b -> b
+	if ((x == 'a' && y == 'a') || (x == 'b' && y == 'b')) { // a -> a or b -> b
 		result.origin = origin;
 		result.x = input;
 		return &result;
@@ -37,22 +37,22 @@ struct node* mdu_ab_lang(struct node* origin, struct symbol* input) {
 			result.origin = origin;
 			result.x = input;
 			return &result;
-		} else { // b -> c or erroneous case
+		} else { // b -> a or erroneous case
 			return NULL;
 		}
 	}
 }
 
 int main(int argc, char* argv[]) {
-	printf("Running...");
+	mdu_debug_info("Running...\n");
 	//if (argc > 0) {
 		//char* value = argv[0];
-		char* value = "ab";
+		char* value = "aaaaabbbbb";
 		size_t length = strlen(value);
 
 		struct symbol* input = mdu_str_input(value, length);
 		struct symbol* result = mdu_match_symbol_subset(&mdu_ab_lang, input);
-		mdu_debug_info(MDU_SUCCESS, "[%s] number of symbols in input: %d\n", __func__, result->length);
+		mdu_debug_infof(MDU_SUCCESS, "[%s] number of symbols in input: %d\n", __func__, result->length);
 	//} else {
 	//	puts("No input given. Exiting...\n");
 	//}

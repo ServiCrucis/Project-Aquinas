@@ -15,8 +15,8 @@
 #endif
 
 enum mdu_result_code {
-	MDU_SUCCESS = EXIT_SUCCESS,
-	MDU_FAILURE = EXIT_FAILURE,
+	MDU_SUCCESS,
+	MDU_FAILURE,
 	MDU_ALLOCATION_SUCCESS,
 	MDU_ALLOCATION_FAILURE,
 	MDU_INITIALIZATION_SUCCESS,
@@ -29,10 +29,12 @@ enum mdu_result_code {
 	MDU_INCOMPLETE_RESULT
 };
 
-void mdu_debug_info(const enum mdu_result_code code, const char* information, ...);
+void mdu_debug_info(char const *information, ...);
 
-void mdu_debug_warn(const enum mdu_result_code code, const char* warning, ...);
+void mdu_debug_infof(enum mdu_result_code const code, char const *information, ...);
 
-void mdu_debug_fatal(const enum mdu_result_code code, const char* error_message, ...);
+void mdu_debug_warnf(enum mdu_result_code const code, char const *warning, ...);
+
+void mdu_debug_fatalf(enum mdu_result_code const code, char const *error_message, ...);
 
 #endif /* DEBUG_H_ */
