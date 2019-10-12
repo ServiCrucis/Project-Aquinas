@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <string.h>
 #include "compiler.h"
 #include "debug.h"
@@ -21,7 +22,7 @@ void mdu_compile__handler(struct symbol** symbols, size_t position, size_t lengt
 	mdu_debug_fatal(MDU_INCOMPLETE_RESULT, "[%s] unexpected symbol:\n\n\tposition:%d\n%s\n%s\n%s%s\n", __func__, position, mdu_cat_symbols(symbols, length), errpos, "|");
 }
 
-struct symbol* mdu_match_symbol_subset(struct node* const origin, struct node* (*pattern)(struct node* origin, struct symbol* input), struct symbol* input) {
+struct symbol* mdu_match_symbol_subset(struct node* (*pattern)(struct node* origin, struct symbol* input), struct symbol* input) {
 	struct symbol** stack = malloc(input->length * sizeof(struct symbol*));
 	if (!stack) {
 		mdu_debug_fatal(MDU_ALLOCATION_FAILURE, "[%s] failed to allocate memory for stack (required memory: %d bytes)", __func__, input->length * sizeof(struct symbol*));
@@ -30,8 +31,9 @@ struct symbol* mdu_match_symbol_subset(struct node* const origin, struct node* (
 	size_t offset = 0;
 	size_t next = 0;
 
-	struct symbol* symbol;
-	struct node* node = origin;
+	struct symbol* symbol = input->y[0];
+	struct node* node = &((struct node) { NULL, symbol });
+	node->origin = node;
 
 	for(size_t i = 1; i < input->length; i++) {
 		symbol = input->y[i];
@@ -48,7 +50,7 @@ struct symbol* mdu_match_symbol_subset(struct node* const origin, struct node* (
 				mdu_debug_fatal(MDU_ALLOCATION_FAILURE, "[%s] failed to allocate memory for new_symbol (required memory: %d bytes)", __func__, len * sizeof(struct symbol*));
 			}
 			memcpy(symbols, stack, len);
-			struct symbol* new_symbol = mdu_wrap(symbols, len, input->dimensions + 1);
+			struct symbol* new_symbol = mdu_wrap(symbols, len, input->dimensions);
 			// push new symbol onto stack
 			stack[offset] = new_symbol;
 			// increment stack offset
@@ -62,7 +64,7 @@ struct symbol* mdu_match_symbol_subset(struct node* const origin, struct node* (
 	if (!stack) {
 		mdu_debug_fatal(MDU_ALLOCATION_FAILURE, "[%s] failed to shrink stack size to %d bytes from %d bytes", __func__, offset * sizeof(struct symbol*), input->length * sizeof(struct symbol*));
 	}
-	return mdu_wrap(stack, offset, input->dimensions + 1);
+	return mdu_wrap(stack, offset, input->dimensions);
 }
 
 struct symbol* mdu_wrap(struct symbol** symbols, size_t length, size_t dimensions) {
@@ -70,10 +72,9 @@ struct symbol* mdu_wrap(struct symbol** symbols, size_t length, size_t dimension
 	if (!symbol) {
 		mdu_debug_fatal(MDU_ALLOCATION_FAILURE, "[%s] failed to allocate memory for symbol contents (required memory: %d bytes)", __func__, sizeof(struct symbol));
 	}
-
 	symbol->y = symbols;
 	symbol->length = length;
-	symbol->dimensions = dimensions;
+	symbol->dimensions = dimensions + 1;
 	return symbol;
 }
 
@@ -89,15 +90,16 @@ struct symbol* mdu_input(void* y, size_t length) {
 }
 
 struct symbol* mdu_str_input(char* y, size_t length) {
-	struct symbol* symbol = mdu_input(NULL, length);
-	symbol->y = malloc(length * sizeof(void*));
+	struct symbol* symbol = malloc(sizeof(struct symbol));
+	symbol->y = malloc(length * sizeof(struct symbol*));
 	if(!symbol->y) {
-		mdu_debug_fatal(MDU_ALLOCATION_FAILURE, "[%s] failed to allocate memory for symbol contents (required memory: %d bytes)", __func__, length * sizeof(void*));
+		mdu_debug_fatal(MDU_ALLOCATION_FAILURE, "[%s] failed to allocate memory for symbol contents (required memory: %d bytes)", __func__, length * sizeof(struct symbol*));
 	}
 	for (size_t i = 0; i < length; i++) {
-		symbol->y[i] = mdu_input(y, 1);
+		symbol->y[i] = mdu_input((void*)(intptr_t) y[i], 1);
 	}
-
+	symbol->length = length;
+	symbol->dimensions = 1;
 	return symbol;
 }
 

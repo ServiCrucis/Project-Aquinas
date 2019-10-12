@@ -28,7 +28,7 @@ struct node {
 	struct symbol* x;
 };
 
-struct symbol* mdu_match_symbol_subset(struct node* const origin, struct node* (*pattern)(struct node* origin, struct symbol* input), struct symbol* input);
+struct symbol* mdu_match_symbol_subset(struct node* (*pattern)(struct node* origin, struct symbol* input), struct symbol* input);
 
 struct symbol* mdu_wrap(struct symbol** symbols, size_t length, size_t dimensions);
 
