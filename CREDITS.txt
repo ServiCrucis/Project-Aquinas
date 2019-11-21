@@ -3,4 +3,6 @@ Explicit Attributions:
 	Creators:
 	Andrew Thomas Porter
 	
-Implicit Attributions: N/A
+Implicit Attributions:
+    libCPUID:
+        Veselin Georgiev
