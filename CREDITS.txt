@@ -6,3 +6,5 @@ Explicit Attributions:
 Implicit Attributions:
     libCPUID:
         Veselin Georgiev
+        et al.:
+            <https://github.com/CaritasDeiTeam/libcpuid/graphs/contributors>
