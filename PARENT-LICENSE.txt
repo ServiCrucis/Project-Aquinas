@@ -33,7 +33,7 @@ I. Definitions:
 		<https://novusordowatch.org/start-here/>.
 		
 	6. The pronouns, "I", "We", "Us", "Our" shall be defined as 
-		pronouns referring to the entity "Caritas Dei" (currently 
+		pronouns referring to the entity "Servo Dei" (currently
 		named "Christi Crucifixi LLC"), EIN: 83-1586556,
 		acting on behalf of the Catholic Church.
 		
@@ -153,7 +153,7 @@ IV. Rules of Liability:
 		proportion of liability than the Power which acted
 		according to this license who shall be judged the
 		Indirect Power. (For definitions of Direct Power and
-		Indirect Power, see "Article V, §2.)
+		Indirect Power, see "Article V, ï¿½2.)
 	
 V. Rules of Warranty:
 
@@ -182,7 +182,7 @@ V. Rules of Warranty:
 		be the first ancestor which can be held liable
 		for any liabilities, and no other Power will be 
 		held liable; and will be subject to the rules
-		defined by §1 of Article V of this License.
+		defined by ï¿½1 of Article V of this License.
 		
 VI. Implicit Agreement:
 
