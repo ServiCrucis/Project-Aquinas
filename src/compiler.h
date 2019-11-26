@@ -14,7 +14,10 @@
 
 struct symbol {
 	// either struct symbol** or void**
-	struct symbol** y;
+	union {
+		struct symbol **y;
+		void **value;
+	};
 	// number of pointers
 	size_t length;
 	// how deep the nesting is, or how many times I need to dereference y to get a real value.
@@ -23,22 +26,27 @@ struct symbol {
 
 struct node {
 	// the origin of x
-	struct node* origin;
+	struct node *origin;
 	// the expected x
-	struct symbol* x;
+	struct symbol *x;
 };
 
-struct symbol* mdu_match_symbol_subset(struct node* (*pattern)(struct node* origin, struct symbol* input), struct symbol* input);
+struct symbol_context {
+	struct symbol **bottom;
+	struct symbol **top;
+};
 
-struct symbol* mdu_wrap(struct symbol** symbols, size_t length, size_t dimensions);
+struct symbol *mdu_match_symbol_subset(struct node *(*pattern)(struct node *origin, struct symbol *input), struct symbol *input);
 
-struct symbol* mdu_input(void* y, size_t length);
+struct symbol *mdu_wrap(struct symbol **symbols, size_t length, size_t dimensions);
 
-struct symbol* mdu_str_input(char* y, size_t length);
+struct symbol *mdu_input(void *y, size_t length);
 
-char* mdu_symbol_to_string(struct symbol* const symbol);
+struct symbol *mdu_str_input(char *y, size_t length);
 
-char* mdu_cat_symbols(struct symbol** const symbols, size_t length);
+char *mdu_symbol_to_string(struct symbol *const symbol);
+
+char *mdu_cat_symbols(struct symbol **const symbols, size_t length);
 
 
 #endif /* COMPILER_H_ */
