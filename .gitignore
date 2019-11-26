@@ -57,3 +57,7 @@ dkms.conf
 /cmake-build-release-mingw/
 /cmake-build-debug/
 /cmake-build-debug-mingw/
+
+# Auto-generated header files
+/include/platform.h
+/include/project.h
