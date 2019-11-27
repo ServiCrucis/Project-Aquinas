@@ -4,7 +4,4 @@ Explicit Attributions:
 	Andrew Thomas Porter
 	
 Implicit Attributions:
-    libCPUID:
-        Veselin Georgiev
-        et al.:
-            <https://github.com/CaritasDeiTeam/libcpuid/graphs/contributors>
+    N/A
