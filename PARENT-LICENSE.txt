@@ -102,16 +102,24 @@ II. Provisions:
 	
 III. Rules of Attribution:
 	
-	1. All Works shall be attributed to God as the first author,
-		and must contain a full reproduction, or link to a full 
-		reproduction, of this License in every copy or derivative.
+	1. All Works shall be implicitly attributed to God as the first author,
+	    without need for explicit attribution, and must contain a full
+	    reproduction, or link to a full reproduction, of this License in
+	    every copy or derivative.
 	
-		a. All Public Works shall be attributed to God, and the
-			first, middle, and last name ("Full Name") of 
-			every author of a Public Work must be present
-			within the Work directly.
+		a. All Public Works shall be implicitly attributed to God without
+		    need for explicit attribution, and the first, middle, and last
+		    name ("Full Name") of every author of a Public Work must be
+		    present within the Work directly.
 			
-		b. All Private Works shall be attributed to God alone.
+		b. All Private Works shall be implicitly attributed to God alone
+		    without need for explicit attribution.
+
+		c. If any Work shall transgress the Law in any manner, it may
+		    not be attributed to God whatsoever according to any
+		    authority. All transgressions of the Law regarding any
+		    Work under this License shall be attributed to the
+		    appropriate Power(s).
 		
 	2. All attributions shall enumerate the Works contained in a
 		Work by the person(s) justly according to the proportion 
