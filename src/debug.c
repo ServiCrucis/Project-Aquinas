@@ -1,35 +1,41 @@
 /*
- * debug.c
+ * # debug.c
+ * ## Created:
+ * September 23rd, A.D. 2019
+ * ## Author:
+ * Andrew Thomas Porter [<caritasdedeus@gmail.com>](mailto:caritasdedeus@gmail.com)
  *
- *  Created on: Sep 23, 2019
- *      Author: Andrew Thomas Porter (AMDG)
+ * Copyright &copy; 2019 Christi Crucifixi, LLC. All rights reserved.
  */
-
 #include <stdio.h>
 #include <stdarg.h>
-#include <string.h>
 #include "debug.h"
 
 
-static char** mdu_result_messages = (char *[])
-{
-		"MDU_SUCCESS",
-		"MDU_FAILURE",
-		"MDU_ALLOCATION_SUCCESS",
-		"MDU_ALLOCATION_FAILURE",
-		"MDU_INITIALIZATION_SUCCESS",
-		"MDU_INITIALIZATION_FAILURE",
-		"MDU_STACK_OVERFLOW",
-		"MDU_STACK_UNDERFLOW",
-		"MDU_BUFFER_OVERFLOW",
-		"MDU_BUFFER_UNDERFLOW",
-		"MDU_COMPLETE_RESULT",
-		"MDU_INCOMPLETE_RESULT"
-};
+static char **mdu_result_messages = (char *[])
+		{
+				"R_SUCCESS",
+				"R_FAILURE",
+				"R_ALLOCATION_SUCCESS",
+				"R_ALLOCATION_FAILURE",
+				"R_INITIALIZATION_SUCCESS",
+				"R_INITIALIZATION_FAILURE",
+				"R_STACK_OVERFLOW",
+				"R_STACK_UNDERFLOW",
+				"R_BUFFER_OVERFLOW",
+				"R_BUFFER_UNDERFLOW",
+				"R_COMPLETE_RESULT",
+				"R_INCOMPLETE_RESULT",
+				"R_INDETERMINATE_RESULT",
+				"R_ASSERTION_SUCCESS",
+				"R_ASSERTION_FAILURE",
+				"R_NULL_POINTER",
+				"R_ILLEGAL_VALUE",
+		};
 
-void mdu_debug_info(char const *information, ...) {
+void r_debug_info(char const *fn_name, char const *information, ...) {
 	fputs("[info][", stdout);
-	fputs(mdu_result_messages[MDU_SUCCESS], stdout);
+	fputs(mdu_result_messages[R_SUCCESS], stdout);
 	fputc(']', stdout);
 	fputc(' ', stdout);
 	va_list objects;
@@ -38,9 +44,11 @@ void mdu_debug_info(char const *information, ...) {
 	va_end(objects);
 }
 
-void mdu_debug_infof(enum mdu_result_code const code, char const *information, ...) {
+void r_debug_infof(enum result_code const code, char const *fn_name, char const *information, ...) {
 	fputs("[info][", stdout);
 	fputs(mdu_result_messages[code], stdout);
+	fputs("][", stdout);
+	fputs(fn_name, stdout);
 	fputc(']', stdout);
 	va_list objects;
 	va_start(objects, information);
@@ -48,9 +56,11 @@ void mdu_debug_infof(enum mdu_result_code const code, char const *information, .
 	va_end(objects);
 }
 
-void mdu_debug_warnf(enum mdu_result_code const code, char const *warning, ...) {
+void r_debug_warnf(enum result_code const code, char const *fn_name, char const *warning, ...) {
 	fputs("[warning][", stdout);
 	fputs(mdu_result_messages[code], stdout);
+	fputs("][", stdout);
+	fputs(fn_name, stdout);
 	fputc(']', stdout);
 	va_list objects;
 	va_start(objects, warning);
@@ -58,10 +68,12 @@ void mdu_debug_warnf(enum mdu_result_code const code, char const *warning, ...) 
 	va_end(objects);
 }
 
-void mdu_debug_fatalf(enum mdu_result_code const code, char const *error_message, ...) {
-	fputs("[fatal][", stdout);
-	fputs(mdu_result_messages[code], stdout);
-	fputc(']', stdout);
+void r_debug_fatalf(enum result_code const code, char const *fn_name, char const *error_message, ...) {
+	fputs("[fatal][", stderr);
+	fputs(mdu_result_messages[code], stderr);
+	fputs("][", stderr);
+	fputs(fn_name, stderr);
+	fputc(']', stderr);
 	va_list objects;
 	va_start(objects, error_message);
 	vprintf(error_message, objects);

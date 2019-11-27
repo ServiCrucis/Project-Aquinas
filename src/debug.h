@@ -1,40 +1,54 @@
 /*
- * modulus.h
+ * # modulus.h
+ * ## Created:
+ * August 19th, A.D. 2019
+ * ## Author:
+ * Andrew Thomas Porter [<caritasdedeus@gmail.com>](mailto:caritasdedeus@gmail.com)
  *
- *  Created on: Aug 19, 2019
- *      Author: Andrew Thomas Porter (AMDG)
+ * Copyright &copy; 2019 Christi Crucifixi, LLC. All rights reserved.
  */
-
 #ifndef DEBUG_H_
 #define DEBUG_H_
 
 #include <stdlib.h>
+#include <stdbool.h>
 
-#ifndef MDU_DEBUG
-#define MDU_DEBUG
+// a macro to be used by programs to determine whether or not the build is debug (default: false
+#ifndef R_DEBUG
+	#define R_DEBUG false
+#endif
+#ifndef R_DEBUG_LOGGING
+	#define R_DEBUG_LOGGING false
 #endif
 
-enum mdu_result_code {
-	MDU_SUCCESS,
-	MDU_FAILURE,
-	MDU_ALLOCATION_SUCCESS,
-	MDU_ALLOCATION_FAILURE,
-	MDU_INITIALIZATION_SUCCESS,
-	MDU_INITIALIZATION_FAILURE,
-	MDU_STACK_OVERFLOW,
-	MDU_STACK_UNDERFLOW,
-	MDU_BUFFER_OVERFLOW,
-	MDU_BUFFER_UNDERFLOW,
-	MDU_COMPLETE_RESULT,
-	MDU_INCOMPLETE_RESULT
+enum result_code {
+	R_SUCCESS = EXIT_SUCCESS,
+	R_FAILURE = EXIT_FAILURE,
+	R_ALLOCATION_SUCCESS,
+	R_ALLOCATION_FAILURE,
+	R_INITIALIZATION_SUCCESS,
+	R_INITIALIZATION_FAILURE,
+	R_STACK_OVERFLOW,
+	R_STACK_UNDERFLOW,
+	R_BUFFER_OVERFLOW,
+	R_BUFFER_UNDERFLOW,
+	R_COMPLETE_RESULT,
+	R_INCOMPLETE_RESULT,
+	R_INDETERMINATE_RESULT,
+	// conditions
+			R_ASSERTION_SUCCESS,
+	R_ASSERTION_FAILURE,
+	R_NULL_POINTER,
+	// arguments
+			R_ILLEGAL_VALUE,
 };
 
-void mdu_debug_info(char const *information, ...);
+void r_debug_info(char const *fn_name, char const *information, ...);
 
-void mdu_debug_infof(enum mdu_result_code const code, char const *information, ...);
+void r_debug_infof(enum result_code const code, char const *fn_name, char const *information, ...);
 
-void mdu_debug_warnf(enum mdu_result_code const code, char const *warning, ...);
+void r_debug_warnf(enum result_code const code, char const *fn_name, char const *warning, ...);
 
-void mdu_debug_fatalf(enum mdu_result_code const code, char const *error_message, ...);
+void r_debug_fatalf(enum result_code const code, char const *fn_name, char const *error_message, ...);
 
 #endif /* DEBUG_H_ */
