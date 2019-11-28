@@ -113,7 +113,7 @@ void *mm_get(size_t minbytes);
 
 void *mm_getn(size_t minbytes);
 
-void *mm_reget(size_t minbytes);
+void *mm_resize(size_t minbytes);
 
 void *mm_free(void *ptr);
 

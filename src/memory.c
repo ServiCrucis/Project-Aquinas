@@ -47,8 +47,8 @@ static size_t pages = 0;
 
 // TODO convert Win32 error codes to POSIX-compatible enum codes.
 
-struct m_metadata {
-	// pointer to previous m_metadata
+struct block_metadata {
+	// pointer to previous block_metadata
 	uintptr_t prev;
 	// number of words following this block of memory
 	size_t words;
@@ -210,20 +210,20 @@ void m_sysheap_create(size_t minbytes, size_t maxbytes) {
  * A pointer to the last block that was allocated on the heap
  *
  * ## `uintptr_t next_block`
- * A pointer to the next available position of a `struct m_metadata` on the heap
+ * A pointer to the next available position of a `struct block_metadata` on the heap
  *
  * ## `return;`
  * `void`. If needed, may TODO return a status code in a struct m_result
  */
 static inline uintptr_t __m_get(size_t minbytes, struct heap *heap, size_t word_size) {
-	struct m_metadata *block = ((struct m_metadata *) heap->next_block);
+	struct block_metadata *block = ((struct block_metadata *) heap->next_block);
 	block->prev = ((struct heap *) heap)->last_block;
 	block->words = (size_t) (minbytes / word_size);
-	return heap->last_block + sizeof(struct m_metadata);
+	return heap->last_block + sizeof(struct block_metadata);
 }
 
 static inline enum result_code __m_free(void *ptr, struct heap *heap) {
-	struct m_metadata *block = ((struct m_metadata *) ptr - sizeof(struct m_metadata));
+	struct block_metadata *block = ((struct block_metadata *) ptr - sizeof(struct block_metadata));
 	// update heap pointers
 	heap->last_block = block->prev;
 	heap->next_block = (uintptr_t) block;
@@ -234,7 +234,7 @@ static inline enum result_code __m_free(void *ptr, struct heap *heap) {
 
 void *m_get(size_t minbytes) {
 	uintptr_t memory = __m_get(minbytes, heap, word_size);
-	struct m_metadata *meta = (struct m_metadata *) (memory - sizeof(struct m_metadata));
+	struct block_metadata *meta = (struct block_metadata *) (memory - sizeof(struct block_metadata));
 	heap->last_block = (uintptr_t) memory;
 	heap->next_block = (memory + meta->words * word_size);
 	return (void *) memory;
@@ -297,8 +297,8 @@ static inline void __m_copy(void *src, size_t srclen, void *dst, size_t dstlen, 
 }
 
 void m_copy(void *src, void *dst, size_t offset) {
-	size_t srclen = ((struct m_metadata *) src - sizeof(struct m_metadata))->words * word_size;
-	size_t dstlen = ((struct m_metadata *) dst - sizeof(struct m_metadata))->words * word_size;
+	size_t srclen = ((struct block_metadata *) src - sizeof(struct block_metadata))->words * word_size;
+	size_t dstlen = ((struct block_metadata *) dst - sizeof(struct block_metadata))->words * word_size;
 	__m_copy(src, srclen, dst, dstlen, offset);
 }
 
@@ -326,7 +326,7 @@ static inline void __m_set(void *memory, uint8_t const *value, uint8_t stride, s
 }
 
 void m_set(void *memory, uint8_t *value, uint8_t stride) {
-	__m_set(memory, value, stride, ((struct m_metadata *) memory - sizeof(struct m_metadata))->words * word_size);
+	__m_set(memory, value, stride, ((struct block_metadata *) memory - sizeof(struct block_metadata))->words * word_size);
 }
 
 void m_setd(void *memory, uint8_t *value, uint8_t stride, size_t len) {
@@ -363,7 +363,7 @@ struct heap *mm_create_heap(size_t minbytes, size_t maxbytes) {
 	struct heap *heap = (struct heap *) m_get(sizeof(struct heap));
 	heap->memory = __sys_create_heap(minbytes, maxbytes);
 	heap->last_block = (uintptr_t) heap->memory;
-	*(struct m_metadata *) heap->last_block = (struct m_metadata) {
+	*(struct block_metadata *) heap->last_block = (struct block_metadata) {
 			heap->last_block,
 			0
 	};
@@ -407,7 +407,7 @@ void *mm_getn(size_t minbytes) {
 	return result;
 }
 
-void *mm_reget(size_t minbytes) {
+void *mm_resize(size_t minbytes) {
 
 }
 
