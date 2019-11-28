@@ -98,26 +98,6 @@ void m_set(void *memory, uint8_t *value, uint8_t stride);
 
 void m_setd(void *memory, uint8_t *value, uint8_t stride, size_t len);
 
-
-struct heap *mm_create_heap(size_t minbytes, size_t maxbytes);
-
-enum result_code mm_free_heap(struct heap *heap);
-
-enum result_code mm_heap_stack_init(size_t heaps);
-
-enum result_code mm_push(struct heap *heap);
-
-struct heap *mm_pop();
-
-void *mm_get(size_t minbytes);
-
-void *mm_getn(size_t minbytes);
-
-void *mm_resize(size_t minbytes);
-
-void *mm_free(void *ptr);
-
-
 size_t m_get_cache_size(enum cache cache);
 
 size_t m_get_page_size();
