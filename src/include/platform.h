@@ -9,7 +9,6 @@
 #define INCLUDE_PLATFORM_H_
 
 #include <stddef.h>
-#include "macro.h"
 
 // VARIABLES:
 
