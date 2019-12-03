@@ -43,7 +43,7 @@ enum result_code {
 			R_ILLEGAL_VALUE,
 };
 
-void r_debug_info(char const *fn_name, char const *information, ...);
+void r_debug_info(char const *information, ...);
 
 void r_debug_infof(enum result_code const code, char const *fn_name, char const *information, ...);
 

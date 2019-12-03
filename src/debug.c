@@ -33,10 +33,8 @@ static char **mdu_result_messages = (char *[])
 				"R_ILLEGAL_VALUE",
 		};
 
-void r_debug_info(char const *fn_name, char const *information, ...) {
-	fputs("[info][", stdout);
-	fputs(mdu_result_messages[R_SUCCESS], stdout);
-	fputc(']', stdout);
+void r_debug_info(char const *information, ...) {
+	fputs("[info]", stdout);
 	fputc(' ', stdout);
 	va_list objects;
 	va_start(objects, information);
