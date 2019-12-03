@@ -20,42 +20,44 @@
 #include <stdlib.h>
 #include <string.h>
 #include "memory.h"
-#include "macro.h"
 #include "platform.h"
 
-struct p_result p_get_platform() {
-	struct p_result result = *((struct p_result *) m_get(sizeof(struct p_result)));
-	result.content.value = PLATFORM_NAME;
-	result.code = R_INITIALIZATION_SUCCESS;
-	return result;
+char *p_get_platform() {
+	return PLATFORM_NAME;
 }
 
 /*
  * Returns a copy of a system environment variable string value. There is no obligation to copy the returned string.
  * You must use m_free for the string.
  */
-struct p_result p_get_env(char *var) {
+char *p_get_env(char *var) {
 #ifdef __STDC_HOSTED__ // check if standard C is defined on this platform
 	char *env = getenv(var);
 	size_t len = strlen(env);
 	char *result = m_get(len);
-	struct p_result ret = *((struct p_result *) m_get(sizeof(struct p_result)));
 	strcpy(env, result);
-	return ret;
+	return result;
 #else
-#error "[fatal][p_get_env] p_get_env is not defined on this platform."
+	#error "[build][fatal][p_get_env] p_get_env is not defined on this platform."
 #endif
 }
 
-struct p_result p_get_fn(char *module, char *function) {
-	struct p_result result = *((struct p_result *) m_get(sizeof(struct p_result)));
+uintptr_t p_get_fn(char *module, char *function) {
 #if PLATFORM == WINDOWS || ENVIRONMENT == WINDOWS
-	result.content.function = (void (*)(void)) GetProcAddress(LoadLibrary(module), function);
+	return (uintptr_t) GetProcAddress(LoadLibrary(module), function);
 #elif PLATFORM == LINUX || ENVIRONMENT == UNIX
-
+	// TODO UNIX p_get_fn
+#else
+	#error "[build][fatal][p_get_fn] platform not yet supported"
 #endif
 }
 
-struct p_result p_get_fna(char *module, uintptr_t function_offset) {
-
+uintptr_t p_get_fna(char *module, uintptr_t function_offset) {
+#if PLATFORM == WINDOWS || ENVIRONMENT == WINDOWS
+	return ((uintptr_t) LoadLibrary(module) + function_offset);
+#elif PLATFORM == LINUX || ENVIRONMENT == UNIX
+	// TODO UNIX p_get_fna
+#else
+	#error "[build][fatal][p_get_fna] platform not yet supported"
+#endif
 }

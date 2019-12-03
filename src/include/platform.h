@@ -708,14 +708,18 @@ struct p_result {
 	enum result_code code;
 };
 
+// currently unused
 enum device_type {
 	PHYSICAL,
 	LOGICAL
 };
 
+typedef uintmax_t udevptr_t;
+
+// currently unused
 struct p_device {
 	// the unique identifier for this device
-	uintmax_t id;
+	uintmax_t uid;
 	// the device name string
 	char *name;
 	// the platform-dependent interface module name of this device, commonly called the device driver
@@ -723,10 +727,11 @@ struct p_device {
 	// To be used with p_get_fn's module parameter
 	char *interface_module;
 	enum device_type type;
+
 };
 
 /*
- * # `struct p_result p_get_platform();`
+ * # `char *p_get_platform();`
  * Gets the platform (friendly) name string. Use the macro expansion `PLATFORM_NAME_LENGTH` for string length (with null terminator).
  *
  * You may alternatively use the `PLATFORM_NAME` macro when you do not need to retrieve the friendly platform name strictly
@@ -735,44 +740,58 @@ struct p_device {
  * ## `return struct p_result`
  * A `struct p_result` containing a pointer of type `char *`, a null-terminated string containing the platform name.
  */
-struct p_result p_get_platform();
+char *p_get_platform();
 
-struct p_result p_get_env(char *var);
+char *p_get_env(char *var);
 
 /* platform functional programming */
 
 /*
- * # `struct p_result p_get_fn(char *module, char *function);` ("get function")
+ * # `uintptr_t p_get_fn(char *module, char *function);` ("get function")
  * Gets a function from the specified implementation-specific module. The module is explicitly the name of the module
 *  without any sort of file extension, and will first check the program's environment for an existing module before
 *  searching the system's environment for the given module. If the function succeeds in finding the module, the function
-*  will attempt to retrieve the address of the specified function, or return NULL with result code R_INITIALIZATION_FAILURE.
+*  will attempt to retrieve the address of the specified function, or return `NULL` with result code `R_INITIALIZATION_FAILURE`.
 *
-*  If the function is unable to find the module name, the result will contain a NULL result with result code R_FAILURE.
+*  If the function is unable to find the module name, the result will contain a `NULL` result with result code `R_FAILURE`.
+ *
+ *  The return type and arguments of this function pointer are non-sensical; you must cast the returned function pointer
+ *  to the correct function pointer.
  *
  *  ## `char *module`
  *  a string containing the module name
  *
  *  ## `char *function`
  *  a string containing the function name
+ *
+ *  ## `return uintptr_t`
+ *  A `uintptr_t` containing the start of the function as `(uintptr_t (module_base_address + function_offset)`
 */
-struct p_result p_get_fn(char *module, char *function);
+uintptr_t p_get_fn(char *module, char *function);
 
 /*
- * # `struct p_result p_get_fna(char *module, uintptr_t function_offset);` ("get function absolute")
- * Gets a function from the specified function offset which is an absolute address relative to the offset within a program
- * or shared library.
+ * # `uintptr_t p_get_fna(char *module, uintptr_t function_offset);` ("get function absolute")
+ * Gets a function from the specified implementation-specific module. The module is explicitly the name of the module
+*  without any sort of file extension, and will first check the program's environment for an existing module before
+*  searching the system's environment for the given module. If the function succeeds in finding the module, the function
+*  will attempt to retrieve the address of the specified function, or return `NULL` with result code `R_INITIALIZATION_FAILURE`.
+ *
+ * The return type and arguments of this function pointer are non-sensical; you must cast the returned function pointer
+ *  to the correct function pointer.
  *
  * ## `char *module`
  * a string containing the module name
  *
  * ## `uintptr_t function_offset`
  * a pointer value representing the offset of the function relative to the start of the module
+ *
+ * ## `return uintptr_t`
+ * A `uintptr_t` containing the start of the function as `(uintptr_t) (module_base_address + function_offset)`
  */
-struct p_result p_get_fna(char *module, uintptr_t function_offset);
+uintptr_t p_get_fna(char *module, uintptr_t function_offset);
 
 /* platform hardware enumeration */
 
-struct p_device p_get_device();
+// struct p_device p_get_device();
 
 #endif /* INCLUDE_PLATFORM_H_ */

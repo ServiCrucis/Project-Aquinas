@@ -25,7 +25,7 @@
 
 
 int main(int argc, char *argv[]) {
-	r_debug_info(__func__, "Running...\n");
-	m_sysheap_create(64, 128);
+	r_debug_info("Running...\n");
+	m_heap_create(64, 128);
 	return 0;
 }
