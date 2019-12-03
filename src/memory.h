@@ -9,6 +9,7 @@
  */
 
 #include <stdint.h>
+#include "debug.h"
 
 #ifndef MEMORY_H_
 #define MEMORY_H_
@@ -32,8 +33,8 @@ struct heap {
 };
 
 /*
- * # `void m_init(size_t);`
- * Initializes memory.c's internal components.
+ * # `void m_heap_create(size_t minbytes, size_t maxbytes);`
+ * Initializes memory.c's internal heap (the process heap).
  *
  * ## `size_t minbytes`
  * The minimum size of the heap in bytes for the duration of the program.
@@ -41,7 +42,19 @@ struct heap {
  * ## `size_t maxbytes`
  * The maximum size of the heap in bytes for the duration of the program.
  */
-void m_sysheap_create(size_t minbytes, size_t maxbytes);
+void m_heap_create(size_t minbytes, size_t maxbytes);
+
+/*
+ * # `void m_heap_resize(size_t minbytes);`
+ * Resizes the heap with as many pages as are necessary to meet the minimum bytes requirement.
+ * If the heap is greater than `minbytes` bytes, an attempt will be made to shrink the heap. Any memory outside this range
+ * that is accessed after a call to this function is undefined behavior.
+ *
+ * If the heap is less than `minbytes` bytes, an attempt will be made to expand the heap.
+ *
+ *
+ */
+void m_heap_resize(size_t minbytes);
 
 /*
  * # `size_t m_get_heap_size();`
@@ -62,11 +75,6 @@ size_t m_get_heap_size();
 void *m_get(size_t minbytes);
 
 /*
- * Gets the next available memory block on the heap and clears the values to zero.
- */
-void *m_getn(size_t minbytes);
-
-/*
  * Resizes the given block of memory to minbytes.
  */
 void *m_resize(void *ptr, size_t minbytes);
@@ -74,29 +82,19 @@ void *m_resize(void *ptr, size_t minbytes);
 /*
  * Frees the given block of memory.
  */
-enum result_code m_free(void *ptr);
+void m_free(void *ptr);
 
-/*
- * Securely frees the given block of memory by zeroing the memory after freeing.
- */
-enum result_code m_frees(void *ptr);
-
-/*
- *
- */
 void m_copy(void *src, void *dst, size_t offset);
 
-/*
- *
- */
 void m_copyd(void *src, size_t srclen, void *dst, size_t dstlen, size_t offset);
 
-/*
- *
- */
-void m_set(void *memory, uint8_t *value, uint8_t stride);
+void m_set(void *memory, uintptr_t value);
 
-void m_setd(void *memory, uint8_t *value, uint8_t stride, size_t len);
+void m_setd(void *memory, uintptr_t value, size_t len);
+
+void m_setv(void *memory, uint8_t *value, uint8_t stride);
+
+void m_setvd(void *memory, uint8_t *value, uint8_t stride, size_t len);
 
 size_t m_get_cache_size(enum cache cache);
 
