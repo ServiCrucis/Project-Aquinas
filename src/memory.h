@@ -26,10 +26,10 @@ enum cache {
 };
 
 struct heap {
-	void *memory;
 	uintptr_t last_block;
 	uintptr_t next_block;
 	size_t size;
+	void *memory;
 };
 
 /*

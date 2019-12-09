@@ -79,8 +79,8 @@ static inline void __m_init_cpu_info(size_t *_caches, size_t **_cache_size, size
 	if (!GetLogicalProcessorInformationEx) {
 		r_debug_fatalf(R_INITIALIZATION_FAILURE, __func__, "failed to initialize function kernel32.GetLogicalProcessorInformation (error code: %X", GetLastError());
 	}
-	SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX *pinfo = NULL;
 	DWORD size = sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX);
+	SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX *pinfo = m_get(size);
 	// populate SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX buffer
 	register size_t len = 0;
 	do {
@@ -129,10 +129,12 @@ void m_heap_create(size_t minbytes, size_t maxbytes) {
 	// initialize `heap`
 	if (!heap) {
 		pages = (size_t) (maxbytes / page_size);
-		size_t size = pages * page_size;
-		heap->memory = malloc(size);
-		heap->size = size;
-
+		// if the size of the heap is less than the page size, init one page
+		if (pages < 1)
+			pages = 1;
+		heap = malloc(sizeof(struct heap));
+		heap->memory = calloc(pages, page_size);
+		heap->size = pages * page_size;
 		if (!heap) {
 			r_debug_fatalf(R_ALLOCATION_FAILURE, __func__, "failed to allocate heap (size: %d bytes)", minbytes);
 		}
@@ -205,7 +207,7 @@ void *m_get(size_t minbytes) {
 
 void *m_resize(void *ptr, size_t minbytes) {
 	if (!ptr) {
-		return m_get(minbytes);
+		return NULL;
 	}
 	// get the block that holds `ptr`
 	struct block *block = (struct block *) ((uintptr_t) ptr - METADATA);
@@ -221,11 +223,9 @@ void *m_resize(void *ptr, size_t minbytes) {
 			m_heap_resize(heap->size + minbytes);
 		}
 
-		return ptr;
-	} else {
-		ptr = NULL;
-		return NULL;
 	}
+
+	return ptr;
 }
 
 void m_free(void *ptr) {
