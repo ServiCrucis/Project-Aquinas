@@ -20,7 +20,7 @@
 // set memory unit to use dynamic allocations instead of a single static allocation
 #define DYNAMIC_HEAP true
 #include "memory.h"
-#include "debug.h"
+#include "error.h"
 #include "compiler.h"
 
 

@@ -695,7 +695,7 @@
 
 /* generic platform functions */
 
-#include "../debug.h"
+#include "../error.h"
 #include <stdint.h>
 
 struct p_result {
@@ -789,6 +789,10 @@ uintptr_t p_get_fn(char *module, char *function);
  * A `uintptr_t` containing the start of the function as `(uintptr_t) (module_base_address + function_offset)`
  */
 uintptr_t p_get_fna(char *module, uintptr_t function_offset);
+
+int p_get_errno();
+
+void p_set_errno(int state);
 
 /* platform hardware enumeration */
 

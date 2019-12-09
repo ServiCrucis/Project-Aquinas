@@ -10,7 +10,7 @@
 #include <stdint.h>
 #include <string.h>
 #include "compiler.h"
-#include "debug.h"
+#include "error.h"
 #include "memory.h"
 
 void mdu_compile__handler(struct symbol **symbols, size_t position, size_t length) {

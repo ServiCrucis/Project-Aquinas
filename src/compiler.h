@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "debug.h"
+#include "error.h"
 
 struct symbol {
 	// either struct symbol** or void**

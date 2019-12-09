@@ -9,7 +9,7 @@
  */
 
 #include <stdint.h>
-#include "debug.h"
+#include "error.h"
 
 #ifndef MEMORY_H_
 #define MEMORY_H_
@@ -75,7 +75,15 @@ size_t m_get_heap_size();
 void *m_get(size_t minbytes);
 
 /*
- * Resizes the given block of memory to minbytes.
+ * Resizes the given block of memory to minbytes. If `ptr` is `NULL`, `ptr` will be initialized with `m_get(size_t)`.
+ * If there is a block following this block, the function fails: `ptr` is set to `NULL`, and the function returns `NULL`.
+ * The global error variable is set to `R_ILLEGAL_ACCESS` since in all single-threaded cases, the heap is a FIFO stack of
+ * contiguous memory blocks, and position on the heap is temporally linear deterministic such that heap location is
+ * dependent on what is currently executing, whereas a multi-threaded heap is temporally non-linear non-deterministic
+ * such that heap location is dependent on thread competition. The latter is not the case with deterministic multi-
+ * threaded environments, in which case position on the heap is contingent on execution order and temporal placement. For
+ * all other cases, a different heap than this one is needed to make efficient use of m_resize as there is no guarantee
+ * that the usage will be optimally linear.
  */
 void *m_resize(void *ptr, size_t minbytes);
 
