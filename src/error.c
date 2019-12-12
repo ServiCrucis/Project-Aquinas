@@ -47,7 +47,7 @@ void r_debug_infof(enum result_code const code, char const *fn_name, char const 
 	fputs(mdu_result_messages[code], stdout);
 	fputs("][", stdout);
 	fputs(fn_name, stdout);
-	fputc(']', stdout);
+	fputs("] ", stdout);
 	va_list objects;
 	va_start(objects, information);
 	vprintf(information, objects);
@@ -74,7 +74,7 @@ void r_debug_fatalf(enum result_code const code, char const *fn_name, char const
 	fputc(']', stderr);
 	va_list objects;
 	va_start(objects, error_message);
-	vprintf(error_message, objects);
+	vfprintf(stderr, error_message, objects);
 	va_end(objects);
 	exit(code);
 }

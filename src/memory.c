@@ -45,7 +45,7 @@ struct block {
 	void *data;
 };
 // the offset of a block's metadata relative to the data pointer
-#define METADATA sizeof(struct block) - sizeof(void *)
+#define METADATA sizeof(struct block)
 
 static inline void __m_init_page_size(size_t *_page_size) {
 	//  set `page_size`
@@ -63,9 +63,15 @@ static inline void __m_init_page_size(size_t *_page_size) {
 	}
 }
 
-static inline void __m_init_cpu_info(size_t *_caches, size_t **_cache_size, size_t **_sector_size, size_t *_word_size) {
+static inline void __m_init_cpu_info(size_t *_caches, size_t *_cache_size, size_t *_sector_size, size_t *_word_size) {
 	// initialize word size
 	*_word_size = sizeof(uintptr_t);
+	// initialize caches
+	*_caches = 3;
+	// initialize cache_size array
+	_cache_size = m_get(3 * sizeof(size_t));
+	// initialize sector_size
+	_sector_size = m_get(3 * sizeof(size_t));
 
 	// !!!
 	// (can use our memory functions from this point onwards)
@@ -80,27 +86,30 @@ static inline void __m_init_cpu_info(size_t *_caches, size_t **_cache_size, size
 		r_debug_fatalf(R_INITIALIZATION_FAILURE, __func__, "failed to initialize function kernel32.GetLogicalProcessorInformation (error code: %X", GetLastError());
 	}
 	DWORD size = sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX);
-	SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX *pinfo = m_get(size);
+	auto SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX *pinfo = m_get(size);
 	// populate SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX buffer
-	register size_t len = 0;
 	do {
 		m_resize(pinfo, size);
-		GetLogicalProcessorInformationEx(RelationCache, (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX) pinfo, &size);
-		len++;
-	} while (GetLastError() == ERROR_INSUFFICIENT_BUFFER);
-	// initialize caches
-	*_caches = len;
-	// initialize cache_size array
-	_cache_size = m_get(len * sizeof(size_t));
-	// initialize sector_size
-	_sector_size = m_get(len * sizeof(size_t));
+	} while (!GetLogicalProcessorInformationEx(RelationCache, (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX) pinfo, &size));
 	// read contents of SYSTEM_LOGICAL_PROCESSOR_INFORMATION array
 	register size_t i = 0;
-	for (register SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX *current = pinfo; ((uintptr_t) current) < (len * sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX)); current += sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX)) {
+	for (register SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX *current = pinfo; ((uintptr_t) current) < ((uintptr_t) pinfo + size) && i < 3; current = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX *) ((uintptr_t) current + current->Size)) {
 		switch (current->Relationship) {
 			case RelationCache:
-				*_cache_size[i] = current->Cache.CacheSize;
-				*_sector_size[i] = current->Cache.LineSize;
+				i = current->Cache.Level - 1;
+				switch (current->Cache.Type) {
+					case CacheUnified:
+					case CacheInstruction:
+						break;
+					case CacheData:
+						_cache_size[i] = current->Cache.CacheSize;
+						_sector_size[i] = current->Cache.LineSize;
+						break;
+					case CacheTrace:
+					default:
+						r_debug_infof(R_SUCCESS, __func__, "Ignoring irrelevant cache type: 0x%X\n", current->Cache.Type);
+						break;
+				}
 				break;
 			case RelationProcessorCore:
 			case RelationNumaNode:
@@ -108,13 +117,12 @@ static inline void __m_init_cpu_info(size_t *_caches, size_t **_cache_size, size
 			case RelationGroup:
 			case RelationAll:
 			default:
-				r_debug_infof(R_SUCCESS, __func__, "Ignoring unexpected Relationship: %X", current->Relationship);
+				r_debug_infof(R_SUCCESS, __func__, "Ignoring irrelevant relationship: 0x%X\n", current->Relationship);
 				break;
 		}
-		// increment i
-		i++;
 	}
-
+	// free the memory used for our SYSTEM_LOGICAL_PROCESSOR_INFORMATION array
+	m_free(pinfo);
 	#elif PLATFORM == LINUX || ENVIRONMENT == UNIX
 	// TODO UNIX __m_init_cpu_info
 	#else
@@ -140,20 +148,24 @@ void m_heap_create(size_t minbytes, size_t maxbytes) {
 		}
 	}
 
-	// initialize cache count, cache size, cache line size, and word size
-	__m_init_cpu_info(&caches, &cache_size, &sector_size, &word_size);
-
 	// set heap pointer variables
 	heap->last_block = (uintptr_t) NULL;
 	heap->next_block = (uintptr_t) heap->memory;
+
+	// initialize cache count, cache size, cache line size, and word size
+	__m_init_cpu_info(&caches, cache_size, sector_size, &word_size);
 }
 
 void m_heap_resize(size_t minbytes) {
-
+	size_t size = (minbytes / word_size) * word_size;
+	heap->memory = realloc(heap->memory, size);
+	uintptr_t value = 0;
+	m_setvd((void *) ((uintptr_t) heap->memory + heap->size), (uint8_t *) &value, 8, size - heap->size);
+	heap->size = size;
 }
 
 /*
- * # `static inline void *__m_get(size_t minbytes, uintptr_t heap, size_t size, uintptr_t last_block, uintptr_t next_block);`
+ * # `static inline uintptr_t __m_get(size_t minbytes, uintptr_t heap, size_t size, uintptr_t last_block, uintptr_t next_block);`
  *
  * Finds a pointer to an available block of memory that is at least minbytes bytes in size, but may be longer. The
  * calculation is based on the number of native words in order to prevent fragmentation. It is the responsibility of the
@@ -169,22 +181,14 @@ void m_heap_resize(size_t minbytes) {
  * ## `size_t _word_size`
  * The size of a native word in bytes (usually `sizeof(uintptr_t)`)
  *
- * ## `size_t size`
- * The size of the heap in bytes
- *
- * ## `uintptr_t last_block`
- * A pointer to the last block that was allocated on the heap
- *
- * ## `uintptr_t next_block`
- * A pointer to the next available position of a `struct block` on the heap
- *
- * ## `return;`
- * `void`
+ * ## `return`
  */
 static inline uintptr_t __m_get(size_t minbytes, struct heap *_heap, size_t _word_size) {
 	struct block *block = (struct block *) _heap->next_block;
+	// TODO free block tracking
 	block->prev = _heap->last_block;
 	block->size = (size_t) (minbytes / _word_size) * _word_size;
+	block->data = (void *) ((uintptr_t) block + METADATA);
 	return (uintptr_t) block->data;
 }
 
@@ -192,7 +196,7 @@ static inline void __m_free(void *ptr, struct heap *_heap) {
 	struct block *block = ((struct block *) ptr - METADATA);
 	// update heap pointers
 	_heap->last_block = block->prev;
-	_heap->next_block = (uintptr_t) block;
+	_heap->next_block = (uintptr_t) block + sizeof(struct block) + block->size;
 	block->prev = (uintptr_t) NULL;
 	block->size = 0;
 }
@@ -206,7 +210,7 @@ void *m_get(size_t minbytes) {
 }
 
 void *m_resize(void *ptr, size_t minbytes) {
-	if (!ptr) {
+	if ((uintptr_t) ptr < ((uintptr_t) heap->memory + heap->size - word_size)) {
 		return NULL;
 	}
 	// get the block that holds `ptr`
@@ -217,12 +221,16 @@ void *m_resize(void *ptr, size_t minbytes) {
 	if (minbytes > block->size && !next->size) {
 		// increase block size to be at least `minbytes` in size
 		block->size += (size_t) ((minbytes - block->size) / word_size) * word_size;
-		// resize heap if necessary
+		// check if the heap is large enough and exit with error if it isn't
 		// compare last heap address with the address immediately following this block
 		if (((uintptr_t) heap + heap->size - word_size) < ((uintptr_t) block->data + block->size - word_size)) {
-			m_heap_resize(heap->size + minbytes);
+			r_debug_fatalf(R_ASSERTION_FAILURE, __func__, "insufficient heap space to resize block");
 		}
-
+		// update next
+		next = (struct block *) ((uintptr_t) block + block->size);
+		next->prev = (uintptr_t) block;
+		next->size = 0;
+		next->data = NULL;
 	}
 
 	return ptr;

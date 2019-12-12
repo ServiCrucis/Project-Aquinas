@@ -22,10 +22,12 @@
 #include "memory.h"
 #include "error.h"
 #include "compiler.h"
+#include "math.h"
 
-
-int main(int argc, char *argv[]) {
+int main(int argc, char **argv) {
 	r_debug_info("Running...\n");
-	m_heap_create(64, 128);
+	// 128KiB heap
+	m_heap_create(128 * 1024, 128 * 1024);
+	// calculate fib(1 000 000)
 	return 0;
 }
