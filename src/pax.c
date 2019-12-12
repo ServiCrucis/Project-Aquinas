@@ -28,6 +28,5 @@ int main(int argc, char **argv) {
 	r_debug_info("Running...\n");
 	// 128KiB heap
 	m_heap_create(128 * 1024, 128 * 1024);
-	// calculate fib(1 000 000)
 	return 0;
 }
