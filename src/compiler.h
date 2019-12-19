@@ -13,7 +13,7 @@
 #include "error.h"
 
 struct symbol {
-	// either struct symbol** or void**
+	// either struct symbol ** or void **
 	union {
 		struct symbol **y;
 		void **value;
@@ -36,7 +36,7 @@ struct symbol_context {
 	struct symbol **top;
 };
 
-struct symbol *mdu_match_symbol_subset(struct node *(*pattern)(struct node *origin, struct symbol *input), struct symbol *input);
+struct symbol *c_match(struct node *(*pattern)(struct node *origin, struct symbol *input), struct symbol **input);
 
 struct symbol *mdu_wrap(struct symbol **symbols, size_t length, size_t dimensions);
 

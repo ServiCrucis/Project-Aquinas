@@ -1,0 +1,12 @@
+/*
+* A prototype grammar for a universal, all-purpose programming language called "Catholicus".
+* Contents currently subject to change without notice.
+*
+* Everything is a module.
+*
+* A module is a discrete, logical unit. A module may contain other modules of any kind and of any quantity.
+*/
+
+prototype {
+
+}
