@@ -9,7 +9,7 @@
  */
 #if PLATFORM == WINDOWS || ENVIRONMENT == WINDOWS
 
-	#include <libloaderapi.h>
+	#include <windows.h>
 
 #elif PLATFORM == LINUX || ENVIRONMENT == UNIX
 
@@ -34,7 +34,7 @@ char *p_get_env(char *var) {
 #ifdef __STDC_HOSTED__ // check if standard C is defined on this platform
 	char *env = getenv(var);
 	size_t len = strlen(env);
-	char *result = m_get(len);
+	char *result = m_block(len, GLOBAL);
 	strcpy(env, result);
 	return result;
 #else

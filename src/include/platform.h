@@ -730,6 +730,15 @@ struct p_device {
 
 };
 
+enum p_time_resolution {
+	CYCLES,
+	NANOSECONDS,
+	MICROSECONDS,
+	MILLISECONDS,
+	SECONDS,
+
+};
+
 /*
  * # `char *p_get_platform();`
  * Gets the platform (friendly) name string. Use the macro expansion `PLATFORM_NAME_LENGTH` for string length (with null terminator).
@@ -793,6 +802,26 @@ uintptr_t p_get_fna(char *module, uintptr_t function_offset);
 int p_get_errno();
 
 void p_set_errno(int state);
+
+/*
+ * # `uintmax_t p_get_time(enum p_unit unit);`
+ * Real-time hardware clock interrupt query.
+ *
+ * Returns the current real-time clock value stored in a `uintmax_t`.
+ */
+uintmax_t p_get_time(enum p_time_resolution unit);
+
+/*
+ * # `uintmax_t p_get_timestamp();`
+ * Gets the current timestamp in the following encoding:
+ *
+ *      :year:month:day:hour:minute:second:
+ *      : 12 :  4  : 5 : 5  :  6   :   6  :
+ *
+ * Each value is stored as a big endian value. The returned value is a single 64-bit big endian value whose most
+ * significant bits are zero.
+ */
+uint64_t p_get_timestamp();
 
 /* platform hardware enumeration */
 
