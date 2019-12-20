@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.0)
-project(Pax)
+cmake_minimum_required(VERSION 3.15)
+project(Catholicus)
 set(CMAKE_MODULE_PATH ./build/)
 set(PROJECT_SOURCE_DIR ./src/)
 set(CONFIGURE_INPUT ./build/configuration/)

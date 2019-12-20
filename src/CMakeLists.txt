@@ -1,3 +1,3 @@
-project(Pax)
-add_executable(Pax pax.c compiler.c error.c memory.c platform.c)
-target_include_directories(Pax PRIVATE ./include/)
+project(Catholicus)
+add_executable(Catholicus catholicus.c compiler.c error.c memory.c platform.c)
+target_include_directories(Catholicus PRIVATE ./include/)
