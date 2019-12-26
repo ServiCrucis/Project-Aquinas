@@ -1,7 +1,7 @@
 /*
  * # memory.h
  * ## Created:
- * November 6th, A.D. 2019
+ * November 6, A.D. 2019
  * ## Author:
  * Andrew Thomas Porter [<caritasdedeus@gmail.com>](mailto:caritasdedeus@gmail.com)
  *
@@ -25,15 +25,33 @@ enum cache {
 };
 
 struct block {
-	uintptr_t prev;
-	uintptr_t next;
+	struct block *prev;
+	struct block *next;
 	uintptr_t size;
 	uintptr_t data[];
 };
 
 struct heap {
+	// size of memory in bytes
+	size_t size;
+	// address of the last block for static section
+	struct block *global_next;
+	// address of the last block for dynamic section
+	struct block *local_next;
+	// location of the heap's memory
+	uintptr_t memory;
+};
 
-	uintptr_t memory; // location of the heap's memory
+enum cardinality {
+	LEFT,
+	RIGHT,
+	UP,
+	DOWN
+};
+
+enum m_type {
+	LOCAL,
+	GLOBAL
 };
 
 /*
@@ -73,13 +91,13 @@ void m_heap_resize(size_t minbytes);
 size_t m_get_heap_size();
 
 /*
- * # `void *m_get(size_t minbytes);`
+ * # `void *m_create(size_t minbytes, enum side side);`
  * Gets the next available memory block on the heap.
  *
  * ## `return void *`
  * A pointer to a block of allocated memory, or NULL if we failed to find available memory
  */
-void *m_block(size_t minbytes);
+void *m_create(size_t minbytes, enum m_type type);
 
 /*
  * Resizes the given block of memory to minbytes.
@@ -91,9 +109,9 @@ void *m_resize(void *ptr, size_t minbytes);
  */
 void m_free(void *ptr);
 
-void *m_copy(void *src, void *dst, size_t offset);
+void *m_copy(void *src, size_t srcoff, size_t srclen, enum cardinality srcdir, void *dst, size_t dstoff, size_t dstlen, enum cardinality dstdir);
 
-void *m_set(void *memory, uintptr_t value);
+void *m_set(void *memory, size_t offset, size_t length, uintptr_t value, enum cardinality dir);
 
 size_t m_get_cache_size(enum cache cache);
 

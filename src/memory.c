@@ -1,7 +1,7 @@
 /*
  * # memory.c
  * ## Created:
- * November 6th, A.D. 2019
+ * November 6, A.D. 2019
  * ## Author:
  * Andrew Thomas Porter [<caritasdedeus@gmail.com>](mailto:caritasdedeus@gmail.com)
  *
@@ -36,6 +36,11 @@ static size_t caches = 0;
 // size of the heap in pages
 static size_t pages = 0;
 
+#define METADATA sizeof(struct block) - sizeof(uintptr_t)
+
+// approximates the given size to a particular minimum size which will either be the size of a word, sector, cache,
+// or page. If `minbytes` is greater than the size of a page, the returned value is guaranteed to be a multiple of
+// `page_size`.
 static inline size_t __m_approximate(size_t minbytes) {
 	size_t page = page_size;
 	size_t cache = cache_size[L1];
@@ -52,6 +57,8 @@ static inline size_t __m_approximate(size_t minbytes) {
 		} else {
 			return ((minbytes / page) * page) + (minbytes % page);
 		}
+	} else {
+		return (minbytes / word_size) * word_size;
 	}
 }
 
@@ -139,28 +146,33 @@ static inline void __m_init_cpu_info(size_t *_caches, size_t *_cache_size, size_
 }
 
 void m_heap_create(size_t minbytes) {
+	// guard
+	if (heap) {
+		if (heap->memory) {
+			free((void *) heap->memory);
+		}
+		free(heap);
+	}
 	heap = malloc(sizeof(struct heap));
 	__m_init_page_size(&page_size);
 	__m_init_cpu_info(&caches, cache_size, sector_size, &word_size);
-	heap->memory = malloc((minbytes / page_size) * page_size + 1);
-
+	heap->size = __m_approximate(minbytes);
+	heap->memory = (uintptr_t) malloc(heap->size);
+	heap->global_next = (struct block *) heap->memory;
+	heap->local_next = (struct block *) heap->memory + heap->size - 1;
+	m_set((void *) heap->memory, 0, heap->size, 0, RIGHT);
 }
 
 void m_heap_destroy() {
-	if (heap) {
-		if (heap->memory) {
-			free(heap->memory);
-		}
-		if (heap->ptable) {
-			free(heap->ptable);
-		}
-	}
+	free((void *) heap->memory);
+	free(heap);
 }
 
 void m_heap_resize(size_t minbytes) {
+	heap->memory = (uintptr_t) realloc((void *) heap->memory, __m_approximate(minbytes));
 }
 
-void *m_block(size_t minbytes) {
+void *m_create(size_t minbytes, enum m_type type) {
 }
 
 void *m_resize(void *ptr, size_t minbytes) {
@@ -169,10 +181,122 @@ void *m_resize(void *ptr, size_t minbytes) {
 void m_free(void *ptr) {
 }
 
-void *m_copy(void *src, void *dst, size_t offset) {
+// chooses whether to use greater than or less than depending on cardinality
+// used by m_copy and m_set
+static inline bool __cmp(size_t a, size_t b, enum cardinality cardinality) {
+	switch (cardinality) {
+		case UP:
+		case LEFT:
+			return a > b;
+		case DOWN:
+		case RIGHT:
+			return a < b;
+		default:
+			r_debug_fatalf(R_ILLEGAL_VALUE, __func__, "unknown cardinality: %d", cardinality);
+			return false;
+	}
 }
 
-void *m_set(void *memory, uintptr_t value) {
+void *m_copy(void *src, size_t srcoff, size_t srclen, enum cardinality srcdir, void *dst, size_t dstoff, size_t dstlen, enum cardinality dstdir) {
+	if (!src) {
+		r_debug_fatalf(R_NULL_POINTER, __func__, "src (arg 1) is NULL");
+	}
+
+	if (!dst) {
+		r_debug_fatalf(R_NULL_POINTER, __func__, "dst (arg 5) is NULL");
+	}
+	// array indices (with segfault init guard [UB])
+	register size_t srci = -1, dsti = -1;
+	// array index deltas (with 0 delta init guard [endless loop])
+	register int8_t srcd = 0, dstd = 0;
+	// array boundaries (with segfault init guard [UB])
+	register size_t srcend = UINTPTR_MAX, dstend = UINTPTR_MAX;
+	// initialize the source offset
+	switch (srclen) {
+		case UP:
+		case LEFT:
+			srci = srclen - 1;
+			srcd = -1;
+			srcend = -1;
+			break;
+		case DOWN:
+		case RIGHT:
+			srci = 0;
+			srcd = 1;
+			srcend = srclen;
+			break;
+		default:
+			r_debug_fatalf(R_ILLEGAL_VALUE, __func__, "unknown srcdir cardinality: %d", srcdir);
+	}
+	// initialize the destination offset
+	switch (dstdir) {
+		case UP:
+		case LEFT:
+			dsti = dstlen - 1;
+			dstd = -1;
+			dstend = -1;
+			break;
+		case DOWN:
+		case RIGHT:
+			dsti = 0;
+			dstd = 1;
+			dstend = dstlen;
+			break;
+		default:
+			r_debug_fatalf(R_ILLEGAL_VALUE, __func__, "unknown dstdir cardinality: %d", srcdir);
+	}
+
+	srci += srcd * srcoff;
+	dsti += dstd * dstoff;
+
+	for (; __cmp(srci, srcend, srcdir); srci += srcd) {
+		for (; __cmp(dsti, dstend, dstdir); dsti += dstd) {
+			((char *) dst)[dsti] = ((char *) src)[srci];
+		}
+	}
+
+	return dst;
+}
+
+void *m_set(void *memory, size_t offset, size_t length, uintptr_t value, enum cardinality dir) {
+	if (!memory) {
+		r_debug_fatalf(R_NULL_POINTER, __func__, "memory (arg 1) is NULL");
+	}
+	// memory offset (with segfault init guard [UB])
+	register size_t i = -1;
+	// memory offset delta, -1 or 1 (with infinite loop guard)
+	register uint8_t delta = 0;
+	// memory end position (with segfault init guard [UB])
+	register size_t end = UINTPTR_MAX;
+	// initialize memory index, delta, and end
+	switch (dir) {
+		case UP:
+		case LEFT:
+			i = length - 1;
+			delta = -1;
+			end = -1;
+			break;
+		case DOWN:
+		case RIGHT:
+			i = 0;
+			delta = 1;
+			end = length;
+			break;
+		default:
+			r_debug_fatalf(R_ILLEGAL_VALUE, __func__, "unknown cardinality: %d", dir);
+	}
+	// increment the memory index by offset (cardinality adjusted by delta)
+	i += offset * delta;
+
+	register size_t j = 0;
+	for (; __cmp(i, end, dir); i += delta * sizeof(value)) {
+		for (; __cmp(j, sizeof(value), dir); j++) {
+			((char *) memory)[i + j * delta] = ((char *) value)[j];
+		}
+		j = 0;
+	}
+
+	return memory;
 }
 
 size_t m_get_cache_size(enum cache cache) {

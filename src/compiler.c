@@ -15,7 +15,7 @@
 
 // error handler
 void c_compile__handler(struct symbol **symbols, size_t position, size_t length) {
-	char *errpos = m_get(position + 1);
+	char *errpos = malloc(position + 1);
 	if (!errpos) {
 		r_debug_fatalf(R_ALLOCATION_FAILURE,
 		               "[%s] failed to allocate memory for error string (required memory: %d bytes)",
@@ -32,7 +32,7 @@ struct symbol *passthrough(struct symbol *const symbol) {
 }
 
 struct symbol *c_match(struct node *(*pattern)(struct node *origin, struct symbol *input), struct symbol *input) {
-	struct symbol **stack = m_get(input->length * sizeof(struct symbol *));
+	struct symbol **stack = malloc(input->length * sizeof(struct symbol *));
 	if (!stack) {
 		r_debug_fatalf(R_ALLOCATION_FAILURE, __func__, "[%s] failed to allocate memory for stack (required memory: %d bytes)", input->length * sizeof(struct symbol *));
 	}
@@ -51,12 +51,12 @@ struct symbol *c_match(struct node *(*pattern)(struct node *origin, struct symbo
 		} else { // continuity broken
 			// create new symbol from contents of stack
 			size_t len = (1 + next + offset);
-			struct symbol **symbols = m_get(len * sizeof(struct symbol *));
+			struct symbol **symbols = malloc(len * sizeof(struct symbol *));
 			if (!symbols) {
 				r_debug_fatalf(R_ALLOCATION_FAILURE, __func__, "[%s] failed to allocate memory for new_symbol (required memory: %d bytes)", len * sizeof(struct symbol *));
 			}
 			memcpy(symbols, stack, len);
-			struct symbol *new_symbol = mdu_wrap(symbols, len, input->dimensions);
+			struct symbol *new_symbol = c_wrap(symbols, len, input->dimensions);
 			// push new symbol onto stack
 			stack[offset] = new_symbol;
 			// increment stack offset
@@ -73,7 +73,7 @@ struct symbol *c_match(struct node *(*pattern)(struct node *origin, struct symbo
 	if (!stack) {
 		r_debug_fatalf(R_ALLOCATION_FAILURE, __func__, "[%s] failed to shrink stack size to %d bytes from %d bytes", offset * sizeof(struct symbol *), input->length * sizeof(struct symbol *));
 	}
-	return mdu_wrap(stack, next + offset + 1, input->dimensions);
+	return c_wrap(stack, next + offset + 1, input->dimensions);
 }
 
 struct symbol *c_transform(struct symbol *(*transform)(struct symbol *), struct symbol *input) {
@@ -84,8 +84,8 @@ struct symbol *c_match_transform(struct node *(*pattern)(struct node *origin, st
 
 }
 
-struct symbol *mdu_wrap(struct symbol **symbols, size_t length, size_t dimensions) {
-	struct symbol *symbol = m_get(sizeof(struct symbol));
+struct symbol *c_wrap(struct symbol **symbols, size_t length, size_t dimensions) {
+	struct symbol *symbol = malloc(sizeof(struct symbol));
 	if (!symbol) {
 		r_debug_fatalf(R_ALLOCATION_FAILURE, __func__, "[%s] failed to allocate memory for symbol contents (required memory: %d bytes)", sizeof(struct symbol));
 	}
@@ -96,7 +96,7 @@ struct symbol *mdu_wrap(struct symbol **symbols, size_t length, size_t dimension
 }
 
 struct symbol *mdu_input(void *y, size_t length) {
-	struct symbol *symbol = m_get(sizeof(struct symbol));
+	struct symbol *symbol = malloc(sizeof(struct symbol));
 	if (!symbol) {
 		r_debug_fatalf(R_ALLOCATION_FAILURE, __func__, "[%s] failed to allocate memory for symbol contents (required memory: %d bytes)", sizeof(struct symbol));
 	}
@@ -107,8 +107,8 @@ struct symbol *mdu_input(void *y, size_t length) {
 }
 
 struct symbol *mdu_str_input(char *y, size_t length) {
-	struct symbol *symbol = m_get(sizeof(struct symbol));
-	symbol->y = m_get(length * sizeof(struct symbol *));
+	struct symbol *symbol = malloc(sizeof(struct symbol));
+	symbol->y = malloc(length * sizeof(struct symbol *));
 	if (!symbol->y) {
 		r_debug_fatalf(R_ALLOCATION_FAILURE, __func__, "[%s] failed to allocate memory for symbol contents (required memory: %d bytes)", length * sizeof(struct symbol *));
 	}

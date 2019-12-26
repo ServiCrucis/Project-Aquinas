@@ -36,9 +36,9 @@ struct symbol_context {
 	struct symbol **top;
 };
 
-struct symbol *c_match(struct node *(*pattern)(struct node *origin, struct symbol *input), struct symbol **input);
+struct symbol *c_match(struct node *(*pattern)(struct node *origin, struct symbol *input), struct symbol *input);
 
-struct symbol *mdu_wrap(struct symbol **symbols, size_t length, size_t dimensions);
+struct symbol *c_wrap(struct symbol **symbols, size_t length, size_t dimensions);
 
 struct symbol *mdu_input(void *y, size_t length);
 
@@ -47,7 +47,6 @@ struct symbol *mdu_str_input(char *y, size_t length);
 char *mdu_symbol_to_string(struct symbol *const symbol);
 
 char *mdu_cat_symbols(struct symbol **const symbols, size_t length);
-
 
 #endif /* COMPILER_H_ */
 

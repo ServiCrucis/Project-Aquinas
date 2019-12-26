@@ -27,6 +27,6 @@
 int main(int argc, char **argv) {
 	r_debug_info("Running...\n");
 	// 128KiB heap
-	m_heap_create(128 * 1024, 128 * 1024);
+	//m_heap_create(128 * 1024);
 	return 0;
 }
