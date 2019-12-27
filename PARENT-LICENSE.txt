@@ -108,7 +108,7 @@ III. Rules of Attribution:
 	    every copy or derivative.
 	
 		a. All Public Works shall be implicitly attributed to God without
-		    need for explicit attribution, and the first, middle, and last
+		    need for explicit attribution, and at minimum the first and last
 		    name ("Full Name") of every author of a Public Work must be
 		    present within the Work directly.
 			
