@@ -1,6 +1,6 @@
 /*
  * file: platform.h
- * origin: platform.h.in
+ * origin: platform.h
  * author: Andrew Thomas Porter <caritasdedeus@gmail.com>
  * description:
  */
@@ -10,19 +10,20 @@
 
 #include <stddef.h>
 
-// VARIABLES:
-
-// ENVIRONMENT
-// ENVIRONMENT_NAME
-// ENVIRONMENT_NAME_LENGTH
-// ENVIRONMENT_VARIANT
-
-// PLATFORM
-// PLATFORM_NAME
-// PLATFORM_NAME_LENGTH
-// PLATFORM_NAME_LENGTH_MAX
-// PLATFORM_VARIANT
-
+/*
+ * VARIABLES:
+ *
+ * ENVIRONMENT: the value representing the current environment which is the name of a wrapper API such as Cygwin, MinGW,
+ * ENVIRONMENT_NAME
+ * ENVIRONMENT_NAME_LENGTH
+ * ENVIRONMENT_VARIANT
+ *
+ * PLATFORM
+ * PLATFORM_NAME
+ * PLATFORM_NAME_LENGTH
+ * PLATFORM_NAME_LENGTH_MAX
+ * PLATFORM_VARIANT
+ */
 /* platforms */
 #define WINDOWS         1
 #define LINUX           2
@@ -32,73 +33,73 @@
 #define ANDROID         6
 #define GNU             7
 #define CYGWIN          8
-#define EMX             9
-#define INTERIX        10
-#define WINDU          11
+#define MINGW           9
+#define EMX            10
+#define INTERIX        11
+#define WINDU          12
 
 /* platform variants */
 /* WINDOWS */
-#define WINDOWS_CE              12
-#define WINDOWS_HPC2000         13
-#define WINDOWS_HPCPRO          14
-#define WINDOWS_POCKETPC        15
-#define WINDOWS_MOBILE_2003     16
-#define WINDOWS_SMARTPHONE_2002 17
+#define WINDOWS_CE              13
+#define WINDOWS_HPC2000         14
+#define WINDOWS_HPCPRO          15
+#define WINDOWS_POCKETPC        16
+#define WINDOWS_MOBILE_2003     17
+#define WINDOWS_SMARTPHONE_2002 18
 /* LINUX */
-#define SOLARIS 18
-#define GNULINUX 19
-#define MINIX 20
+#define SOLARIS  19
+#define GNULINUX 20
+#define MINIX    21
 /* UNIX */
-#define DRAGONFLY   21
-#define HPUX        22
-#define UNIXWARE    23
-#define LYNX        24
-#define DGUX_SYSTEM 25
-#define SINUX       26
-#define ULTRIX      27
-#define DYNIX       28
+#define DRAGONFLY   22
+#define HPUX        23
+#define UNIXWARE    24
+#define LYNX        25
+#define DGUX_SYSTEM 26
+#define SINUX       27
+#define ULTRIX      28
+#define DYNIX       29
 
 
 /* other platforms */
-#define AIX            29
-#define OS400          30
-#define FREEBSD        31
-#define NETBSD         32
-#define OPENBSD        33
-#define BSDI           34
-#define KFREEBSD       35
-#define OS9            36
-#define BEOS           37
-#define AMIGAOS        38
-#define MORPH          39
-#define AEGIS          40
-#define BLUE_GENE      41
-#define AMDAHL_UTS     42
-#define CONVEX         43
-#define ECOS           44
-#define HIUXMPP        45
-#define INTEGRITY      46
-#define MPE            47
-#define MSDOS_SYSTEM   48
-#define NONSTOP        49
-#define NUCLEUS        50
-#define OS2_SYSTEM     51
-#define PALMOS         52
-#define ZOS            53
-#define PLAN9          54
-#define PYRAMIDDC      55
-#define QNX            56
-#define SCO_OPENSERVER 57
-#define STRATUS_VOS    58
-#define SVR4           59
-#define SYLLABLE       60
-#define SYMBIAN        61
-#define TRU64          62
-#define UNICOS         63
-#define VMS_SYSTEM     64
-#define VXWORKS        65
-
-#define UNKNOWN 66
+#define AIX            30
+#define OS400          31
+#define FREEBSD        32
+#define NETBSD         33
+#define OPENBSD        34
+#define BSDI           35
+#define KFREEBSD       36
+#define OS9            37
+#define BEOS           38
+#define AMIGAOS        39
+#define MORPH          40
+#define AEGIS          41
+#define BLUE_GENE      42
+#define AMDAHL_UTS     43
+#define CONVEX         44
+#define ECOS           45
+#define HIUXMPP        46
+#define INTEGRITY      47
+#define MPE            48
+#define MSDOS_SYSTEM   49
+#define NONSTOP        50
+#define NUCLEUS        51
+#define OS2_SYSTEM     52
+#define PALMOS         53
+#define ZOS            54
+#define PLAN9          55
+#define PYRAMIDDC      56
+#define QNX            57
+#define SCO_OPENSERVER 58
+#define STRATUS_VOS    59
+#define SVR4           60
+#define SYLLABLE       61
+#define SYMBIAN        62
+#define TRU64          63
+#define UNICOS         64
+#define VMS_SYSTEM     65
+#define VXWORKS        66
+#define UNKNOWN        67
 
 // based on 0.1% percentile of word length distribution for English (16 * 4 = 64 characters)
 // source: <http://www.ravi.io/language-word-lengths>
@@ -114,28 +115,26 @@
 #define PLATFORM WINDOWS
 #define PLATFORM_VARIANT WINDOWS
 #define PLATFORM_NAME "Windows"
-#define PLATFORM_NAME_LENGTH 8
+
 #endif
 
 #if defined(_WIN32_WCE)
 	#define PLATFORM WINDOWS
 	#define PLATFORM_VARIANT WINDOWS_CE
 	#define PLATFORM_NAME "Windows CE"
-	#define PLATFORM_NAME_LENGTH 11
+	#define PLATFORM_NAME_LENGTH sizeof(PLATFORM_NAME)
 #endif
 
 #if defined(WIN32_PLATFORM_HPC2000)
 	#define PLATFORM WINDOWS
 	#define PLATFORM_VARIANT WINDOWS_HPC2000
 	#define PLATFORM_NAME "Windows HPC 2000"
-	#define PLATFORM_NAME_LENGTH 17
 #endif
 
 #if defined(WIN32_PLATFORM_HPCPRO)
 	#define PLATFORM WINDOWS
 	#define PLATFORM_VARIANT WINDOWS_HPCPRO
 	#define PLATFORM_NAME "Windows HPC Pro"
-	#define PLATFORM_NAME_LENGTH 16
 #endif
 
 #if defined(WIN32_PLATFORM_PSPC)
@@ -143,11 +142,9 @@
 	#if WIN32_PLATFORM_PSPC < 400
 		#define PLATFORM_VARIANT WINDOWS_POCKETPC
 		#define PLATFORM_NAME "Windows PocketPC"
-		#define PLATFORM_NAME_LENGTH 17
 	#else
 		#define PLATFORM_VARIANT WINDOWS_MOBILE_2003
 		#define PLATFORM_NAME "Windows Mobile 2003"
-		#define PLATFORM_NAME_LENGTH 20
 	#endif
 #endif
 
@@ -155,7 +152,6 @@
 	#define PLATFORM WINDOWS
 	#define PLATFORM_VARIANT WINDOWS_SMARTPHONE_2002
 	#define PLATFORM_NAME "Windows Smartphone 2002"
-	#define PLATFORM_NAME_LENGTH 24
 #endif
 
 /* LINUX */
@@ -165,7 +161,6 @@
 	#define PLATFORM LINUX
 	#define PLATFORM_VARIANT LINUX
 	#define PLATFORM_NAME "Linux"
-	#define PLATFORM_NAME_LENGTH 6
 #endif
 
 #if defined(__gnu_linux__)
@@ -173,7 +168,6 @@
 	#define PLATFORM LINUX
 	#define PLATFORM_VARIANT GNULINUX
 	#define PLATFORM_NAME "GNU Linux"
-	#define PLATFORM_NAME_LENGTH 10
 #endif
 
 #if defined(__minix)
@@ -181,18 +175,16 @@
 	#define PLATFORM LINUX
 	#define PLATFORM_VARIANT MINIX
 	#define PLATFORM_NAME "Minix"
-	#define PLATFORM_NAME_LENGTH 6
 #endif
 
 /* UNIX */
 
 #if defined(__unix__) || defined(__unix)
-	#if !CYGWIN
+	#if !(PLATFORM == CYGWIN) && !(PLATFORM == MINGW)
 		#define PLATFORM UNIX
 		#define PLATFORM_VARIANT UNIX
 		#ifndef PLATFORM_NAME
 			#define PLATFORM_NAME "Unix"
-			#define PLATFORM_NAME_LENGTH 5
 		#endif
 	#endif
 #endif
@@ -204,7 +196,6 @@
 	#define PLATFORM UNIX
 	#define PLATFORM_VARIANT DRAGONFLY
 	#define PLATFORM_NAME "DragonFly"
-	#define PLATFORM_NAME_LENGTH 10
 #endif
 
 /* HPUX */
@@ -212,7 +203,6 @@
 	#define PLATFORM UNIX
 	#define PLATFORM_VARIANT HPUX
 	#define PLATFORM_NAME "HP-UX"
-	#define PLATFORN_NAME_LENGTH 6
 #endif
 
 /* UnixWare */
@@ -220,7 +210,6 @@
 	#define PLATFORM UNIX
 	#define PLATFORM_VARIANT UNIXWARE
 	#define PLATFORM_NAME "UnixWare"
-	#define PLATFORM_NAME_LENGTH 9
 #endif
 
 /* LynxOS */
@@ -228,7 +217,6 @@
 	#define PLATFORM UNIX
 	#define PLATFORM_VARIANT LYNX
 	#define PLATFORM_NAME "Lynx"
-	#define PLATFORM_NAME_LENGTH 5
 #endif
 
 /* DG/UX */
@@ -236,7 +224,6 @@
 	#define PLATFORM UNIX
 	#define PLATFORM_VARIANT DGUX_SYSTEM
 	#define PLATFORM_NAME "DG/UX"
-	#define PLATFORM_NAME_LENGTH 6
 #endif
 
 /* Reliant UNIX */
@@ -244,7 +231,6 @@
 	#define PLATFORM UNIX
 	#define PLATFORM_VARIANT SINUX
 	#define PLATFORM_NAME "Reliant UNIX"
-	#define PLATFORM_NAME_LENGTH 13
 #endif
 
 /* Ultrix */
@@ -252,7 +238,6 @@
 	#define PLATFORM UNIX
 	#define PLATFORM_VARIANT ULTRIX
 	#define PLATFORM_NAME "Ultrix"
-	#define PLATFORM_NAME_LENGTH 7
 #endif
 
 /* DYNIX */
@@ -260,7 +245,6 @@
 	#define PLATFORM UNIX
 	#define PLATFORM_VARIANT DYNIX
 	#define PLATFORM_NAME "DYNIX/ptx"
-	#define PLATFORM_NAME_LENGTH 10
 #endif
 
 /* AIX */
@@ -269,7 +253,6 @@
 	#define PLATFORM AIX
 	#define PLATFORM_VARIANT AIX
 	#define PLATFORM_NAME "AIX"
-	#define PLATFORM_NAME_LENGTH 4
 #endif
 
 /* APPLE MACINTOSH/MAC OS X */
@@ -278,14 +261,12 @@
 	#define PLATFORM MACINTOSH
 	#define PLATFORM_VARIANT MACINTOSH
 	#define PLATFORM_NAME "Macintosh"
-	#define PLATFORM_NAME_LENGTH 10
 #endif
 
 #if defined(__APPLE__) && defined(__MACH__)
 	#define PLATFORM MACINTOSH
 	#define PLATFORM_VARIANT MACOSX
 	#define PLATFORM_NAME "Mac OS/X"
-	#define PLATFORM_NAME_LENGTH 9
 #endif
 
 /* IBM OS/400 */
@@ -294,7 +275,6 @@
 	#define PLATFORM OS400
 	#define PLATFORM_VARIANT OS400
 	#define PLATFORM_NAME "IBM OS/400"
-	#define PLATFORM_NAME_LENGTH 11
 #endif
 
 /* BSD */
@@ -303,48 +283,41 @@
 	#define PLATFORM BSD_ENVRIONMENT
 	#define PLATFORM_VARIANT FREEBSD
 	#define PLATFORM_NAME "FreeBSD"
-	#define PLATFORM_NAME_LENGTH 8
 #endif
 
 #if defined(__NetBSD__)
 	#define PLATFORM BSD_ENVIRONMENT
 	#define PLATFORM_VARIANT NETBSD
 	#define PLATFORM_NAME "NetBSD"
-	#define PLATFORM_NAME_LENGTH 7
 #endif
 
 #if defined(__OpenBSD__)
 	#define PLATFORM BSD_ENVIRONMENT
 	#define PLATFORM_VARIANT OPENBSD
 	#define PLATFORM_NAME "OpenBSD"
-	#define PLATFORM_NAME_LENGTH 8
 #endif
 
 #if defined(__bsdi__)
 	#define PLATFORM BSD_ENVIRONMENT
 	#define PLATFORM_VARIANT BSDI
 	#define PLATFORM_NAME "BSDi"
-	#define PLATFORM_NAME_LENGTH 5
 #endif
 
 #if defined(BSD)
 	#define PLATFORM BSD_ENVIRONMENT
 	#define PLATFORM_NAME "BSD"
-	#define PLATFORM_NAME_LENGTH 4
 #endif
 
 #if defined(_SYSTYPE_BSD)
 	#define PLATFORM BSD_ENVIRONMENT
 	#define PLATFORM_VARIANT BSD
 	#define PLATFORM_NAME "BSD"
-	#define PLATFORM_NAME_LENGTH 4
 #endif
 
 #if defined(__FreeBSD_kernel__) && defined(__GLIBC__)
 	#define PLATFORM BSD_ENVIRONMENT
 	#define PLATFORM_VARIANT KFREEBSD
 	#define PLATFORM_NAME "KFreeBSD"
-	#define PLATFORM_NAME_LENGTH 9
 #endif
 
 /* Android */
@@ -353,7 +326,6 @@
 	#define PLATFORM ANDROID
 	#define PLATFORM_VARIANT ANDROID
 	#define PLATFORM_NAME "Android"
-	#define PLATFORM_NAME_LENGTH 8
 #endif
 
 /* Solaris */
@@ -363,7 +335,6 @@
 	#define PLATFORM LINUX
 	#define PLATFORM_VARIANT SOLARIS
 	#define PLATFORM_NAME "Oracle Solaris"
-	#define PLATFORM_NAME_LENGTH 15
 #endif
 
 /* GNU */
@@ -372,7 +343,6 @@
 	#define PLATFORM GNU
 	#define PLATFORM_VARIANT GNU
 	#define PLATFORM_NAME "GNU"
-	#define PLATFORM_NAME_LENGTH 4
 #endif
 
 /* OS-9 */
@@ -381,7 +351,6 @@
 	#define PLATFORM OS9
 	#define PLATFORM_VARIANT OS9
 	#define PLATFORM_NAME "Microware OS-9"
-	#define PLATFORM_NAME_LENGTH 15
 #endif
 
 /* BeOS  */
@@ -390,7 +359,6 @@
 	#define PLATFORM BEOS
 	#define PLATFORM_VARIANT BEOS
 	#define PLATFORM_NAME "BeOS"
-	#define PLATFORM_NAME_LENGTH 5
 #endif
 
 /* AmigaOS */
@@ -399,7 +367,6 @@
 	#define PLATFORM AMIGAOS
 	#define PLATFORM_VARIANT AMIGAOS
 	#define PLATFORM_NAME "AmigaOS"
-	#define PLATFORM_NAME_LENGTH 8
 #endif
 
 /* MorphOS */
@@ -408,7 +375,6 @@
 	#define PLATFORM MORPH
 	#define PLATFORM_VARIANT MORPH
 	#define PLATFORM_NAME "MorphOS"
-	#define PLATFORM_NAME_LENGTH 8
 #endif
 
 /* Aegis */
@@ -417,7 +383,6 @@
 	#define PLATFORM AEGIS
 	#define PLATFORM_VARIANT AEGIS
 	#define PLATFORM_NAME "Apollo AEGIS"
-	#define PLATFORM_NAME_LENGTH 13
 #endif
 
 /* Blue Gene */
@@ -426,7 +391,6 @@
 	#define PLATFORM BLUE_GENE
 	#define PLATFORM_VARIANT BLUE_GENE
 	#define PLATFORM_NAME "Blue Gene"
-	#define PLATFORM_NAME_LENGTH 10
 #endif
 
 /* Amdahl UTS */
@@ -435,7 +399,6 @@
 	#define PLATFORM UTS
 	#define PLATFORM_VARIANT AMDAHL_UTS
 	#define PLATFORM_NAME "Amdahl UTS"
-	#define PLATFORM_NAME_LENGTH 11
 #endif
 
 /* Convex */
@@ -444,7 +407,6 @@
 	#define PLATFORM CONVEX
 	#define PLATFORM_VARIANT CONVEX
 	#define PLATFORM_NAME "ConvexOS"
-	#define PLATFORM_NAME_LENGTH 9
 #endif
 
 /* eCos */
@@ -453,7 +415,6 @@
 	#define PLATFORM ECOS
 	#define PLATFORM_VARIANT ECOS
 	#define PLATFORM_NAME "eCos"
-	#define PLATFORM_NAME_LENGTH 5
 #endif
 
 /* OSF/1 AD */
@@ -462,7 +423,6 @@
 	#define PLATFORM HIUXMPP
 	#define PLATFORM_VARIANT HIUXMPP
 	#define PLATFORM_NAME "HI-UX MPP"
-	#define PLATFORM_NAME_LENGTH 10
 #endif
 
 /* INTEGRITY */
@@ -471,7 +431,6 @@
 	#define PLATFORM INTEGRITY
 	#define PLATFORM_VARIANT INTEGRITY
 	#define PLATFORM_NAME "INTEGRITY"
-	#define PLATFORM_NAME_LENGTH 10
 #endif
 
 /* MPE */
@@ -480,7 +439,6 @@
 	#define PLATFORM MPE
 	#define PLATFORM_VARIANT MPE
 	#define PLATFORM_NAME "MPE/iX"
-	#define PLATFORM_NAME_LENGTH 7
 #endif
 
 /* MSDOS */
@@ -489,7 +447,6 @@
 	#define PLATFORM MSDOS_SYSTEM
 	#define PLATFORM_VARIANT MSDOS_SYSTEM
 	#define PLATFORM_NAME "MSDOS"
-	#define PLATFORM_NAME_LENGTH 6
 #endif
 
 /* NonStop */
@@ -498,7 +455,6 @@
 	#define PLATFORM NONSTOP
 	#define PLATFORM_VARIANT NONSTOP
 	#define PLATFORM_NAME "NonStop"
-	#define PLATFORM_NAME_LENGTH 8
 #endif
 
 /* Nucleus RTOS */
@@ -507,7 +463,6 @@
 	#define PLATFORM NUCLEUS
 	#define PLATFORM_VARIANT NUCLEUS
 	#define PLATFORM_NAME "Nucleus RTOS"
-	#define PLATFORM_NAME_LENGTH 13
 #endif
 
 /* OS/2 */
@@ -516,7 +471,6 @@
 	#define PLATFORM OS2_SYSTEM
 	#define PLATFORM_VARIANT OS2_SYSTEM
 	#define PLATFORM_NAME "OS/2"
-	#define PLATFORM_NAME_LENGTH 5
 #endif
 
 /* PalmOS */
@@ -525,7 +479,6 @@
 	#define PLATFORM PALMOS
 	#define PLATFORM_VARIANT PALMOS
 	#define PLATFORM_NAME "PalmOS"
-	#define PLATFORM_NAME_LENGTH 7
 #endif
 
 /* z/OS */
@@ -534,7 +487,6 @@
 	#define PLATFORM ZOS
 	#define PLATFORM_VARIANT ZOS
 	#define PLATFORM_NAME "z/OS"
-	#define PLATFORM_NAME_LENGTH 5
 #endif
 
 /* Plan 9 */
@@ -543,7 +495,6 @@
 	#define PLATFORM PLAN9
 	#define PLATFORM_VARIANT PLAN9
 	#define PLATFORM_NAME "Plan 9"
-	#define PLATFORM_NAME_LENGTH 7
 #endif
 
 /* Pyramid DC/OSx */
@@ -552,7 +503,6 @@
 	#define PLATFORM PYRAMIDDC
 	#define PLATFORM_VARIANT PYRAMIDDC
 	#define PLATFORM_NAME "Pyramid DC/OSx"
-	#define PLATFORM_NAME_LENGTH 15
 #endif
 
 /* QNX */
@@ -561,7 +511,6 @@
 	#define PLATFORM QNX
 	#define PLATFORM_VARIANT QNX
 	#define PLATFORM_NAME "QNX"
-	#define PLATFORM_NAME_LENGTH 4
 #endif
 /* SCO OpenServer */
 
@@ -569,7 +518,6 @@
 	#define PLATFORM SCO_OPENSERVER
 	#define PLATFORM_VARIANT SCO_OPENSERVER
 	#define PLATFORM_NAME "SCO OpenServer"
-	#define PLATFORM_NAME_LENGTH 15
 #endif
 
 /* Stratus VOS */
@@ -578,7 +526,6 @@
 	#define PLATFORM STRATUS_VOS
 	#define PLATFORM_VARIANT STRATUS_VOS
 	#define PLATFORM_NAME "Stratus VOS"
-	#define PLATFORM_NAME_LENGTH 12
 #endif
 
 /* SVR4 */
@@ -587,7 +534,6 @@
 	#define PLATFORM SVR4
 	#define PLATFORM_VARIANT SVR4
 	#define PLATFORM_NAME "SVR4"
-	#define PLATFORM_NAME_LENGTH 5
 #endif
 
 /* Syllable */
@@ -596,7 +542,6 @@
 	#define PLATFORM SYLLABLE
 	#define PLATFORM_VARIANT SYLLABLE
 	#define PLATFORM_NAME "Syllable"
-	#define PLATFORM_NAME_LENGTH 9
 #endif
 
 /* Symbian OS */
@@ -605,7 +550,6 @@
 	#define PLATFORM SYMBIAN
 	#define PLATFORM_VARIANT SYMBIAN
 	#define PLATFORM_NAME "Symbian OS"
-	#define PLATFORM_NAME_LENGTH 11
 #endif
 
 /* Tru64 (OSF/1) */
@@ -614,7 +558,6 @@
 	#define PLATFORM TRU64
 	#define PLATFORM_VARIANT TRU64
 	#define PLATFORM_NAME "Tru64 (OSF/1)"
-	#define PLATFORM_NAME_LENGTH 14
 #endif
 
 /* UNICOS */
@@ -623,7 +566,6 @@
 	#define PLATFORM UNICOS
 	#define PLATFORM_VARIANT UNICOS
 	#define PLATFORM_NAME "UNICOS"
-	#define PLATFORM_NAME_LENGTH 7
 #endif
 
 /* VMS */
@@ -632,7 +574,6 @@
 	#define PLATFORM VMS_SYSTEM
 	#define PLATFORM_VARIANT VMS_SYSTEM
 	#define PLATFORM_NAME "VMS"
-	#define PLATFORM_NAME_LENGTH 4
 #endif
 
 /* VxWorks */
@@ -641,9 +582,7 @@
 	#define PLATFORM VXWORKS
 	#define PLATFORM_VARIANT VXWORKS
 	#define PLATFORM_NAME "VxWorks"
-	#define PLATFORM_NAME_LENGTH 8
 #endif
-
 
 /******************************************ENVIRONMENTS******************************************/
 
@@ -652,23 +591,37 @@
 
 #if defined(__CYGWIN__)
 	#define ENVIRONMENT CYGWIN
+	#define ENVIRONMENT_NAME "Cygwin"
 	#ifndef PLATFORM
 		#define PLATFORM WINDOWS
 		#define PLATFORM_NAME "Windows"
-		#define PLATFORM_NAME_LENGTH 8
 	#endif
+#endif
+
+#if defined(__MINGW32__) && !defined(__MINGW64__)
+	#define ENVIRONMENT MINGW
+	#define ENVIRONMENT_NAME "MinGW"
+#elif defined(__MINGW64__)
+	#define ENVIRONMENT MINGW
+	#define ENVIRONMENT_NAME "MinGW-w64"
+#endif
+
+#if defined(__MINGW32__) || defined(__MINGW64__) && !defined(PLATFORM_NAME)
+	#define PLATFORM_NAME "Windows"
 #endif
 
 /* EMX */
 
 #if defined(__EMX__)
 	#define ENVIRONMENT EMX
+	#define ENVIRONMENT_NAME "EMX"
 #endif
 
 /* Interix */
 
 #if defined(__INTERIX)
 	#define ENVIRONMENT INTERIX
+	#define ENVIRONMENT_NAME "Interix"
 #endif
 
 /* Wind/U */
@@ -677,6 +630,8 @@
 	#define ENVIRONMENT WINDU
 	#define PLATFORM WINDU
 	#define PLATFORM_VARIANT WINDU
+	#define PLATFORM_NAME "Wind/U"
+	#define ENVIRONMENT_NAME PLATFORM_NAME
 #endif
 
 
@@ -691,6 +646,444 @@
 
 #ifndef ENVIRONMENT
 	#define ENVIRONMENT PLATFORM
+#endif
+
+// set PLATFORM_NAME_LENGTH
+#ifndef PLATFORM_NAME_LENGTH
+	#define PLATFORM_NAME_LENGTH sizeof(PLATFORM_NAME)
+#endif
+
+// set ENVIRONMENT_NAME_LENGTH
+#ifndef ENVIRONMENT_NAME_LENGTH
+	#define ENVIRONMENT_NAME_LENGTH sizeof(ENVIRONMENT_NAME)
+#endif
+
+/**********************************************************************************************************************
+ * 												    COMPILER VARIABLES
+ **********************************************************************************************************************/
+
+/*
+ * VARIABLES:
+ *
+ * COMPILER: A value representing the current compiler. May be one of the defined values below.
+ * COMPILER_NAME: A string representing the name of the current compiler. It is recommended that COMPILER be used for
+ * preprocessor comparisons instead of this string.
+ * COMPILER_NAME_LENGTH: the length of the COMPILER_NAME string
+ */
+
+#define C_GCC                     1
+#define C_CLANG                   2
+#define C_MSVC                    3
+#define C_ARM                     4
+#define C_LLVM                    5
+#define C_MINGW                   6
+#define C_MIPSPRO                 7
+#define C_ORACLE_PROC             8
+#define C_ORACLE_SOLARIS_STUDIO   9
+#define C_TEXAS_INSTRUMENTS      10
+#define C_TURBO_C                11
+#define C_TINY_C                 12
+#define C_ACC                    13
+#define C_ALTIUM_MICROBLAZE_C    14
+#define C_ALTIUM_C2H             15
+#define C_AMSTERDAM_COMPILER_KIT 16
+#define C_AZTEC_C             17
+#define C_BORLAND_CPP            18
+#define C_CC65                   19
+#define C_COMEAU_CPP             20
+#define C_COMPAQ_C               21
+#define C_CONVEX_C               22
+#define C_COMPCERT_C             23
+#define C_COVERITY_C             24
+#define C_CRAY_C                 25
+#define C_DIAB_C                 26
+#define C_DICE_C                 27
+#define C_DIGIAL_MARS_C          28
+#define C_DIGNUS_SYSTEMS_CPP     29
+#define C_DJGPP                  30
+#define C_EDG_CPP                31
+#define C_EKOPATH_C              32
+#define C_GREEN_HILL_C           33
+#define C_HP_ANSI_C              34
+#define C_HP_ACPP                35
+#define C_IAR_C                  36
+#define C_IBMXL_C                37
+#define C_IBMXL_C_LEGACY         38
+#define C_IBM_ZOSXL_C            39
+#define C_IMAGECRAFT_C           40
+#define C_INTEL_C                41
+#define C_KAI_CPP                42
+#define C_KEIL_CARM              43
+#define C_KEIL_C166              44
+#define C_KEIL_C51               45
+#define C_LCC                    46
+#define C_METROWERKS_CODEWARRIOR 47
+#define C_MICROTEC_C             48
+#define C_MICROWAY_NDP_C         49
+#define C_MIRACLE_C              50
+#define C_MPW_CPP                51
+#define C_NORCROFT_C             52
+#define C_NWCC                   53
+#define C_OPEN64_C               54
+#define C_PACIFIC_C              55
+#define C_PALM_C                 56
+#define C_PELLES_C               57
+#define C_PORTLAND_GROUP_C       58
+#define C_RENESAS_C              59
+#define C_SAS_C                  60
+#define C_SCO_OPENSERVER_C       61
+#define C_SMALL_DEVICE_C         62
+#define C_SN_C                   63
+#define C_STRATUS_VOS_C          64
+#define C_SYMANTEC_CPP           65
+#define C_TENDRA_C               66
+#define C_THINK_C                67
+#define C_ULTIMATE_C             68
+#define C_USL_C                  69
+#define C_VBCC                   70
+#define C_WATCOM_CPP             71
+#define C_ZORTECH_CPP            72
+
+
+/***********************************************************************************************************************
+ *                                                COMPILER DEFINITIONS
+ ***********************************************************************************************************************/
+
+#if defined(_ACC_)
+	#define COMPILER C_ACC
+	#define COMPILER_NAME "ACC"
+#endif
+
+#if defined(_CMB__)
+	#define COMPILER C_ALTIUM_MICROBLAZE_C
+	#define COMPILER_NAME "Altium MicroBlaze C"
+#endif
+
+#if defined(__CHC__)
+	#define COMPILER C_ALTIUM_C2H
+	#define COMPILER_NAME "Altium C-to-Hardware"
+#endif
+
+#if defined(__ACK__)
+	#define COMPILER C_AMSTERDAM_COMPILER_KIT
+	#define COMPILER_NAME "Amsterdam Compiler Kit"
+#endif
+
+#if defined(__CC_ARM)
+	#define COMPILER C_ARM
+	#define COMPILER_NAME "ARM Compiler"
+#endif
+
+#if defined(AZTEC_C) || defined(__AZTEC_C__)
+	#define COMPILER C_AZTEC_C
+	#define COMPILER_NAME "Aztec C"
+#endif
+
+#if defined(__BORLANDC__) || defined(__CODEGEARC__)
+	#define COMPILER C_BORLAND_CPP
+	#define COMPILER_NAME "Borland C++"
+#endif
+
+#if defined(__CC65__)
+	#define COMPILER C_CC65
+	#define COMPILER_NAME "CC65"
+#endif
+
+#if defined(__clang__) && !defined(__ibmxl_vrm__) // IBM XL guard
+	#define COMPILER C_CLANG
+	#define COMPILER_NAME "Clang"
+#endif
+
+#if defined(__COMO__)
+	#define COMPILER C_COMEAU
+	#define COMPILER_NAME "Comeau C++"
+#endif
+
+#if defined(__DECC) || defined(VAXC) || defined(__VAXC)
+	#define COMPILER C_COMPAQ_C
+	#define COMPILER_NAME "Compaq C"
+#elif defined(__DECCXX)
+	#define COMPILER C_COMPAQ_C
+	#define COMPILER_NAME "Compaq C++"
+#endif
+
+#if defined(__convexc__)
+	#define COMPILER C_CONVEX_C
+	#define COMPILER_NAME "Convex C"
+#endif
+
+#if defined(__COMPCERT__)
+	#define COMPILER C_COMPCERT_C
+	#define COMPILER "CompCert"
+#endif
+
+#if defined(__COVERITY__)
+	#define COMPILER C_COVERITY_C
+	#define COMPILER_NAME "Covertiy C/C++ Static Analyzer"
+#endif
+
+#if defined(_CRAYC)
+	#define COMPILER C_CRAY_C
+	#define COMPILER_NAME "Cray C"
+#endif
+
+#if defined(__DCC__)
+	#define COMPILER C_DIAB_C
+	#define COMPILER_NAME "Diab C/C++"
+#endif
+
+#if defined(_DICE)
+	#define COMPILER C_DICE_C
+	#define COMPILER_NAME "DICE C"
+#endif
+
+#if defined(__DMC__)
+	#define COMPILER C_DIGITAL_C_DIGIAL_MARS_C
+	#define COMPILER_NAME "Digital Mars"
+#endif
+
+#if defined(__SYSC__)
+	#define COMPILER C_DIGNUS_SYSTEMS_CPP
+	#define COMPILER_NAME "Dignus Systems C++"
+#endif
+
+#if defined(__DJGPP__) || defined(__GO32__)
+	#define COMPILER C_DJGPP
+	#define COMPILER_NAME "DJGPP"
+#endif
+
+#if defined(__EDG__)
+	#define COMPILER C_EDG_CPP
+	#define COMPILER_NAME "EDG C++ Frontend"
+#endif
+
+#if defined(__PATHCC__)
+	#define COMPILER C_EKOPATH_C
+	#define COMPILER_NAME "EKOPath"
+#endif
+
+#if defined(__GNUC__)
+	#define COMPILER C_GCC
+	#define COMPILER_NAME "GNU C/C++ Compiler"
+#endif
+
+#if defined(__ghs__)
+	#define COMPILER C_GREEN_HILL_C
+	#define COMPILER_NAME "Green Hill C/C++"
+#endif
+
+#if defined(__HP_aCC)
+	#define COMPILER C_HP_ACPP
+	#define COMPILER_NAME "HP aC++"
+#endif
+
+#if defined(__IAR_SYSTEMS_ICC__)
+	#define COMPILER C_IAR_C
+	#define COMPILER_NAME "IAR C/C++"
+#endif
+
+#if defined(__ibmxl__) || (!defined(COMPILER) && defined(__clang__) && defined(__ibmxl_vrm__))
+	#define COMPILER C_IBMXL_C
+	#define COMPILER_NAME "IBM XL C/C++"
+#endif
+
+#if defined(__xlC__)
+	#define COMPILER C_IBMXL_C_LEGACY
+	#define COMPILER_NAME "IBM XL C/C++ Legacy"
+#endif
+
+#if defined(__IBMC__) || defined(__IBMCPP__)
+	#define COMPILER C_IBM_ZOSXL_C
+	#define COMPILER_NAME "IBM z/OS XL C/C++"
+#endif
+
+#if defined(__IMAGECRAFT__)
+	#define COMPILER C_IMAGECRAFT_C
+	#define COMPILER_NAME "ImageCraft C"
+#endif
+
+#if defined(__INTEL_COMPILER) || defined(__ICC) || defined(_ECC) || defined(_ICL)
+	#define COMPILER C_INTEL_C
+	#define COMPILER_NAME "Intel C/C++"
+#endif
+
+#if defined(_KCC)
+	#define COMPILER C_KAI_CPP
+	#define COMPILER_NAME "KAI C++"
+#endif
+
+#if defined(__CA__) || defined(__KEIL__)
+	#define COMPILER C_KEIL_CARM
+	#define COMPILER_NAME "KEIL CARM"
+#endif
+
+#if defined(__C166__)
+	#define COMPILER C_KEIL_C166
+	#define COMPILER_NAME "KEIL C166"
+#endif
+
+#if defined(__C51__)
+	#define COMPILER C_KEIL_C51
+	#define COMPILER_NAME "KEIL C51"
+#endif
+
+#if defined(__LCC__)
+	#define COMPILER C_LCC
+	#define COMPILER_NAME "LCC"
+#endif
+
+#if defined(__llvm__)
+	#define COMPILER C_LLVM
+	#define COMPILER_NAME "LLVM"
+#endif
+
+#if defined(__MWERKS__) || defined(__CWCC__)
+	#define COMPILER C_METROWERKS_CODEWARRIOR
+	#define COMPILER "Metrowerks CodeWarrior"
+#endif
+
+#if defined(_MSC_VER)
+	#define C_MSVC
+	#define COMPILER_NAME "Microsoft Visual C++"
+#endif
+
+#if defined(_MRI)
+	#define COMPILER C_MICROTEC_C
+	#define COMPILER_NAME "Microtec C/C++"
+#endif
+
+#if defined(__NDPC__) || defined(__NDPX__)
+	#define COMPILER C_MICROWAY_NDP_C
+	#define COMPILER_NAME "Microway NDP C"
+#endif
+
+#if defined(__sgi) || defined(sgi)
+	#define COMPILER C_MIPSPRO
+	#define COMPILER_NAME "MIPSpro"
+#endif
+
+#if defined(MIRACLE)
+	#define COMPILER C_MIRACLE_C
+	#define COMPILER_NAME "Miracle C"
+#endif
+
+#if defined(__MRC__) || defined(MPW_C) || defined(MPW_CPLUS)
+	#define COMPILER C_MPW_CPP
+	#define COMPILER_NAME "MPW C++"
+#endif
+
+#if defined(__CC_NORCROFT)
+	#define COMPILER C_NORCROFT_C
+	#define COMPILER_NAME "Norcroft C"
+#endif
+
+#if defined(__NWCC__)
+	#define COMPILER C_NWCC
+	#define COMPILER_NAME "NWCC"
+#endif
+
+#if defined(__OPEN64__) || defined(__OPENCC__)
+	#define COMPILER C_OPEN64_C
+	#define COMPILER_NAME "Open64"
+#endif
+
+#if defined(ORA_PROC)
+	#define COMPILER C_ORACLE_PROC
+	#define COMPILER_NAME "Oracle Pro*C Precompiler"
+#endif
+
+#if defined(__SUNPRO_C) || defined(__SUNPRO_CC)
+	#define COMPILER C_ORACLE_SOLARIS_STUDIO
+	#define COMPILER_NAME "Oracle Solaris Studio"
+#endif
+
+#if defined(__PGI__)
+	#define COMPILER C_PORTLAND_GROUP_C
+	#define COMPILER_NAME "Portland Group C/C++"
+#endif
+
+#if defined(__RENESAS__) || defined(__HITACHI__)
+	#define COMPILER C_RENESAS_C
+	#define COMPILER_NAME "Renesas C/C++"
+#endif
+
+#if defined(SASC) || defined(__SASC) || defined(__SASC__)
+	#define COMPILER C_SAS_C
+	#define COMPILER_NAME "SAS/C"
+#endif
+
+#if defined(_SCO_DS)
+	#define COMPILER C_SCO_OPENSERVER_C
+	#define COMPILER_NAME "SCO OpenServer"
+#endif
+
+#if defined(SDCC)
+	#define COMPILER C_SMALL_DEVICE_C
+	#define COMPILER_NAME "Small Device C Compiler"
+#endif
+
+#if defined(__SNC__)
+	#define COMPILER C_SN_C
+	#define COMPILER_NAME "SN Compiler"
+#endif
+
+#if defined(__VOSC__)
+	#define COMPILER C_STRATUS_VOS_C
+	#define COMPILER_NAME "Stratus VOS C"
+#endif
+
+#if defined(__SC__)
+	#define COMPILER C_TENDRA_C
+	#define COMPILER_NAME "TenDRA C/C++"
+#endif
+
+#if defined(__TI_COMPILER_VERSION__) || defined(_TMS320C6X)
+	#define COMPILER C_TEXAS_INSTRUMENTS
+	#define COMPILER_NAME "Texas Instruments C/C++ Compiler"
+#endif
+
+#if defined(THINKC3) || defined(THINKC4)
+	#define COMPILER C_THINK_C
+	#define COMPILER_NAME "THINK C"
+#endif
+
+#if defined(__TINYC__)
+	#define COMPILER C_TINY_C
+	#define COMPILER_NAME "Tiny C"
+#endif
+
+#if defined(__TURBOC__)
+	#define COMPILER C_TURBO_C
+	#define COMPILER_NAME "Turbo C/C++"
+#endif
+
+#if defined(_UCC)
+	#define COMPILER C_ULTIMATE_C
+	#define COMPILER_NAME "Ultimate C/C++"
+#endif
+
+#if defined(__USLC__)
+	#define COMPILER C_USL_C
+	#define COMPILER_NAME "USL C"
+#endif
+
+#if defined(__VBCC__)
+	#define COMPILER C_VBCC
+	#define COMPILER_NAME "VBCC"
+#endif
+
+#if defined(__WATCOMC__)
+	#define COMPILER C_WATCOM_CPP
+	#define COMPILER_NAME "Watcom C++"
+#endif
+
+#if defined(__ZTC__)
+	#define COMPILER C_ZORTECH_CPP
+	#define COMPILER_NAME "Zortech C++"
+#endif
+
+#ifndef COMPILER_NAME_LENGTH
+	#define COMPILER_NAME_LENGTH sizeof(COMPILER_NAME)
 #endif
 
 /* generic platform functions */
@@ -710,8 +1103,7 @@ struct p_result {
 
 // currently unused
 enum device_type {
-	PHYSICAL,
-	LOGICAL
+	PHYSICAL, LOGICAL
 };
 
 typedef uintmax_t udevptr_t;
@@ -719,24 +1111,18 @@ typedef uintmax_t udevptr_t;
 // currently unused
 struct p_device {
 	// the unique identifier for this device
-	uintmax_t uid;
+	uintmax_t        uid;
 	// the device name string
-	char *name;
+	char             *name;
 	// the platform-dependent interface module name of this device, commonly called the device driver
 	// may otherwise be a logical interface, a.k.a. virtual device driver.
 	// To be used with p_get_fn's module parameter
-	char *interface_module;
+	char             *interface_module;
 	enum device_type type;
-
 };
 
 enum p_time_resolution {
-	CYCLES,
-	NANOSECONDS,
-	MICROSECONDS,
-	MILLISECONDS,
-	SECONDS,
-
+	CYCLES, NANOSECONDS, MICROSECONDS, MILLISECONDS, SECONDS,
 };
 
 /*
