@@ -64,12 +64,12 @@ I. Definitions:
 			diction of this license; and for any legal
 			disputations,  please send an email to
 			<caritasdedeus@gmail.com> addressed to "Andrew 
-			Thomas Porter, Owner of Christi Crucifixi LLC, 
-			EIN: 83-1586556", or mail a letter using standard 
-			postal service, to the following address:
+			Thomas Porter, Owner of Christi Crucifixi LLC",
+			or mail a letter using standard postal service, to
+			the following address:
 			
 				Andrew Thomas Porter, Owner
-				Christi Crucifixi LLC (EIN: 83-1586556)
+				Christi Crucifixi LLC
 				97 Westlee Ln
 				Palm Coast, FL 32164
 				United States of America
