@@ -4,7 +4,7 @@
  Author      : Andrew Thomas Porter (AMDG)
  Version     : 1.2.1
  Copyright   : See LICENSE.txt
- Description : Modulus language compiler
+ Description : Catholicus language compiler
  ============================================================================
  */
 #include <stdio.h>
@@ -24,9 +24,16 @@
 #include "compiler.h"
 #include "math.h"
 
+
+static void printtrie(binary_trie trie) {
+
+}
+
 int main(int argc, char **argv) {
-	r_debug_info("Running...\n");
-	// 128KiB heap
-	//m_heap_create(128 * 1024);
+	r_info("Running.\n");
+	r_info("Building binary_trie.\n");
+	binary_trie trie;
+	trie.binodes = NULL;
+	printtrie(trie);
 	return 0;
 }

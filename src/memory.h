@@ -14,7 +14,7 @@
 #ifndef MEMORY_H_
 #define MEMORY_H_
 
-enum cache {
+typedef enum cache {
 	L1 = 0,
 	L2 = 1,
 	L3 = 3,
@@ -22,37 +22,30 @@ enum cache {
 	// `L_EXT` is the start of cache level extensions for CPUs or platforms offering more than four cache levels
 	// and begins at zero for compatibility purposes. Access of `L_EXT + (level - 1)` greater than or equal to `caches`
 	// is undefined behavior.
-};
+} cache;
 
-struct block {
+typedef struct block {
 	struct block *prev;
 	struct block *next;
+	// the number of users of this block
+	uintptr_t users;
 	uintptr_t size;
 	uintptr_t data[];
-};
+} block;
 
-struct heap {
+typedef struct heap {
 	// size of memory in bytes
 	size_t size;
-	// address of the last block for static section
-	struct block *global_next;
-	// address of the last block for dynamic section
-	struct block *local_next;
 	// location of the heap's memory
 	uintptr_t memory;
-};
+} heap;
 
-enum cardinality {
+typedef enum cardinality {
 	LEFT,
 	RIGHT,
 	UP,
 	DOWN
-};
-
-enum m_type {
-	LOCAL,
-	GLOBAL
-};
+} cardinality;
 
 /*
  * # `void m_heap_create(size_t minbytes, size_t maxbytes);`
@@ -61,13 +54,13 @@ enum m_type {
  * ## `size_t minbytes`
  * The minimum size of the heap in bytes for the duration of the program.
  */
-void m_heap_create(size_t minbytes);
+heap m_heap_create(size_t minbytes);
 
 /*
  * # `void m_heap_destroy();`
  * Frees the heap memory and then frees the heap object.
  */
-void m_heap_destroy();
+void m_heap_destroy(heap heap);
 
 /*
  * # `void m_heap_resize(size_t minbytes);`
@@ -81,6 +74,10 @@ void m_heap_destroy();
  */
 void m_heap_resize(size_t minbytes);
 
+heap m_heap_get();
+
+void m_heap_set(heap heap);
+
 /*
  * # `size_t m_get_heap_size();`
  * Gets the actual size of the heap in bytes.
@@ -91,13 +88,13 @@ void m_heap_resize(size_t minbytes);
 size_t m_get_heap_size();
 
 /*
- * # `void *m_create(size_t minbytes, enum side side);`
- * Gets the next available memory block on the heap.
+ * # `void *m_request(size_t minbytes, enum side side);`
+ * Requests the next available memory block on the heap.
  *
  * ## `return void *`
  * A pointer to a block of allocated memory, or NULL if we failed to find available memory
  */
-void *m_create(size_t minbytes, enum m_type type);
+void *m_request(size_t minbytes);
 
 /*
  * Resizes the given block of memory to minbytes.

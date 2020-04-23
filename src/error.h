@@ -41,12 +41,12 @@ enum result_code {
 	R_ILLEGAL_VALUE,
 };
 
-void r_debug_info(char const *information, ...);
+void r_info(char const *information, ...);
 
-void r_debug_infof(enum result_code const code, char const *fn_name, char const *information, ...);
+void r_infof(enum result_code const code, char const *fn_name, char const *information, ...);
 
-void r_debug_warnf(enum result_code const code, char const *fn_name, char const *warning, ...);
+void r_warnf(enum result_code const code, char const *fn_name, char const *warning, ...);
 
-void r_debug_fatalf(enum result_code const code, char const *fn_name, char const *error_message, ...);
+void r_fatalf(enum result_code const code, char const *fn_name, char const *error_message, ...);
 
 #endif /* DEBUG_H_ */

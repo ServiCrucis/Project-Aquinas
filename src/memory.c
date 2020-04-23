@@ -24,8 +24,7 @@
 #include "platform.h"
 #include "math.h"
 
-// page-aligned heap
-static struct heap *heap;
+static heap current;
 // the size of a page in bytes
 static size_t *cache_size; // in bytes
 static size_t page_size; // in bytes
@@ -74,7 +73,7 @@ static inline void __m_init_page_size(size_t *_page_size) {
 		#error "platform not yet supported"
 	#endif
 	if (!*_page_size) {
-		r_debug_fatalf(R_INITIALIZATION_FAILURE, __func__, "failed to initialize page_size");
+		r_fatalf(R_INITIALIZATION_FAILURE, __func__, "failed to initialize page_size");
 	}
 }
 
@@ -94,21 +93,15 @@ static inline void __m_init_cpu_info(size_t *_caches, size_t *_cache_size, size_
 
 	// initialize processor information
 	#if PLATFORM == WINDOWS || ENVIRONMENT == WINDOWS
-	register WINBOOL (*GetLogicalProcessorInformationEx)(LOGICAL_PROCESSOR_RELATIONSHIP, PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX, PDWORD);
-	GetLogicalProcessorInformationEx = (WINBOOL (*)(LOGICAL_PROCESSOR_RELATIONSHIP, PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX, PDWORD)) p_get_fn("kernel32", "GetLogicalProcessorInformationEx");
-
-	if (!GetLogicalProcessorInformationEx) {
-		r_debug_fatalf(R_INITIALIZATION_FAILURE, __func__, "failed to initialize function kernel32.GetLogicalProcessorInformation (error code: %X", GetLastError());
-	}
 	DWORD size = sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX);
-	auto SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX *pinfo = malloc(size);
+	SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX *pinfo = malloc(size);
 	// populate SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX buffer
 	do {
 		m_resize(pinfo, size);
 	} while (!GetLogicalProcessorInformationEx(RelationCache, (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX) pinfo, &size));
 	// read contents of SYSTEM_LOGICAL_PROCESSOR_INFORMATION array
 	register size_t i = 0;
-	for (register SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX *current = pinfo; ((uintptr_t) current) < ((uintptr_t) pinfo + size) && i < 3; current = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX *) ((uintptr_t) current + current->Size)) {
+	for (SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX *current = pinfo; ((uintptr_t) current) < ((uintptr_t) pinfo + size) && i < 3; current = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX *) ((uintptr_t) current + current->Size)) {
 		switch (current->Relationship) {
 			case RelationCache:
 				i = current->Cache.Level - 1;
@@ -118,11 +111,13 @@ static inline void __m_init_cpu_info(size_t *_caches, size_t *_cache_size, size_
 						break;
 					case CacheData:
 						_cache_size[i] = current->Cache.CacheSize;
+						r_infof(R_SUCCESS, __func__, "_cache_size[i]: %u", _cache_size[i]);
 						_sector_size[i] = current->Cache.LineSize;
+						r_infof(R_SUCCESS, __func__, "_sector_size[i]: %u", _sector_size[i]);
 						break;
 					case CacheTrace:
 					default:
-						r_debug_infof(R_SUCCESS, __func__, "Ignoring irrelevant cache type: 0x%X\n", current->Cache.Type);
+						r_infof(R_SUCCESS, __func__, "Ignoring irrelevant cache type: 0x%X\n", current->Cache.Type);
 						break;
 				}
 				break;
@@ -132,7 +127,7 @@ static inline void __m_init_cpu_info(size_t *_caches, size_t *_cache_size, size_
 			case RelationGroup:
 			case RelationAll:
 			default:
-				r_debug_infof(R_SUCCESS, __func__, "Ignoring irrelevant relationship: 0x%X\n", current->Relationship);
+				r_infof(R_SUCCESS, __func__, "Ignoring irrelevant relationship: 0x%X\n", current->Relationship);
 				break;
 		}
 	}
@@ -145,34 +140,26 @@ static inline void __m_init_cpu_info(size_t *_caches, size_t *_cache_size, size_
 	#endif
 }
 
-void m_heap_create(size_t minbytes) {
-	// guard
-	if (heap) {
-		if (heap->memory) {
-			free((void *) heap->memory);
-		}
-		free(heap);
-	}
-	heap = malloc(sizeof(struct heap));
-	__m_init_page_size(&page_size);
-	__m_init_cpu_info(&caches, cache_size, sector_size, &word_size);
-	heap->size = __m_approximate(minbytes);
-	heap->memory = (uintptr_t) malloc(heap->size);
-	heap->global_next = (struct block *) heap->memory;
-	heap->local_next = (struct block *) heap->memory + heap->size - 1;
-	m_set((void *) heap->memory, 0, heap->size, 0, RIGHT);
+static inline heap __m_get_process_heap() {
+	#if PLATFORM == WINDOWS || ENVIRONMENT == WINDOWS
+	HANDLE procheap = GetProcessHeap();
+	size_t size = HeapSize(procheap, 0, &size);
+		heap result = {size, procheap};
+		
+	#elif PLATFORM == LINUX || ENVIRONMENT == UNIX
+	#endif
 }
 
-void m_heap_destroy() {
-	free((void *) heap->memory);
-	free(heap);
+void m_init() {
+	__m_init_page_size(&page_size);
+	__m_init_cpu_info(&caches, cache_size, sector_size, &word_size);
+	current = __m_get_process_heap();
 }
 
 void m_heap_resize(size_t minbytes) {
-	heap->memory = (uintptr_t) realloc((void *) heap->memory, __m_approximate(minbytes));
 }
 
-void *m_create(size_t minbytes, enum m_type type) {
+void *m_request(size_t minbytes) {
 }
 
 void *m_resize(void *ptr, size_t minbytes) {
@@ -183,7 +170,7 @@ void m_free(void *ptr) {
 
 // chooses whether to use greater than or less than depending on cardinality
 // used by m_copy and m_set
-static inline bool __cmp(size_t a, size_t b, enum cardinality cardinality) {
+static inline bool __cmp(size_t a, size_t b, cardinality cardinality) {
 	switch (cardinality) {
 		case UP:
 		case LEFT:
@@ -192,18 +179,18 @@ static inline bool __cmp(size_t a, size_t b, enum cardinality cardinality) {
 		case RIGHT:
 			return a < b;
 		default:
-			r_debug_fatalf(R_ILLEGAL_VALUE, __func__, "unknown cardinality: %d", cardinality);
+			r_fatalf(R_ILLEGAL_VALUE, __func__, "unknown cardinality: %d", cardinality);
 			return false;
 	}
 }
 
-void *m_copy(void *src, size_t srcoff, size_t srclen, enum cardinality srcdir, void *dst, size_t dstoff, size_t dstlen, enum cardinality dstdir) {
+void *m_copy(void *src, size_t srcoff, size_t srclen, cardinality srcdir, void *dst, size_t dstoff, size_t dstlen, cardinality dstdir) {
 	if (!src) {
-		r_debug_fatalf(R_NULL_POINTER, __func__, "src (arg 1) is NULL");
+		r_fatalf(R_NULL_POINTER, __func__, "src (arg 1) is NULL");
 	}
 
 	if (!dst) {
-		r_debug_fatalf(R_NULL_POINTER, __func__, "dst (arg 5) is NULL");
+		r_fatalf(R_NULL_POINTER, __func__, "dst (arg 5) is NULL");
 	}
 	// array indices (with segfault init guard [UB])
 	register size_t srci = -1, dsti = -1;
@@ -226,7 +213,7 @@ void *m_copy(void *src, size_t srcoff, size_t srclen, enum cardinality srcdir, v
 			srcend = srclen;
 			break;
 		default:
-			r_debug_fatalf(R_ILLEGAL_VALUE, __func__, "unknown srcdir cardinality: %d", srcdir);
+			r_fatalf(R_ILLEGAL_VALUE, __func__, "unknown srcdir cardinality: %d", srcdir);
 	}
 	// initialize the destination offset
 	switch (dstdir) {
@@ -243,7 +230,7 @@ void *m_copy(void *src, size_t srcoff, size_t srclen, enum cardinality srcdir, v
 			dstend = dstlen;
 			break;
 		default:
-			r_debug_fatalf(R_ILLEGAL_VALUE, __func__, "unknown dstdir cardinality: %d", srcdir);
+			r_fatalf(R_ILLEGAL_VALUE, __func__, "unknown dstdir cardinality: %d", srcdir);
 	}
 
 	srci += srcd * srcoff;
@@ -258,9 +245,9 @@ void *m_copy(void *src, size_t srcoff, size_t srclen, enum cardinality srcdir, v
 	return dst;
 }
 
-void *m_set(void *memory, size_t offset, size_t length, uintptr_t value, enum cardinality dir) {
+void *m_set(void *memory, size_t offset, size_t length, uintptr_t value, cardinality dir) {
 	if (!memory) {
-		r_debug_fatalf(R_NULL_POINTER, __func__, "memory (arg 1) is NULL");
+		r_fatalf(R_NULL_POINTER, __func__, "memory (arg 1) is NULL");
 	}
 	// memory offset (with segfault init guard [UB])
 	register size_t i = -1;
@@ -283,7 +270,7 @@ void *m_set(void *memory, size_t offset, size_t length, uintptr_t value, enum ca
 			end = length;
 			break;
 		default:
-			r_debug_fatalf(R_ILLEGAL_VALUE, __func__, "unknown cardinality: %d", dir);
+			r_fatalf(R_ILLEGAL_VALUE, __func__, "unknown cardinality: %d", dir);
 	}
 	// increment the memory index by offset (cardinality adjusted by delta)
 	i += offset * delta;

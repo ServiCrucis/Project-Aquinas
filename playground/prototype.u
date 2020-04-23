@@ -27,8 +27,9 @@
 * outside of which there is no salvation[; Vatican II is a robber synod, and a grave departure from the truth because it
 * preaches a "gospel" of religious liberty, ecumenism, and other heresies condemned by previous councils, Popes, etc.;
 * the See is overrun by Freemasons, and the great apostasy has reached the Chair of Peter since the death of
-* Pope Pius XII as prophesied by Bl. Anne Catherine Emmerich, and as declared in the true Third Secret of Fatima (which
-* has been obscured and overwritten unlawfully)].
+* Pope Pius XII by virtue of Holy Mother Church's indefectibility from the truth; and of lesser weight (by virtue of these
+* being private revelations), what was prophesied by Bl. Anne Catherine Emmerich, and declared in the true Third Secret
+* of Fatima (which has been obscured and overwritten unlawfully by the enemies of the Church)].
 *
 * Principles:
 * A module:
@@ -66,6 +67,10 @@
 *       reducing noise and increasing productivity of the programmer, and the performance of the application which is
 *       contingent on how well you understand the abstract computational system that Catholicus runs on, and how well
 *       your code conforms to this system.
+*
+* Principles concerning all data:
+*   1. All data has definite order.
+*   2. All order is hierarchical by nature.
 */
 
 module :=
@@ -73,14 +78,14 @@ module :=
     // this is the general principle and format for all modules
     module-example_with_parameters (in0, in1) : (out0, out1) :=
     {
-        statement0
-        statement1
-        statement2
+        logic
+        state
     }
 
     // An expositional-interface
     expositional-interface (module-example_with_parameters) : (out0, out1) :=
     {
+        // statements as modules
         out0 = statement2
         out1 = statement0
     }
@@ -103,7 +108,7 @@ module :=
         out0 = expression
     }
 
-    function_multi-out (in0, in1) : (out0, out1) :=
+    multi-out (in0, in1) : (out0, out1) :=
     {
         statement
         statement
@@ -124,6 +129,7 @@ module :=
     {
         (x0, y0, z0) = pipeline_common(a, b, c)
         (x1, y1, z1) = pipeline_common(d, e, f)
+
     }
 
     pipe0 (a) :=
@@ -140,5 +146,10 @@ module :=
     {
         // ...
     }
+
+
+    <int> variable-module := 3
+
+    <char> symbol-module := '\U+0000'
 
 }

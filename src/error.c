@@ -12,7 +12,7 @@
 #include "error.h"
 
 
-static char **mdu_result_messages = (char *[])
+static char **cth_result_messages = (char *[])
 		{
 				"R_SUCCESS",
 				"R_FAILURE",
@@ -33,7 +33,7 @@ static char **mdu_result_messages = (char *[])
 				"R_ILLEGAL_VALUE",
 		};
 
-void r_debug_info(char const *information, ...) {
+void r_info(char const *information, ...) {
 	fputs("[info]", stdout);
 	fputc(' ', stdout);
 	va_list objects;
@@ -42,9 +42,9 @@ void r_debug_info(char const *information, ...) {
 	va_end(objects);
 }
 
-void r_debug_infof(enum result_code const code, char const *fn_name, char const *information, ...) {
+void r_infof(enum result_code const code, char const *fn_name, char const *information, ...) {
 	fputs("[info][", stdout);
-	fputs(mdu_result_messages[code], stdout);
+	fputs(cth_result_messages[code], stdout);
 	fputs("][", stdout);
 	fputs(fn_name, stdout);
 	fputs("] ", stdout);
@@ -54,9 +54,9 @@ void r_debug_infof(enum result_code const code, char const *fn_name, char const 
 	va_end(objects);
 }
 
-void r_debug_warnf(enum result_code const code, char const *fn_name, char const *warning, ...) {
+void r_warnf(enum result_code const code, char const *fn_name, char const *warning, ...) {
 	fputs("[warning][", stdout);
-	fputs(mdu_result_messages[code], stdout);
+	fputs(cth_result_messages[code], stdout);
 	fputs("][", stdout);
 	fputs(fn_name, stdout);
 	fputc(']', stdout);
@@ -66,9 +66,9 @@ void r_debug_warnf(enum result_code const code, char const *fn_name, char const 
 	va_end(objects);
 }
 
-void r_debug_fatalf(enum result_code const code, char const *fn_name, char const *error_message, ...) {
+void r_fatalf(enum result_code const code, char const *fn_name, char const *error_message, ...) {
 	fputs("[fatal][", stderr);
-	fputs(mdu_result_messages[code], stderr);
+	fputs(cth_result_messages[code], stderr);
 	fputs("][", stderr);
 	fputs(fn_name, stderr);
 	fputc(']', stderr);
