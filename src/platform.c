@@ -42,9 +42,9 @@ char *p_get_env(char *var) {
 #endif
 }
 
-uintptr_t p_get_fn(char *module, char *function) {
+void *(*p_get_fn(char *module, char *function))() {
 #if PLATFORM == WINDOWS || ENVIRONMENT == WINDOWS
-	return (uintptr_t) GetProcAddress(LoadLibrary(module), function);
+	return (void *(*)()) GetProcAddress(LoadLibrary(module), function);
 #elif PLATFORM == LINUX || ENVIRONMENT == UNIX
 	// TODO UNIX p_get_fn
 #else
@@ -52,9 +52,9 @@ uintptr_t p_get_fn(char *module, char *function) {
 #endif
 }
 
-uintptr_t p_get_fna(char *module, uintptr_t function_offset) {
+void *(*p_get_fna(char *module, uintptr_t function_offset))() {
 #if PLATFORM == WINDOWS || ENVIRONMENT == WINDOWS
-	return ((uintptr_t) LoadLibrary(module) + function_offset);
+	return (void *(*)()) (LoadLibrary(module) + function_offset);
 #elif PLATFORM == LINUX || ENVIRONMENT == UNIX
 	// TODO UNIX p_get_fna
 #else
