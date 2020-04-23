@@ -1142,7 +1142,7 @@ char *p_get_env(char *var);
 /* platform functional programming */
 
 /*
- * # `uintptr_t p_get_fn(char *module, char *function);` ("get function")
+ * # `void *p_get_fn(char *module, char *function);` ("get function")
  * Gets a function from the specified implementation-specific module. The module is explicitly the name of the module
 *  without any sort of file extension, and will first check the program's environment for an existing module before
 *  searching the system's environment for the given module. If the function succeeds in finding the module, the function
@@ -1160,9 +1160,9 @@ char *p_get_env(char *var);
  *  a string containing the function name
  *
  *  ## `return uintptr_t`
- *  A `uintptr_t` containing the start of the function as `(uintptr_t (module_base_address + function_offset)`
+ *  A `void *` containing the start of the function as `(void *(module_base_address + function_offset)`
 */
-uintptr_t p_get_fn(char *module, char *function);
+void *(*p_get_fn(char *module, char *function))();
 
 /*
  * # `uintptr_t p_get_fna(char *module, uintptr_t function_offset);` ("get function absolute")
@@ -1183,7 +1183,7 @@ uintptr_t p_get_fn(char *module, char *function);
  * ## `return uintptr_t`
  * A `uintptr_t` containing the start of the function as `(uintptr_t) (module_base_address + function_offset)`
  */
-uintptr_t p_get_fna(char *module, uintptr_t function_offset);
+void *(*p_get_fna(char *module, uintptr_t function_offset))();
 
 int p_get_errno();
 
