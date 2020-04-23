@@ -1,6 +1,0 @@
-/*
- * origin: project.h.in
- * auto-generated project.h file containing project macros for configuration
- */
-#define MODULUS_VERSION_MAJOR @Modulus-Compiler-Generator_VERSION_MAJOR@
-#define MODULUS_VERSION_MINOR @Modulus-Compiler-Generator_VERSION_MINOR@

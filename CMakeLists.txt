@@ -2,13 +2,12 @@ cmake_minimum_required(VERSION 3.15)
 project(Catholicus)
 set(CMAKE_MODULE_PATH ./build/)
 set(PROJECT_SOURCE_DIR ./src/)
-set(CONFIGURE_INPUT ./build/configuration/)
 # compiler flags
 if (CYGWIN OR MINGW OR MSYS OR UNIX)
     # set C standard to C18 revision
     add_compile_options(-std=c18)
     # set warnings
-    add_compile_options(-Wall -Wpedantic -Werror=pedantic -Wextra)
+    add_compile_options(-Wall -Wpedantic -Wfatal-errors -Wextra)
     # ubsan (undefined, address, pointer-compare, pointer-subtract, leak)
     #add_compile_options(-fsanitize=undefined -fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=leak)
     #add_link_options(-fsanitize=undefined -fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=leak)
@@ -18,6 +17,4 @@ if (CYGWIN OR MINGW OR MSYS OR UNIX)
         add_compile_options(-Ofast)
     endif ()
 endif ()
-# configuration files
-configure_file(${CONFIGURE_INPUT}/project.h.in ${PROJECT_SOURCE_DIR}/include/project.h)
 add_subdirectory(${PROJECT_SOURCE_DIR})
