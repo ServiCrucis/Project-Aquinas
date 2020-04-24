@@ -1086,6 +1086,12 @@
 	#define COMPILER_NAME_LENGTH sizeof(COMPILER_NAME)
 #endif
 
+/* generic word information */
+// uword: an unsigned word; has the same number of bits as the native architecture's word
+typedef uintptr_t uword;
+// word: a signed word; has the same number of bits as the native architecture's word
+typedef intptr_t word;
+
 /* generic platform functions */
 
 #include "../error.h"

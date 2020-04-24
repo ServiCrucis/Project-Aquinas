@@ -14,6 +14,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "platform.h"
+
 #define BITMASK(b) (1u << ((b) % BITS))
 #define BITSLOT(b) ((b) / BITS)
 #define BITSET(a, b) ((a)[BITSLOT(b)] |= BITMASK(b))
@@ -21,23 +23,24 @@
 #define BITGET(a, b) ((a)[BITSLOT(b)] & BITMASK(b))
 #define BITNSLOTS(nb) ((nb + BITS - 1u) / BITS)
 
-typedef uintptr_t uword;
 #define BITS sizeof(uword)
 
 typedef struct binary_trie {
 	// the binary nodes
 	uword *binodes;
+	// the size of the value
+	uword bits;
 } binary_trie;
 
 typedef struct uword_pair {
 	uword a;
-	uword value;
+	uword b;
 } pair;
 
-uword b_read(binary_trie trie, uword address);
+uword b_read(binary_trie *trie, uword address);
 
-void b_write(binary_trie trie, uword address, uword value);
+void b_write(binary_trie *trie, uword address, uword value);
 
-binary_trie b_create(pair *nodes, uword length);
+binary_trie *b_create(pair *nodes, uword bits, uword length);
 
 #endif //CATHOLICUS_BINARY_TRIE_H
