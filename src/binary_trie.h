@@ -16,13 +16,6 @@
 
 #include "platform.h"
 
-#define BITMASK(b) (1u << ((b) % BITS))
-#define BITSLOT(b) ((b) / BITS)
-#define BITSET(a, b) ((a)[BITSLOT(b)] |= BITMASK(b))
-#define BITCLEAR(a, b) ((a)[BITSLOT(b)] &= ~BITMASK(b))
-#define BITGET(a, b) ((a)[BITSLOT(b)] & BITMASK(b))
-#define BITNSLOTS(nb) ((nb + BITS - 1u) / BITS)
-
 #define BITS sizeof(uword)
 
 typedef struct binary_trie {

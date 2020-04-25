@@ -25,15 +25,23 @@
 #include "math.h"
 
 
-static void printtrie(binary_trie trie) {
-
+static void printtrie(binary_trie *trie) {
+	uword values = 1u << trie->bits;
+	for(uword address = 0; address < values; address++) {
+		r_infof(R_SUCCESS, __func__, "[%u] = %u\n", address, b_read(trie, address));
+	}
 }
 
 int main(int argc, char **argv) {
 	r_info("Running.\n");
 	r_info("Building binary_trie.\n");
-	binary_trie trie;
-	trie.binodes = NULL;
+	pair test[3] = {
+			{0, 1},
+			{1, 2},
+			{2, 3}
+	};
+	binary_trie *trie = b_create(test, 8, 3);
 	printtrie(trie);
+	free(trie);
 	return 0;
 }
