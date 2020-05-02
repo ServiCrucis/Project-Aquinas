@@ -14,23 +14,24 @@
 
 static char **cth_result_messages = (char *[])
 		{
-				"R_SUCCESS",
-				"R_FAILURE",
-				"R_ALLOCATION_SUCCESS",
-				"R_ALLOCATION_FAILURE",
-				"R_INITIALIZATION_SUCCESS",
-				"R_INITIALIZATION_FAILURE",
-				"R_STACK_OVERFLOW",
-				"R_STACK_UNDERFLOW",
-				"R_BUFFER_OVERFLOW",
-				"R_BUFFER_UNDERFLOW",
-				"R_COMPLETE_RESULT",
-				"R_INCOMPLETE_RESULT",
-				"R_INDETERMINATE_RESULT",
-				"R_ASSERTION_SUCCESS",
-				"R_ASSERTION_FAILURE",
-				"R_NULL_POINTER",
-				"R_ILLEGAL_VALUE",
+				"SUCCESS",
+				"FAILURE",
+				"ALLOCATION_SUCCESS",
+				"ALLOCATION_FAILURE",
+				"INITIALIZATION_SUCCESS",
+				"INITIALIZATION_FAILURE",
+				"STACK_OVERFLOW",
+				"STACK_UNDERFLOW",
+				"BUFFER_OVERFLOW",
+				"BUFFER_UNDERFLOW",
+				"COMPLETE_RESULT",
+				"INCOMPLETE_RESULT",
+				"INDETERMINATE_RESULT",
+				"ASSERTION_SUCCESS",
+				"ASSERTION_FAILURE",
+				"NULL_POINTER",
+				"ILLEGAL_VALUE",
+				"STATUS"
 		};
 
 void r_info(char const *information, ...) {
@@ -59,7 +60,7 @@ void r_warnf(enum result_code const code, char const *fn_name, char const *warni
 	fputs(cth_result_messages[code], stdout);
 	fputs("][", stdout);
 	fputs(fn_name, stdout);
-	fputc(']', stdout);
+	fputs("] ", stdout);
 	va_list objects;
 	va_start(objects, warning);
 	vprintf(warning, objects);
@@ -71,7 +72,7 @@ void r_fatalf(enum result_code const code, char const *fn_name, char const *erro
 	fputs(cth_result_messages[code], stderr);
 	fputs("][", stderr);
 	fputs(fn_name, stderr);
-	fputc(']', stderr);
+	fputs("] ", stderr);
 	va_list objects;
 	va_start(objects, error_message);
 	vfprintf(stderr, error_message, objects);

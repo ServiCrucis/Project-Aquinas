@@ -22,6 +22,7 @@
 #endif
 
 enum result_code {
+	// R for Result
 	R_SUCCESS = EXIT_SUCCESS,
 	R_FAILURE = EXIT_FAILURE,
 	R_ALLOCATION_SUCCESS,
@@ -39,6 +40,7 @@ enum result_code {
 	R_ASSERTION_FAILURE,
 	R_NULL_POINTER,
 	R_ILLEGAL_VALUE,
+	R_STATUS,
 };
 
 void r_info(char const *information, ...);
