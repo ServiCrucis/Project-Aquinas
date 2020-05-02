@@ -14,17 +14,11 @@
 #include <stdio.h>
 #include <math.h>
 
-#include "binary_trie.h"
-
-// Genus Primus (principia) de computator
-// mov x to y
-// unity
-// uniqueness
-// unity + uniqueness = continuity
+#include "bit_trie.h"
 
 typedef struct pattern {
 	struct pattern *nodes;
-	binary_trie *map;
+	//binary_trie    *map;
 } pattern;
 
 pattern p_read(FILE *in);
