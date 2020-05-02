@@ -42,6 +42,8 @@ char *p_get_env(char *var) {
 #endif
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wincompatible-pointer-types"
 void *(*p_get_fn(char *module, char *function))() {
 #if PLATFORM == WINDOWS || ENVIRONMENT == WINDOWS
 	return (void *(*)()) GetProcAddress(LoadLibrary(module), function);
@@ -51,7 +53,10 @@ void *(*p_get_fn(char *module, char *function))() {
 	#error "[build][fatal][p_get_fn] platform not yet supported"
 #endif
 }
+#pragma clang diagnostic pop
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wincompatible-pointer-types"
 void *(*p_get_fna(char *module, uintptr_t function_offset))() {
 #if PLATFORM == WINDOWS || ENVIRONMENT == WINDOWS
 	return (void *(*)()) (LoadLibrary(module) + function_offset);
@@ -61,3 +66,4 @@ void *(*p_get_fna(char *module, uintptr_t function_offset))() {
 	#error "[build][fatal][p_get_fna] platform not yet supported"
 #endif
 }
+#pragma clang diagnostic pop

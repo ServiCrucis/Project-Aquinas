@@ -23,6 +23,12 @@
  * PLATFORM_NAME_LENGTH
  * PLATFORM_NAME_LENGTH_MAX
  * PLATFORM_VARIANT
+ *
+ * ARCHITECTURE
+ * ARCHITECTURE_NAME
+ * ARCHITECTURE_NAME_LENGTH
+ * ARCHITECTURE_VARIANT
+ *
  */
 /* platforms */
 #define WINDOWS         1
@@ -1086,11 +1092,26 @@
 	#define COMPILER_NAME_LENGTH sizeof(COMPILER_NAME)
 #endif
 
+#include <limits.h>
 /* generic word information */
 // uword: an unsigned word; has the same number of bits as the native architecture's word
 typedef uintptr_t uword;
 // word: a signed word; has the same number of bits as the native architecture's word
 typedef intptr_t word;
+// uintmin_t: unsigned word with number of bits less than or equal to uword which represents the smallest natively
+// supported bit string and is a multiple of the number of bits in uword.
+typedef unsigned char uintmin_t;
+// udevptr_t: a uword containing a hardware address to a hardware device (implementation dependent), for example: to PCI,
+// SATA, SCSI, network, virtual (software) device, etc.
+typedef uword udevptr_t;
+
+// common pair struct
+typedef struct uword_pair {
+	uword a;
+	uword b;
+} pair;
+
+#define MIN_BITS CHAR_BIT
 
 /* generic platform functions */
 
@@ -1108,14 +1129,12 @@ struct p_result {
 };
 
 // currently unused
-enum device_type {
+typedef enum device_type {
 	PHYSICAL, LOGICAL
-};
-
-typedef uintmax_t udevptr_t;
+} device_type;
 
 // currently unused
-struct p_device {
+typedef struct p_device {
 	// the unique identifier for this device
 	uintmax_t        uid;
 	// the device name string
@@ -1125,11 +1144,11 @@ struct p_device {
 	// To be used with p_get_fn's module parameter
 	char             *interface_module;
 	enum device_type type;
-};
+} p_device;
 
-enum p_time_resolution {
+typedef enum p_time_resolution {
 	CYCLES, NANOSECONDS, MICROSECONDS, MILLISECONDS, SECONDS,
-};
+} p_time_resolution;
 
 /*
  * # `char *p_get_platform();`
@@ -1143,6 +1162,12 @@ enum p_time_resolution {
  */
 char *p_get_platform();
 
+/*
+ * # `char *p_get_env(char *var);`
+ * Gets an environment variable associated with the given string. The platform-dependent behavior is conveniently
+ * abstracted away in favor of a common behavior.
+ *
+ */
 char *p_get_env(char *var);
 
 /* platform functional programming */
@@ -1191,8 +1216,10 @@ void *(*p_get_fn(char *module, char *function))();
  */
 void *(*p_get_fna(char *module, uintptr_t function_offset))();
 
+// currently unused (no implementation)
 int p_get_errno();
 
+// currently unused (no implementation)
 void p_set_errno(int state);
 
 /*
