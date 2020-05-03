@@ -23,7 +23,7 @@
 static void print_bittrie(bit_trie *trie, uword bits) {
 	for(uword address = 0; address < bits; address++) {
 		uword bit = btt_read(trie, address);
-		r_infof(R_STATUS, __func__, "\t[%u] = %u\n", address, bit);
+		r_infof(R_STATUS, __func__, "[%u] = %u\n", address, bit);
 	}
 }
 
@@ -41,6 +41,5 @@ int main(int argc, char **argv) {
 	free(trie->binodes);
 	free(trie);
 	r_info("Done.\n");
-	// test set_bit and get_bit
-	return 0;
+	return R_SUCCESS;
 }
