@@ -42,3 +42,8 @@ bit_trie *btt_create(pair const *pairs, uword depth, uword length) {
 	
 	return result;
 }
+
+void btt_free(bit_trie *trie) {
+	free(trie->binodes);
+	free(trie);
+}

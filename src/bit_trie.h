@@ -30,4 +30,6 @@ void btt_write(bit_trie *trie, uword address, uword value);
 
 bit_trie *btt_create(pair const *pairs, uword depth, uword length);
 
+void btt_free(bit_trie *trie);
+
 #endif //CATHOLICUS_BIT_TRIE_H
