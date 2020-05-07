@@ -7,8 +7,8 @@
  * Copyright &copy; 2020 Christi Crucifixi, LLC. All rights reserved.
  */
 
-#ifndef CATHOLICUS_PATTERN_H
-#define CATHOLICUS_PATTERN_H
+#ifndef CATHOLICUS_PERMUTATION_H
+#define CATHOLICUS_PERMUTATION_H
 
 #include <stdint.h>
 #include <stdio.h>
@@ -16,13 +16,13 @@
 
 #include "bit_trie.h"
 
-typedef struct pattern {
-	struct pattern *nodes;
+typedef struct permutation {
+	struct permutation *nodes;
 	//binary_trie    *map;
-} pattern;
+} permutation;
 
-pattern p_read(FILE *in);
+permutation p_read(FILE *in);
 
-void p_write(pattern in, FILE *out);
+void p_write(permutation in, FILE *out);
 
-#endif //CATHOLICUS_PATTERN_H
+#endif //CATHOLICUS_PERMUTATION_H

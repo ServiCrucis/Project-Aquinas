@@ -8,17 +8,17 @@
 #include "compiler.h"
 
 
-static inline pattern *__next_pattern(context context, pattern in) {
+static inline permutation *__next_pattern(context context, permutation in) {
 }
 
-context c_begin(context local, pattern in) {
+context c_begin(context local, permutation in) {
 }
 
-context c_end(context local, pattern in) {
+context c_end(context local, permutation in) {
 
 }
 
-context c_link(context local, pattern in) {
+context c_link(context local, permutation in) {
 
 }
 
