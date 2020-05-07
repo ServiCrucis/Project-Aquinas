@@ -106,4 +106,41 @@ static inline bool in_buffer(uword min, uword max, uword value) {
 	return (min <= value) & (value < max);
 }
 
+static inline uword to_index(uword address) {
+	uword address_bits = sigbits(address);
+	uword rel_offset = 0;
+	for (uword i = 0; i < address_bits; i++) {
+		// length of the bitset
+		uword length = dbl(pow2i(i));
+		// address bit
+		uword address_bit = (address >> i) & 1u;
+		// relative offset
+		rel_offset = rel_offset + address_bit * (length / 2u);
+	}
+	
+	return dbl(pow2i(address_bits - 1u)) - 2u + rel_offset;
+}
+
+static inline uword get_bit(uword *bitarray, uword words, uword bit_offset) {
+	uword bits = sizeof(uword) * sizeof(uintmin_t) * MIN_BITS;
+	uword index = bit_offset / bits;
+	if (!in_buffer(0, words, index))
+		r_fatalf(R_BUFFER_OVERFLOW, __func__, "index out of range: 0 <= index=%u < %u\n", index, words);
+	uword word  = bitarray[index];
+	uword bit   = (word >> (bit_offset % bits)) & ((uword) 1u);
+	return bit;
+}
+
+static inline void set_bit(uword *bitarray, uword words, uword bit_offset, uword value) {
+	uword bits = sizeof(uword) * sizeof(uintmin_t) * MIN_BITS;
+	uword index = bit_offset / bits;
+	// guard
+	if (!in_buffer(0, words, index))
+		r_fatalf(R_BUFFER_OVERFLOW, __func__, "index out of range: 0 <= index=%u < %u\n", index, words);
+	uword word  = bitarray[index];
+	word ^= (word ^ ((value & ((uword) 1u)) << (bit_offset % bits))) & (((uword) 1u) << (bit_offset % bits));
+	bitarray[index] = word;
+}
+
+
 #endif //CATHOLICUS_BIT_MATH_H
