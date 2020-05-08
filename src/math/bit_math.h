@@ -107,8 +107,7 @@ static inline bool in_buffer(uword min, uword max, uword value) {
 }
 
 static inline uword bit_index(uword address) {
-	uword address_bits = sigbits(address);
-	return dbl(pow2i(address_bits - 1u)) - 2u + address;
+	return dbl(pow2i(sigbits(address) - 1u)) - 2u + address;
 }
 
 static inline uword get_bit(uword *bitarray, uword words, uword bit_offset) {
