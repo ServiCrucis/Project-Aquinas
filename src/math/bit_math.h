@@ -12,7 +12,7 @@
 #define CATHOLICUS_BIT_MATH_H
 
 #include <stdbool.h>
-
+#include <limits.h>
 #include "platform.h"
 
 
@@ -47,7 +47,7 @@ static inline uword sigbitsn(uword *bit_string, size_t words) {
  * Compute 2 to the power of exponent using integer bit math.
  */
 static inline uword pow2i(uword exponent) {
-	return 1u << exponent;
+	return 1ull << exponent;
 }
 
 static inline uword powni(uword base, uword exponent) {
@@ -106,19 +106,9 @@ static inline bool in_buffer(uword min, uword max, uword value) {
 	return (min <= value) & (value < max);
 }
 
-static inline uword to_index(uword address) {
+static inline uword bit_index(uword address) {
 	uword address_bits = sigbits(address);
-	uword rel_offset = 0;
-	for (uword i = 0; i < address_bits; i++) {
-		// length of the bitset
-		uword length = dbl(pow2i(i));
-		// address bit
-		uword address_bit = (address >> i) & 1u;
-		// relative offset
-		rel_offset = rel_offset + address_bit * (length / 2u);
-	}
-	
-	return dbl(pow2i(address_bits - 1u)) - 2u + rel_offset;
+	return dbl(pow2i(address_bits - 1u)) - 2u + address;
 }
 
 static inline uword get_bit(uword *bitarray, uword words, uword bit_offset) {
@@ -142,5 +132,16 @@ static inline void set_bit(uword *bitarray, uword words, uword bit_offset, uword
 	bitarray[index] = word;
 }
 
+/*
+ * Gets the minimum number of bits required to represent the given type on the native architecture
+ */
+#define bitwidth(Type) (sizeof(Type) * CHAR_BIT)
+
+/*
+ * Gets the number of bits for a given array
+ */
+#define bitlen(array, elements) (sizeof(typeof(array)) * elements * CHAR_BIT)
+
+#define truncate(value, bits) ( (value << (sizeof(typeof(value)) * CHAR_BIT - bits)) >> (sizeof(typeof(value)) * CHAR_BIT - bits) )
 
 #endif //CATHOLICUS_BIT_MATH_H

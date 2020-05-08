@@ -15,11 +15,11 @@
 #include "error.h"
 
 uword btt_read(bit_trie *trie, uword address) {
-	return get_bit(trie->binodes, (2u << trie->depth) / BITS, to_index(address));
+	return get_bit(trie->binodes, (2u << trie->depth) / BITS, bit_index(address));
 }
 
 void btt_write(bit_trie *trie, uword address, uword bit) {
-	set_bit(trie->binodes, (2u << trie->depth) / BITS, to_index(address), bit);
+	set_bit(trie->binodes, (2u << trie->depth) / BITS, bit_index(address), bit);
 }
 
 bit_trie *btt_create(pair const *pairs, uword depth, uword length) {
