@@ -19,21 +19,22 @@
 
 #include "platform.h"
 #include "compiler.h"
+#include "bit_math.h"
 
 static void test_bittrie() {
-	r_info("Building binary_trie.\n");
-	pair    test[] = {
-			{ 0,1 },
-			{ 255,1 }
-	};
-	bit_trie *trie   = btt_create(test, 8, 2);
-	uword bits = 256;
-	for(uword address = 0; address < bits; address++) {
-		uword bit = btt_read(trie, address);
-		r_infof(R_STATUS, __func__, "[%u] = %u\n", address, bit);
+	r_info("Building bit_trie.\n");
+//	pair    test[] = {
+//			{ 23,1 },
+//			{ 237,1 }
+//	};
+//	bit_trie *trie   = btt_create(test, 8, 2);
+//	uword bits = 256;
+	for(uword address = 0; address < (1ull << 8ull); address++) {
+//		uword bit = btt_read(trie, address);
+		r_infof(R_STATUS, __func__, "[%u]\n", bit_index((address << 1u) | 1ull));
 	}
 	
-	btt_free(trie);
+//	btt_free(trie);
 	r_info("Done.\n");
 }
 
@@ -41,6 +42,6 @@ static void test_bittrie() {
 
 int main(int argc, char **argv) {
 	r_info("Running.\n");
-	
+	test_bittrie();
 	return R_SUCCESS;
 }

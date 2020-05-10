@@ -14,16 +14,17 @@
 #include "bit_math.h"
 #include "error.h"
 
-uword btt_read(bit_trie *trie, uword address) {
-	return get_bit(trie->binodes, (2u << trie->depth) / BITS, bit_index(address));
+uword btt_read(bit_trie *trie, uword address, uword side) {
+	return get_bit(trie->binodes, (2u << trie->depth) / BITS, bit_index((address << 1u) | side));
 }
 
-void btt_write(bit_trie *trie, uword address, uword bit) {
-	set_bit(trie->binodes, (2u << trie->depth) / BITS, bit_index(address), bit);
+void btt_write(bit_trie *trie, uword address, uword side, uword bit) {
+	set_bit(trie->binodes, (2u << trie->depth) / BITS, bit_index((address << 1u) | side), bit);
 }
 
 bit_trie *btt_create(pair const *pairs, uword depth, uword length) {
 	bit_trie *result = malloc(sizeof(bit_trie));
+	
 	if (!result) {
 		r_fatalf(R_ALLOCATION_FAILURE, __func__, "failed to allocate memory for binary_trie");
 	}
