@@ -106,8 +106,16 @@ static inline bool in_buffer(uword min, uword max, uword value) {
 	return (min <= value) & (value < max);
 }
 
+/*
+ * Gets the bit index of a given address in a bit trie.
+ */
 static inline uword bit_index(uword address) {
-	return dbl(pow2i(sigbits(address) - 1u)) - 2u + address;
+	uword side = address & 1u;
+	address >>= 1u;
+	if (!address) return side;
+	uword address_bits = log2i(address);
+	// 2 * pow2i(address_bits) - 2u + address - side * pow2i(address_bits)
+	return address == 1 ? side : (2ull << address_bits) - 2u + address - side * (1ull << address_bits);
 }
 
 static inline uword get_bit(uword *bitarray, uword words, uword bit_offset) {

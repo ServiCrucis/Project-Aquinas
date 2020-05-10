@@ -24,9 +24,9 @@ typedef struct bit_trie {
 	uword depth;
 } bit_trie;
 
-uword btt_read(bit_trie *trie, uword address, uword side);
+uword btt_read(bit_trie *trie, uword address);
 
-void btt_write(bit_trie *trie, uword address, uword side, uword value);
+void btt_write(bit_trie *trie, uword address, uword value);
 
 bit_trie *btt_create(pair const *pairs, uword depth, uword length);
 

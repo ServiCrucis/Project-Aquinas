@@ -31,7 +31,9 @@ static void test_bittrie() {
 //	uword bits = 256;
 	for(uword address = 0; address < (1ull << 8ull); address++) {
 //		uword bit = btt_read(trie, address);
-		r_infof(R_STATUS, __func__, "[%u]\n", bit_index((address << 1u) | 1ull));
+		// 0: left; 1: right
+		uword side = 1ull;
+		r_infof(R_STATUS, __func__, "[%u]\n", bit_index((address << 1u) | side));
 	}
 	
 //	btt_free(trie);
