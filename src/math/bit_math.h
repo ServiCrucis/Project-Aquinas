@@ -108,6 +108,11 @@ static inline bool in_buffer(uword min, uword max, uword value) {
 
 /*
  * Gets the bit index of a given address in a bit trie.
+ * For a given bit trie of N bits, there are 2*(2^N) - 2 bits in the trie, and 2^N - 1 indices for either the left or
+ * right side, so the index may be calculated as 2 * (2^log_2(address)) - 2 + address - side_bit * pow2(log_2(address)).
+ * For an N bit trie, the minimum number of bits required to represent a complete address is N + 1 bits. For example,
+ * in an 8-bit trie, you need 9 bits to represent a complete address as there are 510 bits total in the trie. The
+ * right-most bit determines which side of the trie will be accessed, either 0 for left, or 1 for right.
  */
 static inline uword bit_index(uword address) {
 	uword side = address & 1u;
