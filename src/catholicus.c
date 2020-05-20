@@ -23,24 +23,31 @@
 
 static void test_bittrie() {
 	r_info("Building bit_trie.\n");
-//	pair    test[] = {
-//			{ 23,1 },
-//			{ 237,1 }
-//	};
-//	bit_trie *trie   = btt_create(test, 8, 2);
-//	uword bits = 256;
-	for(uword address = 0; address < (1ull << 8ull); address++) {
-//		uword bit = btt_read(trie, address);
-		// 0: left; 1: right
-		uword side = 1ull;
-		r_infof(R_STATUS, __func__, "[%u]\n", bit_index((address << 1u) | side));
+	pair    test[] = {
+			{ 23,1 },
+			{ 237,1 }
+	};
+	bit_trie *trie   = btt_create(test, 8, 2);
+	uword values = 256;
+	// 0: left; 1: right
+	uword side = 0ull;
+	r_info("bit_trie side:left.\n");
+	for(uword address = 0; address < values; address++) {
+		
+		uword bit = btt_read(trie, (address << 1u) | side);
+		r_infof(R_STATUS, __func__, "[%u] = %u\n", bin_index((address << 1u) | side), bit);
 	}
 	
-//	btt_free(trie);
+	r_info("bit_trie side:right.\n");
+	side = 1ull;
+	for(uword address = 0; address < values; address++) {
+		uword bit = btt_read(trie, (address << 1u) | side);
+		r_infof(R_STATUS, __func__, "[%u]\n", bin_index((address << 1u) | side), bit);
+	}
+	
+	btt_free(trie);
 	r_info("Done.\n");
 }
-
-
 
 int main(int argc, char **argv) {
 	r_info("Running.\n");
