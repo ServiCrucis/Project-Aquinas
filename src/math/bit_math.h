@@ -16,13 +16,98 @@
 #include "platform.h"
 
 
-static inline uword log2i(uword bit_string);
+/*
+ * Gets the minimum number of bits required to represent the given type on the native architecture
+ */
+#define bitwidth(Type) (sizeof(Type) * CHAR_BIT)
+
+/*
+ * Gets the number of bits for a given array
+ */
+#define bitlen(array, elements) (sizeof(typeof(array)) * elements * CHAR_BIT)
+
+#define truncate(value, bits) ( (value << (sizeof(typeof(value)) * CHAR_BIT - bits)) >> (sizeof(typeof(value)) * CHAR_BIT - bits) )
+
 /*
  * Compute number of significant bits in the given word
  */
-static inline uword sigbits(uword bit_string) {
-	// TODO use assembly instructions to implement sigbits with log2i for unsupported architectures
-	return log2i(bit_string) + 1u;
+static inline uword sigbits(register uword bit_string) {
+#if defined(__GNUC__)
+	#if DATA_MODEL == LLP64 || DATA_MODEL == SILP64
+		return __builtin_clzll(~(bit_string | 1ull));
+	#else
+		return __builtin_clzl(~(bit_string | 1ul));
+	#endif
+#elif ARCH == ARCH_INTEL_X86
+	return __x86_lzcnt(~(((unsigned long) bit_string) | 1u));
+#elif ARCH == ARCH_AMD64
+	return __x64_bsrl((unsigned long long) bit_string);
+#elif ARCH == ARCH_ARM
+	#if ARCH_VARIANT == ARCH_ARM32
+		return __arm32_clz(~(((unsigned long) bit_string) | 1u));
+	#elif ARCH_VARIANT == ARCH_ARM64
+		return __arm64_clz(~(((unsigned long) bit_string) | 1u));
+	#else
+		#error "ARM variant not supported"
+	#endif
+#else
+	ubyte  k = 0;
+	if (bit_string > 0xFFFFFFFFu) { bit_string >>= 32; k  = 32; }
+    if (bit_string > 0x0000FFFFu) { bit_string >>= 16; k |= 16; }
+    if (bit_string > 0x000000FFu) { bit_string >>= 8;  k |= 8;  }
+    if (bit_string > 0x0000000Fu) { bit_string >>= 4;  k |= 4;  }
+    if (bit_string > 0x00000003u) { bit_string >>= 2;  k |= 2;  }
+    k |= (bit_string & 2u) >> 1u;
+    return k;
+#endif
+}
+
+static inline uword bitmask(register uword value, register uword bit_count) {
+	
+}
+static inline bool in_buffer(register uword const min, register uword const max, register uword const value);
+
+/*
+ * Compute number of significant base 10 digits in a given base 2 word
+ */
+static inline uword digits(register uword bit_string) {
+	// 64 5-bit values for the number of base 10 digits given the number of significant bits
+	static uword const table[(5u * bitwidth(uword) * MIN_BITS) / bitwidth(uword)] = {
+			595074420672366658ull,
+			1487649731220662338ull,
+			1338881125918357041ull,
+			10190338531011820577ull,
+			596218515170119284ull
+	};
+	
+	uword bits = bitwidth(uword);
+	uword bit_index = sigbits(bit_string) * 5u;
+	uword avalue_start = bit_index;
+	uword avalue_end = bit_index + 5u;
+	// start index
+	uword sindex = avalue_start / bits;
+	// end index
+	uword eindex = avalue_end / bits;
+	uword value_mask = 0x1Fu; // 5 bit bitmask
+	if (sindex != eindex) {
+		uword result = 0;
+		uword bit_pos = avalue_start % bitwidth(uword);
+		// read the bits from start index
+		uword sdiff = (bitwidth(uword) - 1u) - bit_pos; // bits out of 5 stored on this word
+		result |= (table[sindex] >> (bitwidth(uword) - 1u - sdiff)) & (value_mask >> sdiff);
+		// read the bits from end index
+		uword ediff = bit_pos; // bits out of 5 stored on this word
+		result |= (table[eindex] >> (bitwidth(uword) - 1u - ediff)) & (value_mask >> ediff);
+		return result;
+	} else {
+		uword value = table[sindex];
+		// shift bit position in the word
+		uword shift = avalue_start % bitwidth(uword);
+		// delta shift; value stored sequentially from left to right
+		uword dshift = (bitwidth(uword) - 1u) - (shift - 5u);
+		value >>= dshift;
+		return value & value_mask;
+	}
 }
 
 /*
@@ -50,6 +135,9 @@ static inline uword pow2i(uword exponent) {
 	return 1ull << exponent;
 }
 
+/*
+ * Compute base to the power of exponent using bit math.
+ */
 static inline uword powni(uword base, uword exponent) {
 	uword result = 1;
 	
@@ -66,27 +154,25 @@ static inline uword powni(uword base, uword exponent) {
 /*
  * Compute log base 2 of the given bit string using integer bit math.
  */
-static inline uword log2i(uword bit_string) {
-	uword result = 0;
-	
-	while (bit_string >>= (uword) 1ull) {
-		result++;
-	}
-	
-	return result;
+static inline uword log2i(register uword bit_string) {
+	return sigbits(bit_string) - 1ull;
+}
+
+static inline uword log10i(register uword bit_string) {
+	return 0;
 }
 
 /*
  * Doubles the given value using bit math.
  */
-static inline uword dbl(uword value) {
+static inline uword dbl(register uword const value) {
 	return value << 1u;
 }
 
 /*
  * Halves the given value using bit math.
  */
-static inline uword hlv(uword value) {
+static inline uword hlv(register uword const value) {
 	return value >> 1u;
 }
 
@@ -95,27 +181,25 @@ static inline uword hlv(uword value) {
 /*
  * Compute if given value is within the range [min, max].
  */
-static inline bool in_range(uword min, uword max, uword value) {
+static inline bool in_range(register uword const min, register uword const max, register uword const value) {
 	return (min <= value) & (value <= max);
 }
 
 /*
  * Compute if given value is within the range [min, max).
  */
-static inline bool in_buffer(uword min, uword max, uword value) {
+static inline bool in_buffer(register uword const min, register uword const max, register uword const value) {
 	return (min <= value) & (value < max);
 }
 
 /*
- * Gets the binary index of a given address in a binary trie.
- * For a given bit trie of N bits, there are 2*(2^N) - 2 bits in the trie, and 2^N - 1 indices for either the left or
- * right side, so the index may be calculated as 2 * (2^log_2(address)) - 2 + address - side_bit * pow2(log_2(address)).
- * For an N bit trie, the minimum number of bits required to represent a complete address is N + 1 bits. For example,
- * in an 8-bit trie, you need 9 bits to represent a complete address as there are 510 bits total in the trie. The
- * right-most bit determines which side of the trie will be accessed, either 0 for left, or 1 for right.
+ * Gets the binary index of a given address in a binary binary_trie.
+ * For a given bit binary_trie of N bits, there are 2*(2^N) - 2 bits in the binary_trie, and 2^N - 1 indices for either the left or
+ * right side, so the index may be calculated as 2 * (2^log_2(address)) - 2 + address - side_bit * pow2(log_2(address)). The
+ * right-most bit determines which side of the binary_trie will be accessed, either 0 for left, or 1 for right.
  * (See <https://www.desmos.com/calculator/z8l7kyskro>)
  */
-static inline uword bin_index(uword address) {
+static inline uword bin_index(register uword address) {
 	uword side = address & 1u;
 	address >>= 1u;
 	if (!address) return side;
@@ -124,17 +208,35 @@ static inline uword bin_index(uword address) {
 	return address == 1 ? side : (2ull << address_bits) - 2u + address - side * (1ull << address_bits);
 }
 
-static inline uword get_bit(uword *bitarray, uword words, uword bit_offset) {
+static inline uword get_bit(uword const *bitarray, uword const words, uword const bit_index) {
 	uword bits = sizeof(uword) * sizeof(uintmin_t) * MIN_BITS;
-	uword index = bit_offset / bits;
+	
+	uword index = bit_index / bits;
 	if (!in_buffer(0, words, index))
 		r_fatalf(R_BUFFER_OVERFLOW, __func__, "index out of range: 0 <= index=%u < %u\n", index, words);
+	
 	uword word  = bitarray[index];
-	uword bit   = (word >> (bit_offset % bits)) & ((uword) 1u);
+	uword bit   = (word >> (bit_index % bits)) & ((uword) 1u);
 	return bit;
 }
 
-static inline void set_bit(uword *bitarray, uword words, uword bit_offset, uword value) {
+static inline uword *get_bits(uword const *bitarray, uword const words, uword const bit_index, uword const value_bits) {
+	uword bits = sizeof(uword) * sizeof(uintmin_t) * MIN_BITS;
+	
+	uword start = bit_index / bits;
+	if (!in_buffer(0, words, start))
+		r_fatalf(R_BUFFER_OVERFLOW, __func__, "start out of range: 0 <= start=%u < %u\n", start, words);
+	
+	uword end = (bit_index + value_bits - 1u) / bits;
+	if (!in_buffer(0, words, end))
+		r_fatalf(R_BUFFER_OVERFLOW, __func__, "end out of range: 0 <= end=%u < %u\n", end, words);
+	
+	for (uword i = start; i < end; i++) {
+	
+	}
+}
+
+static inline void set_bit(uword *bitarray, uword const words, uword const bit_offset, uword const value) {
 	uword bits = sizeof(uword) * sizeof(uintmin_t) * MIN_BITS;
 	uword index = bit_offset / bits;
 	// guard
@@ -144,17 +246,5 @@ static inline void set_bit(uword *bitarray, uword words, uword bit_offset, uword
 	word ^= (word ^ ((value & ((uword) 1u)) << (bit_offset % bits))) & (((uword) 1u) << (bit_offset % bits));
 	bitarray[index] = word;
 }
-
-/*
- * Gets the minimum number of bits required to represent the given type on the native architecture
- */
-#define bitwidth(Type) (sizeof(Type) * CHAR_BIT)
-
-/*
- * Gets the number of bits for a given array
- */
-#define bitlen(array, elements) (sizeof(typeof(array)) * elements * CHAR_BIT)
-
-#define truncate(value, bits) ( (value << (sizeof(typeof(value)) * CHAR_BIT - bits)) >> (sizeof(typeof(value)) * CHAR_BIT - bits) )
 
 #endif //CATHOLICUS_BIT_MATH_H
