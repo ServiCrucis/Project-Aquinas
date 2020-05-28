@@ -20,6 +20,7 @@
 #include "platform.h"
 #include "compiler.h"
 #include "bit_math.h"
+#include "bit_trie.h"
 
 static void test_bittrie() {
 	r_info("Building bit_trie.\n");
@@ -49,8 +50,32 @@ static void test_bittrie() {
 	r_info("Done.\n");
 }
 
+static void test_digits() {
+	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 1ull, digits(1ull));
+	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 10ull, digits(10ull));
+	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 100ull, digits(100ull));
+	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 1000ull, digits(1000ull));
+	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 10000ull, digits(10000ull));
+	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 100000ull, digits(100000ull));
+	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 1000000ull, digits(1000000ull));
+	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 10000000ull, digits(10000000ull));
+	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 100000000ull, digits(100000000ull));
+	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 1000000000ull, digits(1000000000ull));
+	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 10000000000ull, digits(10000000000ull));
+	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 100000000000ull, digits(100000000000ull));
+	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 1000000000000ull, digits(1000000000000ull));
+	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 10000000000000ull, digits(10000000000000ull));
+	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 100000000000000ull, digits(100000000000000ull));
+	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 1000000000000000ull, digits(1000000000000000ull));
+	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 10000000000000000ull, digits(10000000000000000ull));
+	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 100000000000000000ull, digits(100000000000000000ul));
+	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 1000000000000000000ull, digits(1000000000000000000ull));
+	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 10000000000000000000ull, digits(10000000000000000000ull));
+}
+
 int main(int argc, char **argv) {
 	r_info("Running.\n");
-	test_bittrie();
+	//test_bittrie();
+	test_digits();
 	return R_SUCCESS;
 }
