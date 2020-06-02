@@ -13,7 +13,9 @@
 
 #include <stdbool.h>
 #include <limits.h>
+#include "asm.h"
 #include "platform.h"
+#include "error.h"
 
 
 /*
@@ -26,92 +28,67 @@
  */
 #define bitlen(array, elements) (sizeof(typeof(array)) * elements * CHAR_BIT)
 
+/*
+ * Truncates the given value by a specified number of bits and assumes the right-most bit is bit 0.
+ */
 #define truncate(value, bits) ( (value << (sizeof(typeof(value)) * CHAR_BIT - bits)) >> (sizeof(typeof(value)) * CHAR_BIT - bits) )
 
+static inline uword bitmask(register uword value, register uword bit_count) {
+
+}
+
 /*
- * Compute number of significant bits in the given word
+ * Compute the number of significant bits in the given word
  */
 static inline uword sigbits(register uword bit_string) {
 #if defined(__GNUC__)
-	#if DATA_MODEL == LLP64 || DATA_MODEL == SILP64
-		return __builtin_clzll(~(bit_string | 1ull));
+	#if DATA_MODEL == LLP64 || DATA_MODEL == ILP64 || DATA_MODEL == SILP64
+	r_info("LLP64 or ILP64 or SILP64");
+	return bitwidth(typeof(bit_string)) - __builtin_clzll((bit_string | 1ull));
+	#elif DATA_MODEL == LP64
+	return bitwidth(typeof(bit_string)) - __builtin_clzll((bit_string | 1ul));
+	#elif DATA_MODEL == ILP32 || DATA_MODEL == LP32
+	return bitwidth(typeof(bit_string)) - __builtin_clz((bit_string | 1u));
 	#else
-		return __builtin_clzl(~(bit_string | 1ul));
+		#error "Unsupported data model"
 	#endif
 #elif ARCH == ARCH_INTEL_X86
-	return __x86_lzcnt(~(((unsigned long) bit_string) | 1u));
+	// must check CPU compatibility first
+	return bitwidth(typeof(bit_string)) - __x86_lzcnt((((unsigned long) bit_string) | 1u));
 #elif ARCH == ARCH_AMD64
 	return __x64_bsrl((unsigned long long) bit_string);
 #elif ARCH == ARCH_ARM
 	#if ARCH_VARIANT == ARCH_ARM32
-		return __arm32_clz(~(((unsigned long) bit_string) | 1u));
+		return bitwidth(typeof(bit_string)) - __arm32_clz(~(((unsigned long) bit_string) | 1u));
 	#elif ARCH_VARIANT == ARCH_ARM64
-		return __arm64_clz(~(((unsigned long) bit_string) | 1u));
+		return bitwidth(typeof(bit_string)) - __arm64_clz(~(((unsigned long) bit_string) | 1u));
 	#else
 		#error "ARM variant not supported"
 	#endif
 #else
 	ubyte  k = 0;
 	if (bit_string > 0xFFFFFFFFu) { bit_string >>= 32; k  = 32; }
-    if (bit_string > 0x0000FFFFu) { bit_string >>= 16; k |= 16; }
-    if (bit_string > 0x000000FFu) { bit_string >>= 8;  k |= 8;  }
-    if (bit_string > 0x0000000Fu) { bit_string >>= 4;  k |= 4;  }
-    if (bit_string > 0x00000003u) { bit_string >>= 2;  k |= 2;  }
-    k |= (bit_string & 2u) >> 1u;
-    return k;
+	if (bit_string > 0x0000FFFFu) { bit_string >>= 16; k |= 16; }
+	if (bit_string > 0x000000FFu) { bit_string >>= 8;  k |= 8;  }
+	if (bit_string > 0x0000000Fu) { bit_string >>= 4;  k |= 4;  }
+	if (bit_string > 0x00000003u) { bit_string >>= 2;  k |= 2;  }
+	k |= (bit_string & 2u) >> 1u;
+	return k;
 #endif
 }
-
-static inline uword bitmask(register uword value, register uword bit_count) {
-	
-}
-static inline bool in_buffer(register uword const min, register uword const max, register uword const value);
 
 /*
  * Compute number of significant base 10 digits in a given base 2 word
  */
 static inline uword digits(register uword bit_string) {
-	// 64 5-bit values for the number of base 10 digits given the number of significant bits
-	static uword const table[(5u * bitwidth(uword) * MIN_BITS) / bitwidth(uword)] = {
-			595074420672366658ull,
-			1487649731220662338ull,
-			1338881125918357041ull,
-			10190338531011820577ull,
-			596218515170119284ull
-	};
-	
-	uword bits = bitwidth(uword);
-	uword bit_index = sigbits(bit_string) * 5u;
-	uword avalue_start = bit_index;
-	uword avalue_end = bit_index + 5u;
-	// start index
-	uword sindex = avalue_start / bits;
-	// end index
-	uword eindex = avalue_end / bits;
-	uword value_mask = 0x1Fu; // 5 bit bitmask
-	if (sindex != eindex) {
-		uword result = 0;
-		uword bit_pos = avalue_start % bitwidth(uword);
-		// read the bits from start index
-		uword sdiff = (bitwidth(uword) - 1u) - bit_pos; // bits out of 5 stored on this word
-		result |= (table[sindex] >> (bitwidth(uword) - 1u - sdiff)) & (value_mask >> sdiff);
-		// read the bits from end index
-		uword ediff = bit_pos; // bits out of 5 stored on this word
-		result |= (table[eindex] >> (bitwidth(uword) - 1u - ediff)) & (value_mask >> ediff);
-		return result;
-	} else {
-		uword value = table[sindex];
-		// shift bit position in the word
-		uword shift = avalue_start % bitwidth(uword);
-		// delta shift; value stored sequentially from left to right
-		uword dshift = (bitwidth(uword) - 1u) - (shift - 5u);
-		value >>= dshift;
-		return value & value_mask;
-	}
+	// can't include frac_math.h
+	bit_string = sigbits(bit_string) * 1000000000000ull;
+	bit_string = bit_string / 3321928094887ull;
+	return bit_string + 1;
 }
 
 /*
- * Compute number of significant bits in the given signed word.
+ * Compute the number of significant bits in the given signed word.
  */
 static inline uword sigbitss(word bit_string) {
 	return sigbits((uword) bit_string);
@@ -121,8 +98,8 @@ static inline uword sigbitss(word bit_string) {
  * Compute the number of significant bits in the given bit string.
  */
 static inline uword sigbitsn(uword *bit_string, size_t words) {
-	uword result = 0;
-	for(word i = (words - 1u); i >= 0u; i--) {
+	uword     result = 0;
+	for (word i      = (words - 1u); i >= 0u; i--) {
 		result += sigbits(bit_string[i]);
 	}
 	return result;
@@ -136,7 +113,7 @@ static inline uword pow2i(uword exponent) {
 }
 
 /*
- * Compute base to the power of exponent using bit math.
+ * Compute base to the power of exponent using integer bit math.
  */
 static inline uword powni(uword base, uword exponent) {
 	uword result = 1;
@@ -158,8 +135,18 @@ static inline uword log2i(register uword bit_string) {
 	return sigbits(bit_string) - 1ull;
 }
 
+/*
+ * Computes log base 10 the given bit string using integer bit math.
+ */
 static inline uword log10i(register uword bit_string) {
-	return 0;
+	return digits(bit_string) - 1ull;
+}
+
+/*
+ * Computes log_<base>(bit_string) with base as the base, and the given bit string using integer bit math.
+ */
+static inline uword logni(register uword base, register uword bit_string) {
+	return log10i(bit_string) / log10i(base);
 }
 
 /*
@@ -202,7 +189,8 @@ static inline bool in_buffer(register uword const min, register uword const max,
 static inline uword bin_index(register uword address) {
 	uword side = address & 1u;
 	address >>= 1u;
-	if (!address) return side;
+	if (!address)
+		return side;
 	uword address_bits = log2i(address);
 	// 2 * pow2i(address_bits) - 2u + address - side * pow2i(address_bits)
 	return address == 1 ? side : (2ull << address_bits) - 2u + address - side * (1ull << address_bits);
@@ -215,8 +203,8 @@ static inline uword get_bit(uword const *bitarray, uword const words, uword cons
 	if (!in_buffer(0, words, index))
 		r_fatalf(R_BUFFER_OVERFLOW, __func__, "index out of range: 0 <= index=%u < %u\n", index, words);
 	
-	uword word  = bitarray[index];
-	uword bit   = (word >> (bit_index % bits)) & ((uword) 1u);
+	uword word = bitarray[index];
+	uword bit  = (word >> (bit_index % bits)) & ((uword) 1u);
 	return bit;
 }
 
@@ -232,17 +220,16 @@ static inline uword *get_bits(uword const *bitarray, uword const words, uword co
 		r_fatalf(R_BUFFER_OVERFLOW, __func__, "end out of range: 0 <= end=%u < %u\n", end, words);
 	
 	for (uword i = start; i < end; i++) {
-	
 	}
 }
 
 static inline void set_bit(uword *bitarray, uword const words, uword const bit_offset, uword const value) {
-	uword bits = sizeof(uword) * sizeof(uintmin_t) * MIN_BITS;
+	uword bits  = sizeof(uword) * sizeof(uintmin_t) * MIN_BITS;
 	uword index = bit_offset / bits;
 	// guard
 	if (!in_buffer(0, words, index))
 		r_fatalf(R_BUFFER_OVERFLOW, __func__, "index out of range: 0 <= index=%u < %u\n", index, words);
-	uword word  = bitarray[index];
+	uword word = bitarray[index];
 	word ^= (word ^ ((value & ((uword) 1u)) << (bit_offset % bits))) & (((uword) 1u) << (bit_offset % bits));
 	bitarray[index] = word;
 }
