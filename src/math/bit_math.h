@@ -21,20 +21,33 @@
 /*
  * Gets the minimum number of bits required to represent the given type on the native architecture
  */
-#define bitwidth(Type) (sizeof(Type) * CHAR_BIT)
+#define bitwidth(Type) (sizeof(Type) * MIN_BITS)
 
 /*
  * Gets the number of bits for a given array
  */
-#define bitlen(array, elements) (sizeof(typeof(array)) * elements * CHAR_BIT)
+#define bitlen(array, elements) (sizeof(typeof(array)) * elements * MIN_BITS)
 
 /*
  * Truncates the given value by a specified number of bits and assumes the right-most bit is bit 0.
  */
-#define truncate(value, bits) ( (value << (sizeof(typeof(value)) * CHAR_BIT - bits)) >> (sizeof(typeof(value)) * CHAR_BIT - bits) )
+#define truncate(value, bits) ( (value << (sizeof(typeof(value)) * MIN_BITS - bits)) >> (sizeof(typeof(value)) * MIN_BITS - bits) )
 
-static inline uword bitmask(register uword value, register uword bit_count) {
+/*
+ * Generates a bit mask from the given value that sets bit_count bits from the right to ones.
+ */
+static inline uword bitmaskv(register uword value, register uword bit_count) {
+	return truncate(~value, bit_count) ^ value;
+}
 
+static inline uword sigbits(uword);
+/*
+ * Generates a bitmask from the given value that sets all significant bits to ones.
+ *
+ * Exactly equivalent to `bitmaskv(value, sigbits(value));`
+ */
+static inline uword bitmask(register uword value) {
+	return bitmaskv(value, sigbits(value));
 }
 
 /*
