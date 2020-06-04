@@ -1,5 +1,6 @@
 /*
- * File: symbol
+ * Module: permutation
+ * File: permutation.h
  * Created:
  * February 25, 2020
  * Author: Andrew Porter [<caritasdedeus@gmail.com>](mailto:caritasdedeus@gmail.com)
@@ -14,11 +15,11 @@
 #include <stdio.h>
 #include <math.h>
 
-#include "bit_trie.h"
+#include "binary_trie.h"
 
 typedef struct permutation {
 	struct permutation *nodes;
-	//binary_trie    *map;
+	binary_trie        *map;
 } permutation;
 
 permutation p_read(FILE *in);
