@@ -9,6 +9,11 @@
 #define INCLUDE_PLATFORM_H_
 
 #include <stddef.h>
+#include <limits.h>
+#include <stdint.h>
+
+#include "../error.h"
+
 
 /*
  * VARIABLES:
@@ -16,6 +21,7 @@
  * ENVIRONMENT: the value representing the current environment which is the name of a wrapper API such as Cygwin, MinGW,
  * ENVIRONMENT_NAME
  * ENVIRONMENT_NAME_LENGTH
+ * ENVIRONMENT_NAME_LENGTH_MAX
  * ENVIRONMENT_VARIANT
  *
  * PLATFORM
@@ -24,10 +30,17 @@
  * PLATFORM_NAME_LENGTH_MAX
  * PLATFORM_VARIANT
  *
- * ARCHITECTURE
- * ARCHITECTURE_NAME
- * ARCHITECTURE_NAME_LENGTH
- * ARCHITECTURE_VARIANT
+ * ARCH
+ * ARCH_NAME
+ * ARCH_NAME_LENGTH
+ * ARCH_NAME_LENGTH_MAX
+ * ARCH_VARIANT
+ *
+ * DATA_MODEL
+ * DATA_MODEL_NAME
+ * DATA_MODEL_NAME_LENGTH
+ * DATA_MODEL_NAME_LENGTH_MAX
+ * DATA_MODEL_VARIANT
  *
  */
 /* platforms */
@@ -110,6 +123,8 @@
 // based on 0.1% percentile of word length distribution for English (16 * 4 = 64 characters)
 // source: <http://www.ravi.io/language-word-lengths>
 #define PLATFORM_NAME_LENGTH_MAX 64
+#define ENVIRONMENT_NAME_LENGTH_MAX 64
+#define ARCH_NAME_LENGTH_MAX 64
 
 
 /******************************************PLATFORMS******************************************/
@@ -753,7 +768,7 @@
 
 /***********************************************************************************************************************
  *                                                COMPILER DEFINITIONS
- ***********************************************************************************************************************/
+ **********************************************************************************************************************/
 
 #if defined(_ACC_)
 	#define COMPILER C_ACC
@@ -1092,63 +1107,434 @@
 	#define COMPILER_NAME_LENGTH sizeof(COMPILER_NAME)
 #endif
 
-#include <limits.h>
-/* generic word information */
+
+/***********************************************************************************************************************
+ * 													ARCHITECTURE VARIABLES
+ **********************************************************************************************************************/
+
+#define ARCH_INTEL_X86         1
+#define ARCH_X86_64            2
+#define ARCH_AMD64 X86_64
+#define ARCH_ARM64             3
+#define ARCH_ARM32             4
+#define ARCH_ARM               5
+#define ARCH_INTEL_ITANIUM     6
+#define ARCH_IA_64 ARCH_INTEL_ITANIUM
+#define ARCH_POWERPC           7
+#define ARCH_MIPS              8
+#define ARCH_MIPS_R3000        9
+#define ARCH_MIPS_R4000        10
+#define ARCH_MIPS_R5900        11
+#define ARCH_HPPA_RISC         12
+#define ARCH_ALPHA             13
+#define ARCH_CONVEX            14
+#define ARCH_EPIPHANY          15
+#define ARCH_BLACKFIN          16
+#define ARCH_SPARC             17
+#define ARCH_SYSTEMZ           18
+#define ARCH_SUPERH            19
+#define ARCH_SUPERH1           20
+#define ARCH_SUPERH2           21
+#define ARCH_SUPERH3           22
+#define ARCH_SUPERH4           23
+#define ARCH_SUPERH5           24
+#define ARCH_RS6000            25
+#define ARCH_RS6000_PWR        26
+#define ARCH_RS6000_PWR2       27
+#define ARCH_RS6000_PWR3       28
+#define ARCH_RS6000_PWR4       29
+#define ARCH_MOTOROLA_68000    30
+#define ARCH_MOTOROLA_68010    31
+#define ARCH_MOTOROLA_68020    32
+#define ARCH_MOTOROLA_68030    33
+#define ARCH_MOTOROLA_68040    34
+#define ARCH_MOTOROLA_68060    35
+#define ARCH_TMS320            36
+#define ARCH_TMS320_C2800      37
+#define ARCH_TMS320_C5400      38
+#define ARCH_TMS320_C5500      39
+#define ARCH_TMS320_C6200      40
+#define ARCH_TMS320_C6400      41
+#define ARCH_TMS320_C6400_PLUS 42
+#define ARCH_TMS320_C6600      43
+#define ARCH_TMS320_C6700      44
+#define ARCH_TMS320_C6700_PLUS 45
+#define ARCH_TMS320_C6740      46
+#define ARCH_TMS470            47
+#define ARCH_PYRAMID_9810      48
+#define ARCH_RISCV             49
+#define ARCH_OPTUMUS           50
+
+
+
+/***********************************************************************************************************************
+ * 													ARCHITECTURE DEFINITIONS
+ **********************************************************************************************************************/
+
+
+#if defined(i386) || defined(__i386) || defined(__i386__) || defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__)
+	#define ARCHITECTURE ARCH_INTEL_X86
+	#define ARCHITECTURE_NAME "Intel x86"
+#endif
+
+#if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64) || defined(_M_AMD64)
+	#define ARCH ARCH_AMD64
+#endif
+
+#if defined (__arm__) || defined(__thumb__) || defined(__TARGET_ARCH_ARM) || defined(__TARGET_ARCH_THUMB) || defined(_ARM) || defined(_M_ARM) || defined(_M_ARMT) || defined(__arm)
+	#define ARCHITECTURE ARCH_ARM
+	#define ARCHITECTURE_VARIANT ARCH_ARM32
+	#define ARCHITECTURE_NAME "ARM"
+#endif
+
+#if defined(__aarch64__)
+	#define ARCHITECTURE ARCH_ARM
+	#define ARCHITECTURE_VARIANT ARCH_ARM64
+	#define ARCHITECTURE_NAME "ARM64"
+#endif
+
+#if defined(__ia64__) || defined(_IA64) || defined(__IA64__) || defined(__ia64) || defined(_M_IA64) || defined (__itanium__)
+	#define ARCHITECTURE ARCH_IA_64
+	#define ARCHITECTURE_NAME "Intel Itanium"
+#endif
+
+#if defined(__powerpc) || defined(__powerpc__) || defined(__powerpc64__) || defined(__POWERPC__) || defined(__ppc__) || defined(__ppc64__) || defined(__PPC__) || defined(__PPC64__) || defined(_ARCH_PPC) || defined(_ARCH_PPC64) || defined(_M_PPC) || defined(__PCGECKO__) || defined(__PPCBROADWAY__) || defined(_XENON) || defined(__ppc)
+	#define ARCHITECTURE ARCH_POWERPC
+	#define ARCHITECTURE_NAME "PowerPC"
+#endif
+
+#if defined(__mips__) || defined(mips) || defined(_MIPS_ISA) || defined(__mips) || defined(__MIPS__)
+	#define ARCHITECTURE ARCH_MIPS
+	#if defined(_R3000)
+		#define ARCHITECTURE_VARIANT ARCH_MIPS_R3000
+		#define ARCHITECTURE_NAME "MIPS R3000"
+	#elif defined(_R4000)
+		#define ARCHITECTURE_VARIANT ARCH_MIPS_R4000
+		#define ARCHITECTURE_NAME "MIPS R4000"
+	#elif defined(_R5900)
+		#define ARCHITECTURE_VARIANT ARCH_MIPS_R5900
+		#define ARCHITECTURE_NAME "MIPS R5900"
+	#endif
+	#ifndef ARCHITECTURE_NAME
+		#define ARCHITECTURE_NAME "MIPS"
+	#endif
+#endif
+
+#if defined(__hppa__) || defined(__HPPA__) || defined(__hppa)
+	#define ARCHITECTURE ARCH_HPPA_RISC
+	#define ARCHITECTURE_NAME "HP/PA RISC"
+#endif
+
+#if defined(__alpha__) || defined(__alpha) || defined(_M_ALPHA)
+	#define ARCHITECTURE ARCH_ALPHA
+	#define ARCHITECTURE_NAME "Alpha"
+#endif
+
+#if defined(__convex__)
+	#define ARCHITECTURE ARCH_CONVEX
+	#define ARCHITECTURE_NAME "Convex"
+#endif
+
+#if defined(__epiphany__)
+	#define ARCHITECTURE ARCH_EPIPHANY
+	#define ARCHITECTURE_NAME "Epiphany"
+#endif
+
+#if defined (__bfin) || defined(__BFIN__)
+	#define ARCHITECTURE ARCH_BLACKFIN
+	#define ARCHITECTURE_NAME "Blackfin"
+#endif
+
+#if defined(__sparc__) || defined(__sparc)
+	#define ARCHITECTURE ARCH_SPARC
+	#if defined(__sparc_v8__) || defined(__sparcv8)
+		#define ARCHITECTURE_VARIANT ARCH_SPARC_V8
+		#defien ARCHITECTURE_NAME "SPARC v8"
+	#elif defined(__sparc_v9__) || defined(__sparcv9)
+		#define ARCHITECTURE_VARIANT ARCH_SPARC_V9
+		#define ARCHITECTURE_NAME "SPARC v9"
+	#endif
+	#ifndef ARCHITECTURE_NAME
+		#define ARCHITECTURE_NAME "SPARC"
+	#endif
+#endif
+
+#if defined(__370__) || defined(__THW_370__) || defined(__s390__) || defined(__s390x__) || defined(__zarch__) || defined(__SYSC_ZARCH__)
+	#define ARCHITECTURE ARCH_SYSTEMZ
+	#define ARCHITECTURE_NAME "SystemZ"
+#endif
+
+#if defined(__sh__)
+	#define ARCHITECTURE ARCH_SUPERH
+	#if defined(__sh1__)
+		#define ARCHITECTURE_VARIANT ARCH_SUPERH1
+		#define ARCHITECTURE_NAME "SuperH v1"
+	#elif defined(__sh2__)
+		#define ARCHITECTURE_VARIANT ARCH_SUPERH2
+		#define ARCHITECTURE_NAME "SuperH v2"
+	#elif defined(__sh3__) || defined(__SH3__)
+		#define ARCHITECTURE_VARIANT ARCH_SUPERH3
+		#define ARCHITECTURE_NAME "SuperH v3"
+	#elif defined(__SH4__)
+		#define ARCHITECTURE_VARIANT ARCH_SUPERH4
+		#define ARCHITECTURE_NAME "SuperH v4"
+	#elif defined(__SH5__)
+		#define ARCHITECTURE_VARIANT ARCH_SUPERH5
+		#define ARCHITECTURE_NAME "SuperH v5"
+	#endif
+
+	#ifndef ARCHITECTURE_NAME
+		#define ARCHITECTURE_NAME "SuperH"
+	#endif
+#endif
+
+#if defined(__THW_RS6000) || defined(_IBMR2) || defined(_POWER) || defined(_ARCH_PWR) || defined(_ARCH_PWR2) || defined(_ARCH_PWR3) || defined(_ARCH_PWR4)
+	#define ARCHITECTURE ARCH_RS6000
+	#if defined(_ARCH_PWR)
+		#define ARCHITECTURE_VARIANT ARCH_RS6000_PWR
+		#define ARCHITECTURE_NAME "RS/6000 Power 1"
+	#elif defined(_ARCH_PWR2)
+		#define ARCHITECTURE_VARIANT ARCH_RS6000_PWR2
+		#define ARCHITECTURE_NAME "RS/6000 Power 2"
+	#elif defined(_ARCH_PWR3)
+		#define ARCHITECTURE_VARIANT ARCH_RS6000_PWR3
+		#define ARCHITECTURE_NAME "RS/6000 Power 3"
+	#elif defined(_ARCH_PWR4)
+		#define ARCHITECTURE_VARIANT ARCH_RS6000_PWR4
+		#define ARCHITECTURE_NAME "RS/6000 Power 4"
+	#endif
+	#ifndef ARCHITECTURE_NAME
+		#define ARCHITECTURE_NAME "RS/6000"
+	#endif
+#endif
+
+#if defined(__m68k__) || defined(M68000)
+	#define ARCHITECTURE ARCH_MOTOROLA_68000
+	#if defined(__mc68010__)
+		#define ARCHITECTURE_VARIANT ARCH_MOTOROLA_68010
+		#define ARCHITECTURE_NAME "Motorola 68010"
+	#elif defined(__mc68020__) || defined(__MC68020__)
+		#define ARCHITECTURE_VARIANT ARCH_MOTOROLA_68020
+		#define ARCHITECTURE_NAME "Motorola 68020"
+	#elif defined(__mc68030__) || defined(__MC68030__)
+		#define ARCHITECTURE_VARIANT ARCH_MOTOROLA_68030
+		#define ARCHITECTURE_NAME "Motorola 68030"
+	#elif defined(__mc68040__)
+		#define ARCHITECTURE_VARIANT ARCH_MOTOROLA_68040
+		#define ARCHITECTURE_NAME "Motorola 68040"
+	#elif defined(__mc68050__)
+		#define ARCHITECTURE_VARIANT ARCH_MOTOROLA_68060
+		#define ARCHITECTURE_NAME "Motorola 68060"
+	#endif
+	#ifndef ARCHITECTURE_NAME
+		#define ARCHITECTURE_NAME "Motorola 68000"
+	#endif
+#endif
+
+#if defined(_TMS320C2XX) || defined(__TMS320C2000__) || defined(_TMS320C5X) || defined(__TMS320C55X__) || defined(_TMS320C6X) || defined(__TMS320C6X__)
+	#define ARCHITECTURE ARCH_TMS320
+	#if defined(_TMS320C28X)
+		#define ARCHITECTURE_VARIANT ARCH_TMS320_C2800
+		#define ARCHITECTURE_NAME "TMS320 C2800"
+	#elif defined(_TMS320C5XX)
+		#define ARCHITECTURE_VARIANT ARCH_TMS320_C5400
+		#define ARCHITECTURE_NAME "TMS320 C5400"
+	#elif defined(__TMS320C55X__)
+		#define ARCHITECTURE_VARIANT ARCH_TMS320_C5500
+		#define ARCHITECTURE_NAME "TMS320 C5500"
+	#elif defined(_TMS320C6200)
+		#define ARCHITECTURE_VARIANT ARCH_TMS320_C6200
+		#define ARCHITECTURE_NAME "TMS320 C6200"
+	#elif defined(_TMS320C6400)
+		#define ARCHITECTURE_VARIANT ARCH_TMS320_C6400
+		#define ARCHITECTURE_NAME "TMS320 C6400"
+	#elif defined(_TMS320C6400_PLUS)
+		#define ARCHITECTURE_VARIANT ARCH_TMS320_C6400_PLUS
+		#define ARCHITECTURE_NAME "TMS320 C6400+"
+	#elif defined(_TMS320C6600)
+		#define ARCHITECTURE_VARIANT ARCH_TMS320_C6600
+		#define ARCHITECTURE_NAME "TMS320 C6600"
+	#elif defined(_TMS320C6700)
+		#define ARCHITECTURE_VARIANT ARCH_TMS320_C6700
+		#define ARCHITECTURE_NAME "TMS320 C6700"
+	#elif defined(_TMS320C6700_PLUS)
+		#define ARCHITECTURE_VARIANT ARCH_TMS320_C6700_PLUS
+		#define ARCHITECTURE_NAME "TMS320 C6700+"
+	#elif defined(_TMS320C6740)
+		#define ARCHITECTURE_VARIANT ARCH_TMS320_C6740
+		#define ARCHITECTURE_NAME "TMS320 C6740"
+	#endif
+	#ifndef ARCHITECTURE_NAME
+		#define ARCHITECTURE_NAME "TMS320 C????"
+	#endif
+#endif
+
+#if defined(__TMS470__)
+	#define ARCHITECTURE ARCH_TMS470
+	#define ARCHITECTURE_NAME "TMS470"
+#endif
+
+#if defined(pyr) || defined(__pyr) || defined(__pyr__)
+	#define ARCHITECTURE ARCH_PYRAMID_9810
+	#define ARCHITECTURE_NAME "Pyramid 9810"
+#endif
+
+// RISC-V detection
+#if defined(riscv) || defined(__riscv) || defined(__riscv__)
+	#define ARCHITECTURE ARCH_RISCV
+	#define ARCHITECTURE_NAME "RISC-V"
+#endif
+
+// our abstract universal ISA
+#if defined(__optumus) || defined(__optumus__) || defined(__OPTUMUS) || defined(__OPTUMUS__)
+	#define ARCHITECTURE ARCH_OPTUMUS
+	#define ARCHITECTURE_NAME "Optumus"
+#endif
+
+#ifndef ARCH_VARIANT
+	#define ARCH_VARIANT ARCH
+#endif
+
+#define ARCH_NAME_LENGTH sizeof(ARCHITECTURE_NAME)
+
+/***********************************************************************************************************************
+ * 													DATA MODEL VARIABLES
+ **********************************************************************************************************************/
+
+#define LP32 1
+#define ILP32 2
+#define LP64 3
+#define LLP64 4
+#define ILP64 5
+#define SILP64 6
+#define M_OPTUMUS 7
+
+
+/***********************************************************************************************************************
+ * 													DATA MODEL DEFINITIONS
+ **********************************************************************************************************************/
+
+#if defined(_ILP32) || defined(__ILP32__)
+	#define DATA_MODEL ILP32
+	#define DATA_MODEL_NAME "ILP32"
+#endif
+
+#if defined(_LP64) || defined(__LP64__)
+	#define DATA_MODEL LP64
+	#define DATA_MODEL_NAME "LP64"
+#endif
+
+#if defined(_LP32) || defined(__LP32__)
+	#define DATA_MODEL LP32
+	#define DATA_MODEL_NAME "LP32"
+#endif
+
+#if defined(_LLP64) || defined(__LLP64__)
+	#define DATA_MODEL LLP64
+	#define DATA_MODEL_NAME "LLP64"
+#endif
+
+#if defined(_ILP64) || defined(__ILP64__)
+	#define DATA_MODEL ILP64
+	#define DATA_MODEL_NAME "ILP64"
+#endif
+
+#if defined(_SILP64) || defined (__SILP64__)
+	#define DATA_MODEL SILP64
+	#define DATA_MODEL_NAME "SILP64"
+#endif
+
+#if defined(_OPTUMUS) || defined (__OPTUMUS__) || defined(_optumus) || defined(__optumus__)
+	#define DATA_MODEL M_OPTUMUS
+	#define DATA_MODEL_NAME "Optumus"
+#endif
+
+#ifndef DATA_MODEL
+	// make default data model LP64
+	#define DATA_MODEL LP64
+#endif
+
+#ifndef DATA_MODEL_VARIANT
+	#define DATA_MODEL_VARIANT DATA_MODEL
+#endif
+
+#ifndef DATA_MODEL_NAME_LENGTH
+	#define DATA_MODEL_NAME_LENGTH sizeof(DATA_MODEL_NAME)
+#endif
+
+/* general word information */
 // uword: an unsigned word; has the same number of bits as the native architecture's word
-typedef uintptr_t uword;
 // word: a signed word; has the same number of bits as the native architecture's word
-typedef intptr_t word;
 // uintmin_t: unsigned word with number of bits less than or equal to uword which represents the smallest natively
 // supported bit string and is a multiple of the number of bits in uword.
-typedef unsigned char uintmin_t;
+// intmin_t: signed word with number of bits less than or equal to uword which represents the smallest natively
+// supported bit string and is a multiple of the number of bits in uword.
+// ubyte: an unsigned char containing 8 bits. Guaranteed same size as uint8_t
+// sbyte: a signed char containing 8 bits. Guaranteed same size as int8_t
 // udevptr_t: a uword containing a hardware address to a hardware device (implementation dependent), for example: to PCI,
 // SATA, SCSI, network, virtual (software) device, etc.
-typedef uword udevptr_t;
+
+#if DATA_MODEL == ILP32
+#elif DATA_MODEL == LP64
+#elif DATA_MODEL == LP32
+#elif DATA_MODEL == LLP64
+#elif DATA_MODEL == ILP64
+#elif DATA_MODEL == SILP64
+#elif DATA_MODEL == M_OPTUMUS
+#else
+#endif
+
+// independent types
+typedef uintptr_t     uword;
+typedef intptr_t      word;
+typedef unsigned char ubyte;
+typedef signed char   sbyte;
+typedef unsigned char uintmin_t;
+typedef signed char   intmin_t;
+typedef uintmax_t     udevptr_t;
+typedef uintmax_t     devptr_t;
 
 // common pair struct
 typedef struct uword_pair {
 	uword a;
 	uword b;
-} pair;
+}                     pair;
 
 #define MIN_BITS CHAR_BIT
 
 /* generic platform functions */
 
-#include "../error.h"
-#include <stdint.h>
-
 struct p_result {
 	union {
 		void *value;
-
+		
 		void (*function)();
 	} content;
-
+	
 	enum result_code code;
 };
 
 // currently unused
 typedef enum device_type {
 	PHYSICAL, LOGICAL
-} device_type;
+}                     device_type;
 
 // currently unused
 typedef struct p_device {
 	// the unique identifier for this device
-	uintmax_t        uid;
+	uintmax_t   uid;
 	// the device name string
-	char             *name;
+	char        *name;
 	// the platform-dependent interface module name of this device, commonly called the device driver
 	// may otherwise be a logical interface, a.k.a. virtual device driver.
 	// To be used with p_get_fn's module parameter
-	char             *interface_module;
-	enum device_type type;
-} p_device;
+	char        *interface_module;
+	device_type type;
+}                     p_device;
 
 typedef enum p_time_resolution {
 	CYCLES, NANOSECONDS, MICROSECONDS, MILLISECONDS, SECONDS,
-} p_time_resolution;
+}                     p_time_resolution;
 
 /*
  * # `char *p_get_platform();`
