@@ -39,7 +39,7 @@
 static inline uword bitmaskv(register uword value, register uword bit_count) {
 	return truncate(~value, bit_count) ^ value;
 }
-
+// maintain grouping of functions
 static inline uword sigbits(uword);
 /*
  * Generates a bitmask from the given value that sets all significant bits to ones.
