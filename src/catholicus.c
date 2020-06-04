@@ -73,9 +73,14 @@ static void test_digits() {
 	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 10000000000000000000ull, digits(10000000000000000000ull));
 }
 
+static void test_bintrie() {
+
+}
+
 int main(int argc, char **argv) {
 	r_info("Running.\n");
 	//test_bittrie();
-	test_digits();
+	//test_digits();
+	test_bintrie();
 	return R_SUCCESS;
 }
