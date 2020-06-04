@@ -12,7 +12,7 @@
 #include "error.h"
 
 
-static char **cth_result_messages = (char *[])
+static char *cth_result_messages[] =
 		{
 				"SUCCESS",
 				"FAILURE",
