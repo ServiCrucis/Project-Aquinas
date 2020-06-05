@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(Catholicus)
+project(Project-Aquinas)
 set(CMAKE_MODULE_PATH ./build/)
 set(PROJECT_SOURCE_DIR ./src/)
 # compiler flags
