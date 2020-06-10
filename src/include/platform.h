@@ -1450,7 +1450,7 @@
 #endif
 
 #ifndef DATA_MODEL
-	// make default data model LP64
+// make default data model LP64
 	#define DATA_MODEL LP64
 #endif
 
@@ -1485,6 +1485,8 @@
 #endif
 
 // independent types
+typedef uintmax_t     usuperword;
+typedef intmax_t      superword;
 typedef uintptr_t     uword;
 typedef intptr_t      word;
 typedef unsigned char ubyte;
