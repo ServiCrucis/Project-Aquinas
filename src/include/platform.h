@@ -1463,6 +1463,8 @@
 #endif
 
 /* general word information */
+// usuperword: guaranteed to be at least twice the number of bits as uword
+// superword: guaranteed to be at least twice the number of bits as word
 // uword: an unsigned word; has the same number of bits as the native architecture's word
 // word: a signed word; has the same number of bits as the native architecture's word
 // uintmin_t: unsigned word with number of bits less than or equal to uword which represents the smallest natively
@@ -1474,33 +1476,50 @@
 // udevptr_t: a uword containing a hardware address to a hardware device (implementation dependent), for example: to PCI,
 // SATA, SCSI, network, virtual (software) device, etc.
 
-#if DATA_MODEL == ILP32
-#elif DATA_MODEL == LP64
-#elif DATA_MODEL == LP32
-#elif DATA_MODEL == LLP64
-#elif DATA_MODEL == ILP64
-#elif DATA_MODEL == SILP64
-#elif DATA_MODEL == M_OPTUMUS
-#else
-#endif
-
 // independent types
-typedef uintmax_t     usuperword;
-typedef intmax_t      superword;
+//typedef uintmax_t     usuperword;
+//typedef intmax_t      superword;
 typedef uintptr_t     uword;
 typedef intptr_t      word;
 typedef unsigned char ubyte;
 typedef signed char   sbyte;
 typedef unsigned char uintmin_t;
 typedef signed char   intmin_t;
-typedef uintmax_t     udevptr_t;
-typedef uintmax_t     devptr_t;
+
+// data-model-specific types
+#if DATA_MODEL == ILP32
+typedef uint64_t usuperword;
+typedef int64_t superword;
+#elif DATA_MODEL == LP64
+typedef unsigned __int128 usuperword;
+typedef signed __int128   superword;
+#elif DATA_MODEL == LP32
+typedef uint64_t usuperword;
+typedef int64_t  superword;
+#elif DATA_MODEL == LLP64
+typedef unsigned __int128 usuperword;
+typedef signed __int128   superword;
+#elif DATA_MODEL == ILP64
+typedef unsigned __int128 usuperword;
+typedef signed __int128   superword;
+#elif DATA_MODEL == SILP64
+typedef unsigned __int128 usuperword;
+typedef signed __int128   superword;
+#elif DATA_MODEL == M_OPTUMUS
+typedef unsigned bool usuperword[2];
+typedef signed bool   superword[2];
+#else
+#endif
+
+// device pointer types should be twice the native word size in bits
+typedef usuperword     udevptr_t;
+typedef superword     devptr_t;
 
 // common pair struct
 typedef struct uword_pair {
 	uword a;
 	uword b;
-}                     pair;
+}                         pair;
 
 #define MIN_BITS CHAR_BIT
 
@@ -1519,7 +1538,7 @@ struct p_result {
 // currently unused
 typedef enum device_type {
 	PHYSICAL, LOGICAL
-}                     device_type;
+}                         device_type;
 
 // currently unused
 typedef struct p_device {
@@ -1532,11 +1551,11 @@ typedef struct p_device {
 	// To be used with p_get_fn's module parameter
 	char        *interface_module;
 	device_type type;
-}                     p_device;
+}                         p_device;
 
 typedef enum p_time_resolution {
 	CYCLES, NANOSECONDS, MICROSECONDS, MILLISECONDS, SECONDS,
-}                     p_time_resolution;
+}                         p_time_resolution;
 
 /*
  * # `char *p_get_platform();`
