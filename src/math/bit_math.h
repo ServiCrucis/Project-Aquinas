@@ -100,6 +100,10 @@ static inline uword digits(register uword bit_string) {
 	return bit_string + 1;
 }
 
+static inline uword lerp(uword lower_bound, uword upper_bound, uword x) {
+	return lower_bound + x * (upper_bound - lower_bound);
+}
+
 /*
  * Compute the number of significant bits in the given signed word.
  */
