@@ -1,14 +1,8 @@
-This license inherits from PARENT-LICENSE.txt.
+License for Project Aquinas. ("License")
 
-1. This is a Public Work.
+This file and its contents are governed by Codex Creativus et Privatus
+<https://github.com/MilitiaJustitiae/Licenses/blob/master/CODEX-CREATIVUS-ET-PRIVATUS.txt>
 
-2. You may view these files.
+ADDENDUM & OVERRIDES
+1. This License shall for the time being apply to the complete contents of this Project and sub-projects.
 
-3. You may distribute these files.
-
-4. You may modify the original files to create unique derivatives of these files without limitation.
-
-5. You may modify the original files themselves with approval from the creator(s) of these files (see CREDITS.txt).
-
-Note: this license is a work in progress for the project "Catholicus", and is subject to change.
-For permission or clarification, please email <caritasdedeus@gmail.com> addressed to the creator(s) of these files (see CREDITS.txt).
