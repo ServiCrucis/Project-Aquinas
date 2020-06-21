@@ -1,10 +1,10 @@
 /*
  ============================================================================
- Name        : catholicus.c
- Author      : Andrew Thomas Porter (AMDG)
+ Name        : aquinas.c
+ Author      : Andrew Porter (AMDG)
  Version     : 1.0
  Copyright   : See LICENSE.txt
- Description : Catholicus language compiler
+ Description : Project Aquinas Meta-compiler
  ============================================================================
  */
 #include <stdio.h>
@@ -129,6 +129,8 @@ int main(int argc, char **argv) {
 	r_info("Running.\n");
 	//test_bittrie();
 	//test_digits();
-	test_bintrie();
+	//test_sort();
+	//test_binsearch();
+	//test_dynhashtrie();
 	return R_SUCCESS;
 }

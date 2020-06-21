@@ -8,8 +8,8 @@
  * Copyright &copy; 2020 Christi Crucifixi, LLC. All rights reserved.
  */
 
-#ifndef CATHOLICUS_BINARY_TRIE_H
-#define CATHOLICUS_BINARY_TRIE_H
+#ifndef PROJECT_AQUINAS_BINARY_TRIE_H
+#define PROJECT_AQUINAS_BINARY_TRIE_H
 
 #include "platform.h"
 #include "bit_math.h"

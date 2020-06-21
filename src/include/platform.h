@@ -5,8 +5,8 @@
  * description:
  */
 
-#ifndef INCLUDE_PLATFORM_H_
-#define INCLUDE_PLATFORM_H_
+#ifndef PROJECT_AQUINAS_INCLUDE_PLATFORM_H
+#define PROJECT_AQUINAS_INCLUDE_PLATFORM_H
 
 #include <stddef.h>
 #include <limits.h>
@@ -1653,4 +1653,4 @@ uint64_t p_get_timestamp();
 
 // struct p_device p_get_device();
 
-#endif /* INCLUDE_PLATFORM_H_ */
+#endif /* PROJECT_AQUINAS_INCLUDE_PLATFORM_H */

@@ -8,8 +8,8 @@
  * Copyright &copy; 2020 Christi Crucifixi, LLC. All rights reserved.
  */
 
-#ifndef CATHOLICUS_BIT_TRIE_H
-#define CATHOLICUS_BIT_TRIE_H
+#ifndef PROJECT_AQUINAS_BIT_TRIE_H
+#define PROJECT_AQUINAS_BIT_TRIE_H
 
 #include <stdint.h>
 
@@ -32,4 +32,4 @@ bit_trie *btt_create(pair const *pairs, uword depth, uword length);
 
 void btt_free(bit_trie *trie);
 
-#endif //CATHOLICUS_BIT_TRIE_H
+#endif //PROJECT_AQUINAS_BIT_TRIE_H

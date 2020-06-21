@@ -11,8 +11,8 @@
 #include <stdint.h>
 #include "error.h"
 
-#ifndef MEMORY_H_
-#define MEMORY_H_
+#ifndef PROJECT_AQUINAS_MEMORY_H
+#define PROJECT_AQUINAS_MEMORY_H
 
 typedef enum cache {
 	L1 = 0,
@@ -122,4 +122,4 @@ size_t m_get_caches();
 
 size_t m_get_cache_sectors(enum cache cache);
 
-#endif /* MEMORY_H_ */
+#endif /* PROJECT_AQUINAS_MEMORY_H */

@@ -8,8 +8,8 @@
  * Copyright &copy; 2020 Christi Crucifixi, LLC. All rights reserved.
  */
 
-#ifndef CATHOLICUS_BIT_MATH_H
-#define CATHOLICUS_BIT_MATH_H
+#ifndef PROJECT_AQUINAS_BIT_MATH_H
+#define PROJECT_AQUINAS_BIT_MATH_H
 
 #include <stdbool.h>
 #include <limits.h>
@@ -39,8 +39,10 @@
 static inline uword bitmaskv(register uword value, register uword bit_count) {
 	return truncate(~value, bit_count) ^ value;
 }
+
 // maintain grouping of functions
 static inline uword sigbits(uword);
+
 /*
  * Generates a bitmask from the given value that sets all significant bits to ones.
  *
@@ -213,7 +215,7 @@ static inline uword bin_index(register uword address) {
 	return address == 1 ? side : (2ull << address_bits) - 2u + address - side * (1ull << address_bits);
 }
 
-static inline uword get_bit(uword const *bitarray, uword const words, uword const bit_index) {
+static inline uword get_bit(uword const *restrict bitarray, uword const words, uword const bit_index) {
 	uword bits = sizeof(uword) * sizeof(uintmin_t) * MIN_BITS;
 	
 	uword index = bit_index / bits;
@@ -225,7 +227,8 @@ static inline uword get_bit(uword const *bitarray, uword const words, uword cons
 	return bit;
 }
 
-static inline uword *get_bits(uword const *bitarray, uword const words, uword const bit_index, uword const value_bits) {
+static inline uword *get_bits(uword const *restrict bitarray, uword const words, uword const bit_index, uword const value_bits) {
+	// TODO implement get_bits
 	uword bits = sizeof(uword) * sizeof(uintmin_t) * MIN_BITS;
 	
 	uword start = bit_index / bits;
@@ -240,7 +243,7 @@ static inline uword *get_bits(uword const *bitarray, uword const words, uword co
 	}
 }
 
-static inline void set_bit(uword *bitarray, uword const words, uword const bit_offset, uword const value) {
+static inline void set_bit(uword *restrict bitarray, uword const words, uword const bit_offset, uword const value) {
 	uword bits  = sizeof(uword) * sizeof(uintmin_t) * MIN_BITS;
 	uword index = bit_offset / bits;
 	// guard

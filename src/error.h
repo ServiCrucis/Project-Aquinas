@@ -7,8 +7,8 @@
  *
  * Copyright &copy; 2019 Christi Crucifixi, LLC. All rights reserved.
  */
-#ifndef DEBUG_H_
-#define DEBUG_H_
+#ifndef PROJECT_AQUINAS_DEBUG_H
+#define PROJECT_AQUINAS_DEBUG_H
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -51,4 +51,4 @@ void r_warnf(enum result_code const code, char const *fn_name, char const *warni
 
 void r_fatalf(enum result_code const code, char const *fn_name, char const *error_message, ...);
 
-#endif /* DEBUG_H_ */
+#endif /* PROJECT_AQUINAS_DEBUG_H */

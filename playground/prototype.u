@@ -62,91 +62,40 @@
 *     7. Assume all code is verbatim: what you see is what you get. There are no true high-level abstractions in this
 *       language. What abstractions that are present are for reducing boilerplate and improving readability while
 *       reducing noise and increasing productivity of the programmer, and the performance of the application which is
-*       contingent on how well you understand the abstract computational system that Catholicus runs on, and how well
+*       contingent on how well you understand the abstract computational system that <language> runs on, and how well
 *       your code conforms to this system.
 *
 * Principles concerning all data:
 *   1. All data has definite order.
 *   2. All order is hierarchical by nature.
+*   3. All order is constant by nature.
+*   4. Change exists for constancy.
+*   5. Change is implemented by combination of finite, constant principles to obtain another finite, constant set of one
+*      or more principles.
 */
 
-module :=
+module module :
 {
-    // this is the general principle and format for all modules
-    module-example_with_parameters (in0, in1) : (out0, out1) :=
+    module inner_module : {}
+
+    object object :
     {
-        logic
-        state
+        type member_identifier;
+        ...
     }
 
-    // An expositional-interface
-    expositional-interface (module-example_with_parameters) : (out0, out1) :=
-    {
-        // statements as modules
-        out0 = statement2
-        out1 = statement0
-    }
-
-    module-no_parameters :=
-    {
-        statement
-        // ...
-        variable-definition
-        // ...
-        statement
-        // ...
-    }
-
-    traditional_function (in0, in1) : out0 :=
-    {
-        statement0
-        statement1
-        // ...
-        out0 = expression
-    }
-
-    multi-out (in0, in1) : (out0, out1) :=
-    {
-        statement
-        statement
-        // ...
-        out0 = expression
-        out1 = expression
-    }
-
-    // demonstration of a concept of "pipelines"
-    pipeline_common (a, b, c) : (x, y, z) :=
-    {
-        x = pipe0(a)
-        y = pipe1(b)
-        z = pipe2(c)
-    }
-
-    pipeline_extended (pipeline_common, a, b, c, d, e, f) : (x0, y0, z0, x1, y1, z1) :=
-    {
-        (x0, y0, z0) = pipeline_common(a, b, c)
-        (x1, y1, z1) = pipeline_common(d, e, f)
+    // global precedence for types
+    // identifiers become names for objects as unique types
+    object instance : {
 
     }
 
-    pipe0 (a) :=
-    {
-        // ...
+    function expand(x) : {
+
     }
 
-    pipe1 (b) :=
-    {
-        // ...
+    function function_return_object(a,b,c) : {
+
     }
-
-    pipe2 (c) :=
-    {
-        // ...
-    }
-
-
-    <int> variable-module := 3
-
-    <char> symbol-module := '\U+0000'
 
 }

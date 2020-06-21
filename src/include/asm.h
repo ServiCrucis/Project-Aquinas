@@ -8,8 +8,8 @@
  * Copyright &copy; 2020 Christi Crucifixi, LLC. All rights reserved.
  */
 
-#ifndef CATHOLICUS_ASM_H
-#define CATHOLICUS_ASM_H
+#ifndef PROJECT_AQUINAS_ASM_H
+#define PROJECT_AQUINAS_ASM_H
 
 /**********************************************************************************************************************
  *                                           AMD64 (x86_64 LP64 thru SILP64)										  *
@@ -39,4 +39,4 @@ static inline unsigned long __x86_lzcnt(register unsigned long volatile value) {
 	return value;
 }
 
-#endif //CATHOLICUS_ASM_H
+#endif //PROJECT_AQUINAS_ASM_H

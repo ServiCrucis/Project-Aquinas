@@ -2,8 +2,8 @@
 // Created by ServusDei on 1/29/2020.
 //
 
-#ifndef REFERENCE_VM_H
-#define REFERENCE_VM_H
+#ifndef PROJECT_AQUINAS_REFERENCE_VM_H
+#define PROJECT_AQUINAS_REFERENCE_VM_H
 
 #include <stdint.h>
 
@@ -115,4 +115,4 @@ enum STACK {
     POP
 };
 
-#endif //REFERENCE_VM_H
+#endif //PROJECT_AQUINAS_REFERENCE_VM_H
