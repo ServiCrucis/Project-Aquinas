@@ -17,9 +17,6 @@
 
 #include "binary_trie.h"
 
-typedef union node {
-
-} node;
 typedef struct pattern_trie {
 	struct pattern_trie *children;
 	uword order;
