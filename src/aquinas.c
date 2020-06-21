@@ -11,7 +11,7 @@
 #include <stdlib.h>
 
 // make other libraries use our memory manager (overwrites free as well)
-#define MEMORY_MALLOC_OVERWRITE true
+#define MEMORY_MALLOC_OVERWRITE false
 // enable debug message printing
 #define R_DEBUG true
 // set memory unit to use dynamic allocations instead of a single static allocation
@@ -73,7 +73,55 @@ static void test_digits() {
 	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 10000000000000000000ull, digits(10000000000000000000ull));
 }
 
-static void test_bintrie() {
+static void test_binary_trie() {
+	binary_trie *btrie;
+}
+
+static void test_sort() {
+
+}
+
+//static inline void swap(uword indexA, uword indexB, uword *set) {
+//	uword b = set[indexB];
+//	set[indexB] = set[indexA];
+//	set[indexA] = b;
+//}
+
+static void test_binsearch() {
+	// generate set
+	uword size = 1000;
+	uword *set = malloc(sizeof(uword) * size);
+	
+	for (uword i = 0; i < 1000; i++) {
+		uword v = (((uword) rand()) << 31) | (uword) rand();
+		set[i] = v;
+		r_infof(R_STATUS, __func__, "set[%u] = %llu\n", i, v);
+	}
+	
+//	// sort the values
+//	// heap sort
+//	// heapify
+//	// pair: a=index; b=value;
+//	pair smallest = {0, bitmask(0)};
+//	pair largest = { 0, 0 };
+//	for (uword i = 0; i < size; i++) {
+//		uword value = set[i];
+//		smallest = smallest.b <= value ? smallest : (pair){i, value};
+//		largest = largest.b >= value ? largest : (pair){i, value};
+//	}
+//	// set 0 and size - 1 to smallest and largest respectively
+//	swap(0, smallest.a, set);
+//	swap(size - 1, largest.a, set);
+
+	
+	uword index = rand();
+	index = (index * 1000) / (bitmaskv(index, sigbits(index) + 1));
+	uword value = set[index];
+	uword result = binsearch(value, set, 1000);
+	r_infof(R_STATUS, __func__, "Search result: set[%u]=%llu; actual value: set[%u]=%llu", result, set[result], index, value);
+}
+
+static void test_dynhashtrie() {
 
 }
 

@@ -251,4 +251,59 @@ static inline void set_bit(uword *bitarray, uword const words, uword const bit_o
 	bitarray[index] = word;
 }
 
-#endif //CATHOLICUS_BIT_MATH_H
+static inline void set_bits() {
+	// TODO implement set_bits
+}
+
+/* data sets */
+
+/*
+ * Regular binary search algorithm correctly implemented in C.
+ */
+static inline uword binsearch(uword query, uword *set, uword size) {
+#define left 0
+#define right 1
+	// temporally, O(log_2(n)) binary search
+	uword index  = (size - 1) / 2;
+	uword delta  = index / 2;
+	uword value;
+	ubyte branch = left;
+	
+	compute_start:
+	value = set[index];
+	if (value == query && !delta)
+		return index;
+	branch = value > index;
+	delta /= 2;
+	index  = index + (branch * -1) * delta;
+	goto compute_start;
+}
+
+// THIS TO BE REVISITED and IMPLEMENTED in the NEW LANGUAGE *ONLY* until the details of this algorithm have been
+// fully realized, implemented, and optimized.
+///*
+// * "Distance-based search"
+// *
+// * Uses distance-based search (variant of interpolation search).
+// * Worst case: O(log log n)
+// * Avg. case: O(1)
+// * Best case: O(1)
+// */
+//static inline uword dstsearch(uword query_value, uword *set, uword size, uword lower_bound, uword upper_bound, uword (*dst)(uword value, uword lower_bound, uword upper_bound)) {
+//	// temporally, O(log_oM(n)) dynamic binary search algorithm (TM? lol)
+//	// o: distribution coefficient
+//	// M: number of search regions
+//	// n: number of values in the set
+//	// (constant-time implementation)
+//	return dst(query_value, lower_bound, upper_bound);
+//}
+//
+///*
+// * "Dynamic binary search"
+// *
+// * Performs dynamic binary search in variable time. (worst case: O(log n); best and avg. case: O(1))
+// */
+//static inline uword binsearch_dyn(uword value, uword *set, uword size, uword lower_bound, uword upper_bound) {
+//}
+
+#endif //PROJECT_AQUINAS_BIT_MATH_H
