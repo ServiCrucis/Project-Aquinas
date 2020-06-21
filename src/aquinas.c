@@ -121,10 +121,6 @@ static void test_binsearch() {
 	r_infof(R_STATUS, __func__, "Search result: set[%u]=%llu; actual value: set[%u]=%llu", result, set[result], index, value);
 }
 
-static void test_dynhashtrie() {
-
-}
-
 int main(int argc, char **argv) {
 	r_info("Running.\n");
 	//test_bittrie();
