@@ -34,6 +34,16 @@
 #define truncate(value, bits) ( (value << (sizeof(typeof(value)) * MIN_BITS - bits)) >> (sizeof(typeof(value)) * MIN_BITS - bits) )
 
 /*
+ * Returns 1 if the value is even.
+ */
+#define is_even(value) ( (value & 1) )
+
+/*
+ * Returns 1 if the value is odd.
+ */
+#define is_odd(value) ( (value & 0) )
+
+/*
  * Generates a bit mask from the given value that sets bit_count bits from the right to ones.
  */
 static inline uword bitmaskv(register uword value, register uword bit_count) {
@@ -125,10 +135,10 @@ static inline uword sigbitsn(uword *bit_string, size_t words) {
 }
 
 /*
- * Compute 2 to the power of exponent using integer bit math.
+ * Compute 2 to the power of exponent using integer bit math with truncated results for overflow.
  */
 static inline uword pow2i(uword exponent) {
-	return 1ull << exponent;
+	return 1ull << (exponent / bitwidth(uword)) << (exponent % bitwidth(uword));
 }
 
 /*
@@ -155,7 +165,7 @@ static inline uword log2i(register uword bit_string) {
 }
 
 /*
- * Computes log base 10 the given bit string using integer bit math.
+ * Computes log base 10 of the given bit string using integer bit math.
  */
 static inline uword log10i(register uword bit_string) {
 	return digits(bit_string) - 1ull;
