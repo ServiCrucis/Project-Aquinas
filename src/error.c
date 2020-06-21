@@ -12,7 +12,7 @@
 #include "error.h"
 
 
-static char *cth_result_messages[] =
+static char *aqu_result_messages[] =
 		{
 				[R_SUCCESS] = "SUCCESS",
 				[R_FAILURE] = "FAILURE",
@@ -45,7 +45,7 @@ void r_info(char const *information, ...) {
 
 void r_infof(enum result_code const code, char const *fn_name, char const *information, ...) {
 	fputs("[info][", stdout);
-	fputs(cth_result_messages[code], stdout);
+	fputs(aqu_result_messages[code], stdout);
 	fputs("][", stdout);
 	fputs(fn_name, stdout);
 	fputs("] ", stdout);
@@ -57,7 +57,7 @@ void r_infof(enum result_code const code, char const *fn_name, char const *infor
 
 void r_warnf(enum result_code const code, char const *fn_name, char const *warning, ...) {
 	fputs("[warning][", stdout);
-	fputs(cth_result_messages[code], stdout);
+	fputs(aqu_result_messages[code], stdout);
 	fputs("][", stdout);
 	fputs(fn_name, stdout);
 	fputs("] ", stdout);
@@ -69,7 +69,7 @@ void r_warnf(enum result_code const code, char const *fn_name, char const *warni
 
 void r_fatalf(enum result_code const code, char const *fn_name, char const *error_message, ...) {
 	fputs("[fatal][", stderr);
-	fputs(cth_result_messages[code], stderr);
+	fputs(aqu_result_messages[code], stderr);
 	fputs("][", stderr);
 	fputs(fn_name, stderr);
 	fputs("] ", stderr);
