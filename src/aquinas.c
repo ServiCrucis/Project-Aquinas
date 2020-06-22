@@ -74,7 +74,13 @@ static void test_digits() {
 }
 
 static void test_binary_trie() {
-	binary_trie *btrie;
+	binary_trie *btrie = bintrie_create(32);
+	
+	for (uword i = 0; i < btrie->nodes; i++) {
+		bintrie_set(btrie, i, powni(i, i));
+		r_infof(R_STATUS, __func__, "binary_trie+%llu = %llu\n", i , bintrie_get(btrie, i));
+	}
+	
 }
 
 static void test_sort() {
@@ -124,6 +130,7 @@ static void test_binsearch() {
 int main(int argc, char **argv) {
 	r_info("Running.\n");
 	//test_bittrie();
+	test_binary_trie();
 	//test_digits();
 	//test_sort();
 	//test_binsearch();

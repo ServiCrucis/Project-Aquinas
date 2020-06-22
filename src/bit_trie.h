@@ -18,7 +18,7 @@
 #define BITS (sizeof(uword) * sizeof(uintmin_t) * MIN_BITS)
 
 typedef struct bit_trie {
-	// the binary nodes
+	// the binary data
 	uword *binodes;
 	// the size of the value
 	uword depth;

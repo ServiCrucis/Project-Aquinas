@@ -14,10 +14,27 @@
 #include "platform.h"
 #include "bit_math.h"
 
-// A binary_trie implementation utilizing uword integer values and pointers (aligned to data model)
+// A binary_trie implementation utilizing uword integer values aligned to data model
 typedef struct binary_trie {
-	
+	uword *restrict data;
+	uword nodes;
 } binary_trie;
 
+binary_trie *bintrie_create(uword nodes);
 
-#endif //CATHOLICUS_BINARY_TRIE_H
+void bintrie_free(binary_trie *trie);
+
+/*
+ * Gets the value at the given address in the trie.
+ *
+ * A bitmask is generated based on the number of nodes in the trie to handle buffer overflow.
+ */
+uword bintrie_get(binary_trie *restrict trie, uword address);
+/*
+ * Sets the value at the given address in the trie to the given value.
+ *
+ * A bitmask is generated based on the number of nodes in the trie to handle buffer overflow.
+ */
+void bintrie_set(binary_trie *restrict trie, uword address, uword value);
+
+#endif //PROJECT_AQUINAS_BINARY_TRIE_H
