@@ -155,6 +155,7 @@ static inline uword powni(uword base, uword exponent) {
 	}
 	
 	return result;
+//	return expi(exponent * logei(base)); TODO optmize powni
 }
 
 /*
