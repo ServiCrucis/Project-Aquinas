@@ -34,14 +34,14 @@
 #define truncate(value, bits) ( (value << (sizeof(typeof(value)) * MIN_BITS - bits)) >> (sizeof(typeof(value)) * MIN_BITS - bits) )
 
 /*
- * Returns 1 if the value is even.
- */
-#define is_even(value) ( (value & 1) )
-
-/*
  * Returns 1 if the value is odd.
  */
-#define is_odd(value) ( (value & 0) )
+#define is_odd(value) ( (value) & 1 )
+
+/*
+ * Returns 1 if the value is even.
+ */
+#define is_even(value) ( !is_odd(value) )
 
 /*
  * Generates a bit mask from the given value that sets bit_count bits from the right to ones.
