@@ -4,5 +4,6 @@ This file and its contents are governed by Codex Creativus et Privatus
 <https://github.com/MilitiaJustitiae/Licenses/blob/master/CODEX-CREATIVUS-ET-PRIVATUS.txt>
 
 ADDENDUM & OVERRIDES
-1. This License shall for the time being apply to the complete contents of this Project and sub-projects.
+This License applies to the entirety of Project Aquinas except for the following whose licenses may be found therein:
+1. bit_math.h (Project-Aquinas/math/bit_math.h)
 
