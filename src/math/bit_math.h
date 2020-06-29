@@ -145,6 +145,33 @@ static inline uword pow2i(uword exponent) {
 	return 1ull << (exponent / bitwidth(uword)) << (exponent % bitwidth(uword));
 }
 
+static inline uword pow10i(uword exponent) {
+	static const uword bases[20] = {
+			1,
+			10,
+			100,
+			1000,
+			10000,
+			100000,
+			1000000,
+			10000000,
+			100000000,
+			1000000000,
+			10000000000,
+			100000000000,
+			1000000000000,
+			10000000000000,
+			100000000000000,
+			1000000000000000,
+			10000000000000000,
+			100000000000000000,
+			1000000000000000000,
+			10000000000000000000ull,
+	};
+	
+	return bases[exponent % 20];
+}
+
 /*
  * Compute base to the power of exponent using integer bit math.
  */
@@ -181,6 +208,21 @@ static inline uword log10i(register uword bit_string) {
  */
 static inline uword logni(register uword base, register uword bit_string) {
 	return log10i(bit_string) / log10i(base);
+}
+
+/*
+ * Computes the value of a single bit at a given digit offset from the right.
+ */
+static inline uword get_digit2i(uword value, uword digit) {
+	return (value >> (digit % bitwidth(typeof(value)))) & 1;
+}
+
+/*
+ * Computes the value of a single base 10 digit at the given digit offset.
+ */
+static inline uword get_digit10i(uword value, uword digit) {
+	value /= pow10i(digit);
+	return value % 10;
 }
 
 /*
