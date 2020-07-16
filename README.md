@@ -1,2 +1,5 @@
-# Catholicus-Compiler-Generator
-An Efficient Recursive Predicate Matching Algorithm
+# Project Aquinas
+
+A software suite which will consist of a metacompiler and programming language.
+
+Discussion: https://discord.gg/9HzjW85
