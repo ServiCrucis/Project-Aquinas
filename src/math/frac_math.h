@@ -46,31 +46,15 @@ static inline fraction frc(register word numerator, register word denominator) {
 }
 
 static inline fraction flt_to_frc(ieee_float32 a) {
-	fraction d;
-	d.numerator   = a.fraction;
-	d.denominator = pow2i(a.exponent);
-	return d;
 }
 
 static inline fraction dbl_to_frc(ieee_float64 a) {
-	fraction d;
-	d.numerator = a.fraction;
-	d.denominator = pow2i(a.exponent);
-	return d;
 }
 
 static inline ieee_float32 frc_to_flt(fraction a) {
-	ieee_float32 f32;
-	f32.exponent = log2i(a.denominator);
-	f32.fraction = a.numerator;
-	return f32;
 }
 
 static inline ieee_float64 frc_to_dbl(fraction a) {
-	ieee_float64 f64;
-	f64.exponent = log10i(a.denominator);
-	f64.fraction = a.numerator;
-	return f64;
 }
 
 static inline fraction frc_add(register fraction a, register fraction b) {
