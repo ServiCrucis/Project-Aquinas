@@ -1,7 +1,7 @@
 License for Project Aquinas. ("License")
 
 This file and its contents are governed by Codex Creativus et Privatus
-<https://github.com/MilitiaJustitiae/Licenses/blob/master/CODEX-CREATIVUS-ET-PRIVATUS.txt>
+<https://github.com/ServiRegis/Licenses/blob/master/CODEX-CREATIVUS-ET-PRIVATUS.txt>
 
 ADDENDUM & OVERRIDES
 This License applies to the entirety of Project Aquinas except for the following whose licenses may be found therein:
