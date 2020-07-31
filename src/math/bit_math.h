@@ -433,4 +433,8 @@ static inline uword set_bit(uword bit_string, ubyte bit, ubyte value) {
     return bit_string;
 }
 
+static inline uword clrbit(uword bit_string, ubyte bit) {
+    set_bit(bit_string, bit, 0);
+}
+
 #endif //PROJECT_AQUINAS_BIT_MATH_H
