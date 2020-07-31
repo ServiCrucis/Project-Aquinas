@@ -25,6 +25,11 @@ static inline unsigned long __x64_lzcnt(register unsigned long volatile value) {
 	return value;
 }
 
+static inline unsigned long __x64_tzcnt(register unsigned long volatile value) {
+    asm("tzcnt %0, %0" : "=r" (value) : "r" (value));
+    return value;
+}
+
 /**********************************************************************************************************************
  *                                         Intel x86 (32-bit LP32 and ILP32)   										  *
  **********************************************************************************************************************/
@@ -37,6 +42,11 @@ static inline unsigned long __x86_bsrl(register unsigned long volatile value) {
 static inline unsigned long __x86_lzcnt(register unsigned long volatile value) {
 	asm("lzcnt %0, %0" : "=r" (value) : "r" (value));
 	return value;
+}
+
+static inline unsigned long __x86_tzcnt(register unsigned long volatile value) {
+    asm("tzcnt %0, %0" : "=r" (value) : "r" (value));
+    return value;
 }
 
 #endif //PROJECT_AQUINAS_ASM_H
