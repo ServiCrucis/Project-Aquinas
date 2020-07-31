@@ -9,32 +9,16 @@
  */
 #include <stdio.h>
 #include <stdarg.h>
-#include "error.h"
+#include "state.h"
 
 
 static char *aqu_result_messages[] =
 		{
 				[R_SUCCESS] = "SUCCESS",
 				[R_FAILURE] = "FAILURE",
-				[R_ALLOCATION_SUCCESS] = "ALLOCATION_SUCCESS",
-				[R_ALLOCATION_FAILURE] = "ALLOCATION_FAILURE",
-				[R_INITIALIZATION_SUCCESS] = "INITIALIZATION_SUCCESS",
-				[R_INITIALIZATION_FAILURE] = "INITIALIZATION_FAILURE",
-				[R_STACK_OVERFLOW] = "STACK_OVERFLOW",
-				[R_STACK_UNDERFLOW] = "STACK_UNDERFLOW",
-				[R_BUFFER_OVERFLOW] = "BUFFER_OVERFLOW",
-				[R_BUFFER_UNDERFLOW] = "BUFFER_UNDERFLOW",
-				[R_COMPLETE_RESULT] = "COMPLETE_RESULT",
-				[R_INCOMPLETE_RESULT] = "INCOMPLETE_RESULT",
-				[R_INDETERMINATE_RESULT] = "INDETERMINATE_RESULT",
-				[R_ASSERTION_SUCCESS] = "ASSERTION_SUCCESS",
-				[R_ASSERTION_FAILURE] = "ASSERTION_FAILURE",
-				[R_NULL_POINTER] = "NULL_POINTER",
-				[R_ILLEGAL_VALUE] = "ILLEGAL_VALUE",
-				[R_STATUS] = "STATUS"
 		};
 
-void r_info(char const *information, ...) {
+void info(char const *information, ...) {
 	fputs("[info]", stdout);
 	fputc(' ', stdout);
 	va_list objects;
@@ -43,9 +27,11 @@ void r_info(char const *information, ...) {
 	va_end(objects);
 }
 
-void r_infof(enum result_code const code, char const *fn_name, char const *information, ...) {
+void infof(enum result_code const code, char const *restrict state, char const *fn_name, char const *information, ...) {
 	fputs("[info][", stdout);
 	fputs(aqu_result_messages[code], stdout);
+	fputs("][", stdout);
+	fputs(state, stdout);
 	fputs("][", stdout);
 	fputs(fn_name, stdout);
 	fputs("] ", stdout);
@@ -55,10 +41,12 @@ void r_infof(enum result_code const code, char const *fn_name, char const *infor
 	va_end(objects);
 }
 
-void r_warnf(enum result_code const code, char const *fn_name, char const *warning, ...) {
+void warnf(enum result_code const code, char const *restrict state, char const *fn_name, char const *warning, ...) {
 	fputs("[warning][", stdout);
 	fputs(aqu_result_messages[code], stdout);
 	fputs("][", stdout);
+    fputs(state, stdout);
+    fputs("][", stdout);
 	fputs(fn_name, stdout);
 	fputs("] ", stdout);
 	va_list objects;
@@ -67,16 +55,16 @@ void r_warnf(enum result_code const code, char const *fn_name, char const *warni
 	va_end(objects);
 }
 
-void r_fatalf(enum result_code const code, char const *fn_name, char const *error_message, ...) {
+void fatalf(char const *restrict state, char const *fn_name, char const *error_message, ...) {
 	fputs("[fatal][", stderr);
-	fputs(aqu_result_messages[code], stderr);
-	fputs("][", stderr);
+    fputs(state, stderr);
+    fputs("][", stderr);
 	fputs(fn_name, stderr);
 	fputs("] ", stderr);
 	va_list objects;
 	va_start(objects, error_message);
 	vfprintf(stderr, error_message, objects);
 	va_end(objects);
-	exit(code);
+	exit(R_FAILURE);
 }
 

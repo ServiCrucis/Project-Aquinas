@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#include "binary_trie.h"
+#include "binary_tree.h"
 
 typedef struct pattern_trie {
 	struct pattern_trie *children;

@@ -1,6 +1,6 @@
 /*
- * Module: binary_trie
- * File: binary_trie.h
+ * Module: bit_trie
+ * File: bit_trie.h
  * Created:
  * April 21, 2020
  * Author: Andrew Porter [<caritasdedeus@gmail.com>](mailto:caritasdedeus@gmail.com)

@@ -12,9 +12,6 @@
 #include <limits.h>
 #include <stdint.h>
 
-#include "../error.h"
-
-
 /*
  * VARIABLES:
  *
@@ -1524,16 +1521,6 @@ typedef struct uword_pair {
 #define MIN_BITS CHAR_BIT
 
 /* generic platform functions */
-
-struct p_result {
-	union {
-		void *value;
-		
-		void (*function)();
-	} content;
-	
-	enum result_code code;
-};
 
 // currently unused
 typedef enum device_type {

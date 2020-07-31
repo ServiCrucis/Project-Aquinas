@@ -19,7 +19,7 @@
 
 #include <stdbool.h>
 
-#include "error.h"
+#include "state.h"
 #include "memory.h"
 #include "platform.h"
 #include "math.h"
@@ -73,7 +73,7 @@ static inline void __m_init_page_size(size_t *_page_size) {
 		#error "platform not yet supported"
 	#endif
 	if (!*_page_size) {
-		r_fatalf(R_INITIALIZATION_FAILURE, __func__, "failed to initialize page_size");
+		fatalf("initialization", __func__, "failed to initialize page_size");
 	}
 }
 
@@ -111,13 +111,13 @@ static inline void __m_init_cpu_info(size_t *_caches, size_t *_cache_size, size_
 						break;
 					case CacheData:
 						_cache_size[i] = current->Cache.CacheSize;
-						r_infof(R_SUCCESS, __func__, "_cache_size[i]: %u", _cache_size[i]);
+						infof(R_SUCCESS, "parsing", __func__, "_cache_size[i]: %u", _cache_size[i]);
 						_sector_size[i] = current->Cache.LineSize;
-						r_infof(R_SUCCESS, __func__, "_sector_size[i]: %u", _sector_size[i]);
+						infof(R_SUCCESS, "parsing", __func__, "_sector_size[i]: %u", _sector_size[i]);
 						break;
 					case CacheTrace:
 					default:
-						r_infof(R_SUCCESS, __func__, "Ignoring irrelevant cache type: 0x%X\n", current->Cache.Type);
+						infof(R_SUCCESS, "parsing", __func__, "Ignoring irrelevant cache type: 0x%X\n", current->Cache.Type);
 						break;
 				}
 				break;
@@ -127,7 +127,7 @@ static inline void __m_init_cpu_info(size_t *_caches, size_t *_cache_size, size_
 			case RelationGroup:
 			case RelationAll:
 			default:
-				r_infof(R_SUCCESS, __func__, "Ignoring irrelevant relationship: 0x%X\n", current->Relationship);
+				infof(R_SUCCESS, "parsing", __func__, "Ignoring irrelevant relationship: 0x%X\n", current->Relationship);
 				break;
 		}
 	}
@@ -179,18 +179,18 @@ static inline bool __cmp(size_t a, size_t b, cardinality cardinality) {
 		case RIGHT:
 			return a < b;
 		default:
-			r_fatalf(R_ILLEGAL_VALUE, __func__, "unknown cardinality: %d", cardinality);
+			fatalf("illegal value", __func__, "unknown cardinality: %d", cardinality);
 			return false;
 	}
 }
 
 void *m_copy(void *src, size_t srcoff, size_t srclen, cardinality srcdir, void *dst, size_t dstoff, size_t dstlen, cardinality dstdir) {
 	if (!src) {
-		r_fatalf(R_NULL_POINTER, __func__, "src (arg 1) is NULL");
+		fatalf("null pointer", __func__, "src (arg 1) is NULL");
 	}
 
 	if (!dst) {
-		r_fatalf(R_NULL_POINTER, __func__, "dst (arg 5) is NULL");
+		fatalf("null pointer", __func__, "dst (arg 5) is NULL");
 	}
 	// array indices (with segfault init guard [UB])
 	register size_t srci = -1, dsti = -1;
@@ -213,7 +213,7 @@ void *m_copy(void *src, size_t srcoff, size_t srclen, cardinality srcdir, void *
 			srcend = srclen;
 			break;
 		default:
-			r_fatalf(R_ILLEGAL_VALUE, __func__, "unknown srcdir cardinality: %d", srcdir);
+			fatalf("illegal value", __func__, "unknown srcdir cardinality: %d", srcdir);
 	}
 	// initialize the destination offset
 	switch (dstdir) {
@@ -230,7 +230,7 @@ void *m_copy(void *src, size_t srcoff, size_t srclen, cardinality srcdir, void *
 			dstend = dstlen;
 			break;
 		default:
-			r_fatalf(R_ILLEGAL_VALUE, __func__, "unknown dstdir cardinality: %d", srcdir);
+			fatalf("illegal value", __func__, "unknown dstdir cardinality: %d", srcdir);
 	}
 
 	srci += srcd * srcoff;
@@ -247,7 +247,7 @@ void *m_copy(void *src, size_t srcoff, size_t srclen, cardinality srcdir, void *
 
 void *m_set(void *memory, size_t offset, size_t length, uintptr_t value, cardinality dir) {
 	if (!memory) {
-		r_fatalf(R_NULL_POINTER, __func__, "memory (arg 1) is NULL");
+		fatalf("null pointer", __func__, "memory (arg 1) is NULL");
 	}
 	// memory offset (with segfault init guard [UB])
 	register size_t i = -1;
@@ -270,7 +270,7 @@ void *m_set(void *memory, size_t offset, size_t length, uintptr_t value, cardina
 			end = length;
 			break;
 		default:
-			r_fatalf(R_ILLEGAL_VALUE, __func__, "unknown cardinality: %d", dir);
+			fatalf("illegal value", __func__, "unknown cardinality: %d", dir);
 	}
 	// increment the memory index by offset (cardinality adjusted by delta)
 	i += offset * delta;

@@ -22,118 +22,122 @@
 #include "bit_math.h"
 #include "bit_trie.h"
 
-static void test_bittrie() {
-	r_info("Building bit_trie.\n");
-	pair    test[] = {
-			{ 23,1 },
-			{ 237,1 }
-	};
-	bit_trie *trie   = btt_create(test, 8, 2);
-	uword values = 256;
-	// 0: left; 1: right
-	uword side = 0ull;
-	r_info("bit_trie side:left.\n");
-	for(uword address = 0; address < values; address++) {
-		
-		uword bit = btt_read(trie, (address << 1u) | side);
-		r_infof(R_STATUS, __func__, "[%u] = %u\n", bin_index((address << 1u) | side), bit);
-	}
-	
-	r_info("bit_trie side:right.\n");
-	side = 1ull;
-	for(uword address = 0; address < values; address++) {
-		uword bit = btt_read(trie, (address << 1u) | side);
-		r_infof(R_STATUS, __func__, "[%u]\n", bin_index((address << 1u) | side), bit);
-	}
-	
-	btt_free(trie);
-	r_info("Done.\n");
+#include "state.h"
+
+
+static void test_expi() {
+    for (ubyte i = 0; i < 45; i++) {
+        infof(R_SUCCESS, "testing", __func__, "expi(%llu): %llu\n", i, expi(i));
+    }
+}
+
+static void test_lni() {
+    for(ubyte i = 0; i < 45; i++) {
+        infof(R_SUCCESS, "testing", __func__, "lni(%llu): %llu\n", expi(i), lni(expi(i)));
+    }
+}
+
+static void test_log10i() {
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 1ull, log10i(1ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 10ull, log10i(10ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 100ull, log10i(100ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 1000ull, log10i(1000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 10000ull, log10i(10000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 100000ull, log10i(100000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 1000000ull, log10i(1000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 10000000ull, log10i(10000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 100000000ull, log10i(100000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 1000000000ull, log10i(1000000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 10000000000ull, log10i(10000000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 100000000000ull, log10i(100000000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 1000000000000ull, log10i(1000000000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 10000000000000ull, log10i(10000000000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 100000000000000ull, log10i(100000000000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 1000000000000000ull, log10i(1000000000000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 10000000000000000ull, log10i(10000000000000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 100000000000000000ull, log10i(100000000000000000ul));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 1000000000000000000ull, log10i(1000000000000000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 10000000000000000000ull, log10i(10000000000000000000ull));
 }
 
 static void test_digits() {
-	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 1ull, digits(1ull));
-	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 10ull, digits(10ull));
-	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 100ull, digits(100ull));
-	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 1000ull, digits(1000ull));
-	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 10000ull, digits(10000ull));
-	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 100000ull, digits(100000ull));
-	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 1000000ull, digits(1000000ull));
-	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 10000000ull, digits(10000000ull));
-	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 100000000ull, digits(100000000ull));
-	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 1000000000ull, digits(1000000000ull));
-	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 10000000000ull, digits(10000000000ull));
-	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 100000000000ull, digits(100000000000ull));
-	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 1000000000000ull, digits(1000000000000ull));
-	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 10000000000000ull, digits(10000000000000ull));
-	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 100000000000000ull, digits(100000000000000ull));
-	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 1000000000000000ull, digits(1000000000000000ull));
-	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 10000000000000000ull, digits(10000000000000000ull));
-	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 100000000000000000ull, digits(100000000000000000ul));
-	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 1000000000000000000ull, digits(1000000000000000000ull));
-	r_infof(R_STATUS, __func__, "Digits: value=%llu, digits()=%llu\n", 10000000000000000000ull, digits(10000000000000000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 1ull, digits(1ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 10ull, digits(10ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 100ull, digits(100ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 1000ull, digits(1000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 10000ull, digits(10000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 100000ull, digits(100000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 1000000ull, digits(1000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 10000000ull, digits(10000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 100000000ull, digits(100000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 1000000000ull, digits(1000000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 10000000000ull, digits(10000000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 100000000000ull, digits(100000000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 1000000000000ull, digits(1000000000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 10000000000000ull, digits(10000000000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 100000000000000ull, digits(100000000000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 1000000000000000ull, digits(1000000000000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 10000000000000000ull, digits(10000000000000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 100000000000000000ull, digits(100000000000000000ul));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 1000000000000000000ull, digits(1000000000000000000ull));
+    infof(R_SUCCESS, "testing", __func__, "Digits: value=%llu, digits()=%llu\n", 10000000000000000000ull, digits(10000000000000000000ull));
+}
+
+static void test_to_digits() {
+    uword value = UINT64_MAX;
+    ubyte digits[20];
+    for (uword i = 19; i >= 0; i--) {
+        digits[i] = get_digit10i(value, i);
+        infof(R_SUCCESS, "printing", __func__, "digit[%llu] = %llu\n", i, digits[i]);
+    }
+}
+
+static void test_bittrie() {
+    info("Building bit_trie.\n");
+    pair test[] = {
+            {23,  1},
+            {237, 1}
+    };
+    bit_trie *trie = btt_create(test, 8, 2);
+    uword values = 256;
+    // 0: left; 1: right
+    uword side = 0ull;
+    info("bit_trie side:left.\n");
+    for (uword address = 0; address < values; address++) {
+
+        uword bit = btt_read(trie, (address << 1u) | side);
+        infof(R_SUCCESS, "testing", __func__, "[%u] = %u\n", bin_index((address << 1u) | side), bit);
+    }
+
+    info("bit_trie side:right.\n");
+    side = 1ull;
+    for (uword address = 0; address < values; address++) {
+        uword bit = btt_read(trie, (address << 1u) | side);
+        infof(R_SUCCESS, "testing", __func__, "[%u]\n", bin_index((address << 1u) | side), bit);
+    }
+
+    btt_free(trie);
+    info("Done.\n");
 }
 
 static void test_binary_trie() {
-	binary_trie *btrie = bintrie_create(32);
-	
-	for (uword i = 0; i < btrie->nodes; i++) {
-		bintrie_set(btrie, i, powni(i, i));
-		r_infof(R_STATUS, __func__, "binary_trie+%llu = %llu\n", i , bintrie_get(btrie, i));
-	}
-	
-}
+    binary_tree *btrie = binary_tree_create(31);
 
-static void test_sort() {
-
-}
-
-//static inline void swap(uword indexA, uword indexB, uword *set) {
-//	uword b = set[indexB];
-//	set[indexB] = set[indexA];
-//	set[indexA] = b;
-//}
-
-static void test_binsearch() {
-	// generate set
-	uword size = 1000;
-	uword *set = malloc(sizeof(uword) * size);
-	
-	for (uword i = 0; i < 1000; i++) {
-		uword v = (((uword) rand()) << 31) | (uword) rand();
-		set[i] = v;
-		r_infof(R_STATUS, __func__, "set[%u] = %llu\n", i, v);
-	}
-	
-//	// sort the values
-//	// heap sort
-//	// heapify
-//	// pair: a=index; b=value;
-//	pair smallest = {0, bitmask(0)};
-//	pair largest = { 0, 0 };
-//	for (uword i = 0; i < size; i++) {
-//		uword value = set[i];
-//		smallest = smallest.b <= value ? smallest : (pair){i, value};
-//		largest = largest.b >= value ? largest : (pair){i, value};
-//	}
-//	// set 0 and size - 1 to smallest and largest respectively
-//	swap(0, smallest.a, set);
-//	swap(size - 1, largest.a, set);
-
-	
-	uword index = rand();
-	index = (index * 1000) / (bitmaskv(index, sigbits(index) + 1));
-	uword value = set[index];
-	uword result = binsearch(value, set, 1000);
-	r_infof(R_STATUS, __func__, "Search result: set[%u]=%llu; actual value: set[%u]=%llu", result, set[result], index, value);
+    for (uword i = 0; i < btrie->nodes; i++) {
+        binary_tree_set(btrie, i, powni(i, i));
+        infof(R_SUCCESS, "printing", __func__, "binary_tree+%llu = %llu\n", i, binary_tree_get(btrie, i));
+    }
 }
 
 int main(int argc, char **argv) {
-	r_info("Running.\n");
-	//test_bittrie();
-	test_binary_trie();
-	//test_digits();
-	//test_sort();
-	//test_binsearch();
-	//test_dynhashtrie();
-	return R_SUCCESS;
+    info("Running.\n");
+    //test_expi();
+    //test_lni();
+    //test_log10i();
+    //test_digits();
+    //test_to_digits();
+    //test_bittrie();
+    //test_binary_trie();
+    // main(argc, argv); // jk lol
+    return R_SUCCESS;
 }

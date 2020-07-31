@@ -1,6 +1,6 @@
 /*
- * Module: binary_trie
- * File: binary_trie.c
+ * Module: bit_trie
+ * File: bit_trie.c
  * Created:
  * April 21, 2020
  * Author: Andrew Porter [<caritasdedeus@gmail.com>](mailto:caritasdedeus@gmail.com)
@@ -12,7 +12,7 @@
 
 #include "bit_trie.h"
 #include "bit_math.h"
-#include "error.h"
+#include "state.h"
 
 uword btt_read(bit_trie *trie, uword address) {
 	return get_bit(trie->binodes, (2u << trie->depth) / BITS, bin_index(address));
@@ -26,14 +26,14 @@ bit_trie *btt_create(pair const *pairs, uword depth, uword length) {
 	bit_trie *result = malloc(sizeof(bit_trie));
 	
 	if (!result) {
-		r_fatalf(R_ALLOCATION_FAILURE, __func__, "failed to allocate memory for binary_trie");
+		fatalf("allocating", __func__, "failed to allocate memory for binary_trie");
 	}
 	
 	result->binodes = calloc((2u << depth) / BITS, sizeof(uword));
 	result->depth   = depth;
 	
 	if (!result->binodes) {
-		r_fatalf(R_ALLOCATION_FAILURE, __func__, "failed to allocate memory for binary_trie");
+		fatalf("allocating", __func__, "failed to allocate memory for binary_trie");
 	}
 	
 	for (uword i = 0; i < length; i++) {

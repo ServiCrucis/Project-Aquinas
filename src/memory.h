@@ -9,7 +9,7 @@
  */
 
 #include <stdint.h>
-#include "error.h"
+#include "state.h"
 
 #ifndef PROJECT_AQUINAS_MEMORY_H
 #define PROJECT_AQUINAS_MEMORY_H

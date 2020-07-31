@@ -18,8 +18,7 @@
 #include <stdbool.h>
 #include <limits.h>
 #include "asm.h"
-#include "platform.h"
-#include "error.h"
+#include "state.h"
 
 
 /*

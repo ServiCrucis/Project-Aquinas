@@ -11,7 +11,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "error.h"
+#include "state.h"
 #include "pattern_trie.h"
 
 typedef enum c_command {
