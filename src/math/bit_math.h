@@ -381,7 +381,7 @@ static inline uword bin_index(register uword address) {
     return address == 1 ? side : (2ull << address_bits) - 2u + address - side * (1ull << address_bits);
 }
 
-static inline uword get_bit(uword const *restrict bitarray, uword const words, uword const bit_index) {
+static inline uword get_bita(uword const *restrict bitarray, uword const words, uword const bit_index) {
     uword bits = sizeof(uword) * sizeof(uintmin_t) * MIN_BITS;
 
     uword index = bit_index / bits;
@@ -393,7 +393,7 @@ static inline uword get_bit(uword const *restrict bitarray, uword const words, u
     return bit;
 }
 
-static inline uword *get_bits(uword const *restrict bitarray, uword const words, uword const bit_index, uword const value_bits) {
+static inline uword *get_bitsa(uword const *restrict bitarray, uword const words, uword const bit_index, uword const value_bits) {
     // TODO implement get_bits
     uword bits = sizeof(uword) * sizeof(uintmin_t) * MIN_BITS;
 
@@ -409,7 +409,7 @@ static inline uword *get_bits(uword const *restrict bitarray, uword const words,
     }
 }
 
-static inline void set_bit(uword *restrict bitarray, uword const words, uword const bit_offset, uword const value) {
+static inline void set_bita(uword *restrict bitarray, uword const words, uword const bit_offset, uword const value) {
     uword bits = sizeof(uword) * sizeof(uintmin_t) * MIN_BITS;
     uword index = bit_offset / bits;
     // guard
@@ -420,8 +420,17 @@ static inline void set_bit(uword *restrict bitarray, uword const words, uword co
     bitarray[index] = word;
 }
 
-static inline void set_bits() {
+static inline void set_bitsa() {
     // TODO implement set_bits
+}
+
+static inline uword get_bit(uword bit_string, ubyte bit) {
+    return (bit_string >> bit) & 1ull;
+}
+
+static inline uword set_bit(uword bit_string, ubyte bit, ubyte value) {
+    bit_string ^= (bit_string ^ ((value & ((uword) 1u)) << bit)) & (((uword) 1u) << bit);
+    return bit_string;
 }
 
 #endif //PROJECT_AQUINAS_BIT_MATH_H
