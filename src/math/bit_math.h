@@ -267,17 +267,17 @@ static inline uword expi(register uword exponent) {
  * Compute base to the power of exponent using integer bit math.
  */
 static inline uword powni(register uword base, register uword exponent) {
-	uword result = 1;
+    uword result = 1;
 
-	while (exponent) {
-		if (exponent & 1u)
-			result *= base;
-		exponent >>= 1u;
-		base *= base;
-	}
+    while (exponent) {
+        if (exponent & 1u)
+            result *= base;
+        exponent >>= 1u;
+        base *= base;
+    }
 
-	return result;
-	// TODO implement powni using exp()
+    return result;
+    // TODO implement powni using exp()
 //    return expi(exponent * lni(base));
 }
 
@@ -311,7 +311,7 @@ static inline uword logni(register uword base, register uword bit_string) {
  */
 static inline uword lni(register uword bit_string) {
     // log(e) ~= 0.43429448190325182765112891891661
-    const usuperword numerator =   10000000000000000ull;
+    const usuperword numerator = 10000000000000000ull;
     const usuperword denominator = 14426828394335757ull;
     // 14426828394335757ull
     const usuperword x = bit_string;
@@ -433,7 +433,7 @@ static inline uword set_bit(uword bit_string, ubyte bit, ubyte value) {
     return bit_string;
 }
 
-static inline uword clrbit(uword bit_string, ubyte bit) {
+static inline uword clear_bit(uword bit_string, ubyte bit) {
     set_bit(bit_string, bit, 0);
 }
 
