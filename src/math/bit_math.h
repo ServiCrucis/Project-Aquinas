@@ -310,10 +310,9 @@ static inline uword logni(register uword base, register uword bit_string) {
  * Computes log base e of the given bit string using integer bit math.
  */
 static inline uword lni(register uword bit_string) {
-    // log(e) ~= 0.43429448190325182765112891891661
+    // ln(10) / ln(2) * log(e) ~= 1.4426950408889634073599246810019
     const usuperword numerator = 10000000000000000ull;
-    const usuperword denominator = 14426828394335757ull;
-    // 14426828394335757ull
+    const usuperword denominator = 14426950408889634ull;
     const usuperword x = bit_string;
     // log(bit_string) / log(e)
     return (uword) (((sigbits(x)) * numerator) / denominator);
