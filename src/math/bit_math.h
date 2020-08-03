@@ -53,11 +53,6 @@ typedef struct pair {
 #define is_even(value) ( !is_odd(value) )
 
 /*
- * Returns 1 if the pointer is not NULL
- */
-#define exists(ptr) ((ptr))
-
-/*
  * Computes the absolute value of the given value
  */
 #define abs(value) ( (value) > 0 ? (value) : -(value) )
