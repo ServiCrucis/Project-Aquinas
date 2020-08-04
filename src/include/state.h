@@ -30,6 +30,9 @@ enum result_code {
 
 static uword _global_state;
 
+static char *restrict _global_previous_context = "global";
+static char *restrict _global_context = "global";
+
 static inline void set_state(uword state) {
     _global_state = state;
 }
@@ -38,12 +41,29 @@ static inline uword get_state() {
     return _global_state;
 }
 
+static inline void set_context(char *context) {
+    _global_previous_context = _global_context;
+    _global_context = context;
+}
+
+static inline char *get_context() {
+    return _global_context;
+}
+
+static inline char *get_previous_context() {
+    return _global_previous_context;
+}
+
+static inline void clear_context() {
+    _global_context = _global_previous_context;
+}
+
 void info(char const *information, ...);
 
-void infof(enum result_code const code, char const *restrict state, char const *restrict fn_name, char const *restrict information, ...);
+void infof(enum result_code const code, char const *restrict fn_name, char const *restrict information, ...);
 
-void warnf(enum result_code const code, char const *restrict state, char const *restrict fn_name, char const *restrict warning, ...);
+void warnf(enum result_code const code, char const *restrict fn_name, char const *restrict warning, ...);
 
-void fatalf(char const *restrict state, char const *restrict fn_name, char const *restrict error_message, ...);
+__attribute__((noreturn)) void fatalf(char const *restrict fn_name, char const *restrict error_message, ...);
 
 #endif /* PROJECT_AQUINAS_DEBUG_H */

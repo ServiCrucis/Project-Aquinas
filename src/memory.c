@@ -78,6 +78,7 @@ static inline void __m_init_page_size(size_t *_page_size) {
 }
 
 static inline void __m_init_cpu_info(size_t *_caches, size_t *_cache_size, size_t *_sector_size, size_t *_word_size) {
+    set_context("memory");
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// !!! USE STANDARD MALLOC HERE ONLY !!!
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -111,13 +112,13 @@ static inline void __m_init_cpu_info(size_t *_caches, size_t *_cache_size, size_
 						break;
 					case CacheData:
 						_cache_size[i] = current->Cache.CacheSize;
-						infof(R_SUCCESS, "parsing", __func__, "_cache_size[i]: %u", _cache_size[i]);
+						infof(R_SUCCESS, __func__, "_cache_size[i]: %u", _cache_size[i]);
 						_sector_size[i] = current->Cache.LineSize;
-						infof(R_SUCCESS, "parsing", __func__, "_sector_size[i]: %u", _sector_size[i]);
+						infof(R_SUCCESS, __func__, "_sector_size[i]: %u", _sector_size[i]);
 						break;
 					case CacheTrace:
 					default:
-						infof(R_SUCCESS, "parsing", __func__, "Ignoring irrelevant cache type: 0x%X\n", current->Cache.Type);
+						infof(R_SUCCESS, __func__, "Ignoring irrelevant cache type: 0x%X\n", current->Cache.Type);
 						break;
 				}
 				break;
@@ -127,7 +128,7 @@ static inline void __m_init_cpu_info(size_t *_caches, size_t *_cache_size, size_
 			case RelationGroup:
 			case RelationAll:
 			default:
-				infof(R_SUCCESS, "parsing", __func__, "Ignoring irrelevant relationship: 0x%X\n", current->Relationship);
+				infof(R_SUCCESS, __func__, "Ignoring irrelevant relationship: 0x%X\n", current->Relationship);
 				break;
 		}
 	}
@@ -137,7 +138,9 @@ static inline void __m_init_cpu_info(size_t *_caches, size_t *_cache_size, size_
 	// TODO UNIX __m_init_cpu_info
 	#else
 		#error "platform not yet supported"
-	#endif
+    #endif
+
+    clear_context();
 }
 
 static inline heap __m_get_process_heap() {
@@ -185,6 +188,7 @@ static inline bool __cmp(size_t a, size_t b, cardinality cardinality) {
 }
 
 void *m_copy(void *src, size_t srcoff, size_t srclen, cardinality srcdir, void *dst, size_t dstoff, size_t dstlen, cardinality dstdir) {
+    set_context("memory");
 	if (!src) {
 		fatalf("null pointer", __func__, "src (arg 1) is NULL");
 	}
