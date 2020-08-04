@@ -1,3 +1,3 @@
 project(Project-Aquinas)
-add_executable(Project-Aquinas aquinas.c compiler.c include/state.c memory.c platform.c reference_vm.h reference_vm.c objects/pattern_trie.h objects/pattern_trie.c bit_trie.c bit_trie.h math/bit_math.h objects/binary_tree.c objects/binary_tree.h include/asm.c include/asm.h math/frac_math.c math/frac_math.h objects/map.c objects/map.h)
+add_executable(Project-Aquinas aquinas.c compiler.c include/state.c memory.c platform.c reference_vm.h reference_vm.c objects/pattern_trie.h objects/pattern_trie.c bit_trie.c bit_trie.h math/bit_math.h objects/binary_tree.c objects/binary_tree.h include/asm.c include/asm.h math/frac_math.c math/frac_math.h objects/sigbits_map.c objects/sigbits_map.h)
 target_include_directories(Project-Aquinas PRIVATE ./include/ ./math/ ./objects/)
