@@ -28,22 +28,22 @@ typedef struct context {
 	// the super-context
 	struct context *origin;
 	// pattern_tree pointer array as a stack
-	pattern_tree   **stack;
+	tree_node   **stack;
 	// stack index
 	size_t         si;
 	// the length of the stack
 	size_t         length;
 	// the reference tree
-	pattern_tree   *reference;
+	tree_node   *reference;
 	// the current input
-	pattern_tree   *current;
+	tree_node   *current;
 } context;
 
-context c_begin(context local, pattern_tree in);
+context c_begin(context local, tree_node in);
 
-context c_end(context local, pattern_tree in);
+context c_end(context local, tree_node in);
 
-context c_link(context local, pattern_tree in);
+context c_link(context local, tree_node in);
 
 #endif /* COMPILER_H_ */
 

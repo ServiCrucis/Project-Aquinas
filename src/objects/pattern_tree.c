@@ -9,5 +9,5 @@
  */
 #include "pattern_tree.h"
 
-pattern_tree *p_next(pattern_tree *reference, pattern_tree *in, pattern_tree *out) {
+tree_node *p_next(tree_node *reference, tree_node *in, tree_node *out) {
 }

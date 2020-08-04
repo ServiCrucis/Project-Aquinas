@@ -8,17 +8,17 @@
 #include "compiler.h"
 
 
-static inline pattern_tree *__next_pattern(context context, pattern_tree in) {
+static inline tree_node *__next_pattern(context context, tree_node in) {
 }
 
-context c_begin(context local, pattern_tree in) {
+context c_begin(context local, tree_node in) {
 }
 
-context c_end(context local, pattern_tree in) {
+context c_end(context local, tree_node in) {
 
 }
 
-context c_link(context local, pattern_tree in) {
+context c_link(context local, tree_node in) {
 
 }
 

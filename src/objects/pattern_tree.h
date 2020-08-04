@@ -17,13 +17,13 @@
 
 #include "binary_tree.h"
 
-typedef struct pattern_tree {
-	struct pattern_tree *children;
+typedef struct tree_node {
+	struct tree_node *children;
 	uword order;
-} pattern_tree;
+} tree_node;
 
-pattern_tree p_read(FILE *in);
+typedef tree_node pattern_tree;
 
-void p_write(pattern_tree in, FILE *out);
+
 
 #endif //PROJECT_AQUINAS_PATTERN_TREE_H
