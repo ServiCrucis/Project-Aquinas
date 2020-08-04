@@ -12,38 +12,38 @@
 #include <stdbool.h>
 
 #include "state.h"
-#include "pattern_trie.h"
+#include "pattern_tree.h"
 
 typedef enum c_command {
-	// Opens a pattern_trie and makes it the current context (isomorphic)
+	// Opens a pattern_tree and makes it the current context (isomorphic)
 	BEGIN,
-	// Closes the pattern_trie in the current context sets the current context to the parent context (isomorphic)
+	// Closes the pattern_tree in the current context sets the current context to the parent context (isomorphic)
 	END,
-	// Links one pattern_trie to another creating a sequential continuity (new pattern_trie) at the point of bondage (isomorphic)
+	// Links one pattern_tree to another creating a sequential continuity (new pattern_tree) at the point of bondage (isomorphic)
 	LINK,
 } behavior;
 
-// a pattern_trie representing the current context
+// a pattern_tree representing the current context
 typedef struct context {
 	// the super-context
 	struct context *origin;
-	// pattern_trie pointer array as a stack
-	pattern_trie   **stack;
+	// pattern_tree pointer array as a stack
+	pattern_tree   **stack;
 	// stack index
 	size_t         si;
 	// the length of the stack
 	size_t         length;
 	// the reference tree
-	pattern_trie   *reference;
+	pattern_tree   *reference;
 	// the current input
-	pattern_trie   *current;
+	pattern_tree   *current;
 } context;
 
-context c_begin(context local, pattern_trie in);
+context c_begin(context local, pattern_tree in);
 
-context c_end(context local, pattern_trie in);
+context c_end(context local, pattern_tree in);
 
-context c_link(context local, pattern_trie in);
+context c_link(context local, pattern_tree in);
 
 #endif /* COMPILER_H_ */
 
