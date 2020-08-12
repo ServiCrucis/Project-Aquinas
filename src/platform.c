@@ -62,13 +62,13 @@ void *(*p_get_fn(char *module, char *function))() {
 #pragma clang diagnostic ignored "-Wincompatible-pointer-types"
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-function-type"
-void *(*p_get_fna(char *module, uintptr_t function_offset))() {
+void *(*p_get_fn_offset(char *module, uintptr_t function_offset))() {
 #if PLATFORM == P_WINDOWS || ENVIRONMENT == P_WINDOWS
 	return (void *(*)()) (LoadLibrary(module) + function_offset);
 #elif PLATFORM == P_LINUX || ENVIRONMENT == P_UNIX
-	// TODO UNIX p_get_fna
+	// TODO UNIX p_get_fn_offset
 #else
-	#error "[build][fatal][p_get_fna] platform not yet supported"
+	#error "[build][fatal][p_get_fn_offset] platform not yet supported"
 #endif
 }
 #pragma clang diagnostic pop
