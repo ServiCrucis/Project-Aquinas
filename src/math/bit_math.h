@@ -9,7 +9,7 @@
  *
  * License:
  * Codex Dominatio Publicus sub Leges
- * <https://github.com/MilitiaJustitiae/Licenses/blob/master/CODEX-DOMINATIO-PUBLICUS-SUB-LEGES.txt>
+ * <https://github.com/ServiRegis/Licenses/blob/master/CODEX-DOMINATIO-PUBLICUS-SUB-LEGES.txt>
  */
 
 #ifndef PROJECT_AQUINAS_BIT_MATH_H

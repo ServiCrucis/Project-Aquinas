@@ -6,6 +6,10 @@
  * Author: Andrew Porter [<caritasdedeus@gmail.com>](mailto:caritasdedeus@gmail.com)
  *
  * Copyright &copy; 2020 Christi Crucifixi, LLC. All rights reserved.
+ *
+ * License:
+ * Codex Dominatio Publicus sub Leges
+ * <https://github.com/ServiRegis/Licenses/blob/master/CODEX-DOMINATIO-PUBLICUS-SUB-LEGES.txt>
  */
 
 #pragma clang diagnostic push

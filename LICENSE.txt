@@ -6,4 +6,5 @@ This file and its contents are governed by Codex Creativus et Privatus
 ADDENDUM & OVERRIDES
 This License applies to the entirety of Project Aquinas except for the following whose licenses may be found therein:
 1. bit_math.h (Project-Aquinas/math/bit_math.h)
+2. asm.h (Project-Aquinas/include/asm.h)
 
