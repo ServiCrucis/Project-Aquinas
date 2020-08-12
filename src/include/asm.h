@@ -12,6 +12,10 @@
 #pragma ide diagnostic ignored "ConstantConditionsOC"
 #pragma ide diagnostic ignored "UnreachableCode"
 #pragma clang diagnostic ignored "-Wuninitialized"
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wimplicit-fallthrough="
+
 #ifndef PROJECT_AQUINAS_ASM_H
 #define PROJECT_AQUINAS_ASM_H
 
@@ -1130,3 +1134,4 @@ __attribute__((always_inline)) static inline unsigned long __x86_tzcnt(register 
 #endif //PROJECT_AQUINAS_ASM_H
 
 #pragma clang diagnostic pop
+#pragma GCC diagnostic pop

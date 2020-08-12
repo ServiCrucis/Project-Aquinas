@@ -143,7 +143,6 @@ pair sbm_delete(sigbits_map *restrict map, pair pair) {
     #define end_of_key() ( !bit_index )
     #define next_node_is_NULL() ( node_index < 0 )
     register typeof(*map->values) key = (typeof(*map->values)) pair.a;
-    register const uword value = pair.b;
     register uword bit_index = sigbits(key) - 1;
     register typeof(*map->node_indices) node_index;
     register map_node *current = map;

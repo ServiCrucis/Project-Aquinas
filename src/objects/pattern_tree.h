@@ -24,6 +24,8 @@ typedef struct tree_node {
 
 typedef tree_node pattern_tree;
 
+pattern_tree *ptree_create();
 
+void ptree_free(pattern_tree *restrict tree);
 
 #endif //PROJECT_AQUINAS_PATTERN_TREE_H

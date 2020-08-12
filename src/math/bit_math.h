@@ -63,11 +63,11 @@ typedef struct pair {
  */
 #define abs_diff(a, b) ( abs((a) - (b)) )
 
-static inline uword sqrti(register uword a);
-
-static inline uword dst(register point a, register point b) {
-    return sqrti(abs_diff(b.y, a.y) - abs_diff(b.x, a.x));
-}
+//static inline uword sqrti(register uword a);
+// TODO dst and sqrti
+//static inline uword dst(register point a, register point b) {
+//    return sqrti(abs_diff(b.y, a.y) - abs_diff(b.x, a.x));
+//}
 
 /*
  * Generates a bit mask from the given value that sets bit_count bits from the right to ones.
@@ -387,6 +387,8 @@ static inline uword get_bita(uword const *restrict bitarray, uword const words, 
     return bit;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 static inline uword *get_bitsa(uword const *restrict bitarray, uword const words, uword const bit_index, uword const value_bits) {
     // TODO implement get_bits
     uword bits = sizeof(uword) * sizeof(uintmin_t) * MIN_BITS;
@@ -428,7 +430,7 @@ static inline uword set_bit(uword bit_string, ubyte bit, ubyte value) {
 }
 
 static inline uword clear_bit(uword bit_string, ubyte bit) {
-    set_bit(bit_string, bit, 0);
+    return set_bit(bit_string, bit, 0);
 }
 
 #endif //PROJECT_AQUINAS_BIT_MATH_H

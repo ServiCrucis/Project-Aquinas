@@ -25,6 +25,8 @@
 #include "sigbits_map.h"
 #include "memory.h"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-function"
 
 static void test_expi() {
     for (ubyte i = 0; i < 45; i++) {
@@ -93,7 +95,7 @@ static void test_digits() {
 static void test_to_digits() {
     uword value = UINT64_MAX;
     ubyte digits[20];
-    for (uword i = 19; i >= 0; i--) {
+    for (ubyte i = 19; i < 20; i--) {
         digits[i] = get_digit10i(value, i);
         infof(__func__, "digit[%llu] = %llu\n", i, digits[i]);
     }
@@ -441,7 +443,12 @@ static void test_cpuid() {
 
 static void test_memory() {
     m_init();
+    info(__func__, "Memory module successfully initialized");
+
+
 }
+
+#pragma GCC diagnostic pop
 
 int main(int argc, char **argv) {
     info(__func__, "Running.\n");
