@@ -26,14 +26,14 @@ bit_trie *btt_create(pair const *pairs, uword depth, uword length) {
 	bit_trie *result = malloc(sizeof(bit_trie));
 	
 	if (!result) {
-		fatalf("allocating", __func__, "failed to allocate memory for binary_trie");
+		fatalf(__func__, "failed to allocate memory for binary_trie");
 	}
 	
 	result->binodes = calloc((2u << depth) / BITS, sizeof(uword));
 	result->depth   = depth;
 	
 	if (!result->binodes) {
-		fatalf("allocating", __func__, "failed to allocate memory for binary_trie");
+		fatalf(__func__, "failed to allocate memory for binary_trie");
 	}
 	
 	for (uword i = 0; i < length; i++) {

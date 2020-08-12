@@ -18,21 +18,9 @@ static char *aqu_result_messages[] =
                 [R_FAILURE] = "FAILURE",
         };
 
-void info(char const *information, ...) {
+void info(char const *restrict fn_name, char const *information, ...) {
     fputs("[info]", stdout);
     fputc('[', stdout);
-    fputs(_global_context, stdout);
-    fputs("] ", stdout);
-    va_list objects;
-    va_start(objects, information);
-    vprintf(information, objects);
-    va_end(objects);
-}
-
-void infof(enum result_code const code, char const *fn_name, char const *information, ...) {
-    fputs("[info][", stdout);
-    fputs(aqu_result_messages[code], stdout);
-    fputs("][", stdout);
     fputs(_global_context, stdout);
     fputs("][", stdout);
     fputs(fn_name, stdout);
@@ -43,10 +31,20 @@ void infof(enum result_code const code, char const *fn_name, char const *informa
     va_end(objects);
 }
 
-void warnf(enum result_code const code, char const *fn_name, char const *warning, ...) {
-    fputs("[warning][", stdout);
-    fputs(aqu_result_messages[code], stdout);
+void infof(char const *restrict fn_name, char const *information, ...) {
+    fputs("[info][", stdout);
+    fputs(_global_context, stdout);
     fputs("][", stdout);
+    fputs(fn_name, stdout);
+    fputs("] ", stdout);
+    va_list objects;
+    va_start(objects, information);
+    vprintf(information, objects);
+    va_end(objects);
+}
+
+void warnf(char const *restrict fn_name, char const *warning, ...) {
+    fputs("[warning][", stdout);
     fputs(_global_context, stdout);
     fputs("][", stdout);
     fputs(fn_name, stdout);
@@ -57,7 +55,7 @@ void warnf(enum result_code const code, char const *fn_name, char const *warning
     va_end(objects);
 }
 
-void fatalf(char const *fn_name, char const *error_message, ...) {
+void fatalf(char const *restrict fn_name, char const *error_message, ...) {
     fputs("[fatal][", stderr);
     fputs(_global_context, stderr);
     fputs("][", stderr);

@@ -41,8 +41,8 @@ static inline void map_resize_nodes(register map_node *restrict node, register u
     map_node *new_children = realloc(old_children, new_length * sizeof(*new_children));
 
     if (!new_children) {
-        warnf(R_FAILURE, __func__, "Failed to reallocate memory for node resizing.\n");
-        warnf(R_FAILURE, __func__, "Attempting to allocate new memory\n");
+        warnf(__func__, "Failed to reallocate memory for node resizing.\n");
+        warnf(__func__, "Attempting to allocate new memory\n");
         new_children = calloc(new_length, sizeof(*new_children));
 
         if (!new_children) {

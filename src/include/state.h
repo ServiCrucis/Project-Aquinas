@@ -58,11 +58,11 @@ static inline void clear_context() {
     _global_context = _global_previous_context;
 }
 
-void info(char const *information, ...);
+void info(char const *restrict fn_name, char const *information, ...);
 
-void infof(enum result_code const code, char const *restrict fn_name, char const *restrict information, ...);
+void infof(char const *restrict fn_name, char const *restrict information, ...);
 
-void warnf(enum result_code const code, char const *restrict fn_name, char const *restrict warning, ...);
+void warnf(char const *restrict fn_name, char const *restrict warning, ...);
 
 __attribute__((noreturn)) void fatalf(char const *restrict fn_name, char const *restrict error_message, ...);
 
