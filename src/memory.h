@@ -18,10 +18,13 @@ typedef enum cache {
     L1 = 0,
     L2 = 1,
     L3 = 2,
-    L3_SHARED = 3
+    L1_DATA = 0,
+    L1_INSTRUCTION = 1,
+    L2_UNIFIED = 2,
+    L3_UNIFIED = 3
 } cache;
 
-void m_init();
+void m_initialize();
 
 void *m_create(uword bytes);
 

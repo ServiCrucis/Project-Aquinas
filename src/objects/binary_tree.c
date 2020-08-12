@@ -45,15 +45,17 @@ void binary_tree_set(binary_tree *restrict tree, uword address, uword value) {
 uword *b_get_all(binary_tree *restrict tree, uword *addresses, uword length) {
     uword *values = malloc(sizeof(uword) * length);
     binode *node;
-iterate_addresses:
-    for (ubyte i = 0; i < length; i++) {
+
+    for (uword i = 0; i < length; i++) {
         node = b_traverse((binode *) tree, addresses[i]);
         values[i] = node->value;
     }
+
+    return values;
 }
 
-void b_set_all(binary_tree *restrict tree, pair *values, uword length) {
-    binode *node;
-    pair *pair;
-
-}
+//void b_set_all(binary_tree *restrict tree, pair *values, uword length) {
+//    binode *node;
+//    pair *pair;
+//
+//}

@@ -42,7 +42,7 @@ static struct x86_cpuid_info *cpuid_info;
 //static void *heap_metadata;
 
 
-static inline void __m_init_page_size(size_t *_page_size) {
+static inline void m_init_page_size(size_t *_page_size) {
     //  set `page_size`
     #if PLATFORM == P_WINDOWS || ENVIRONMENT == P_WINDOWS
     SYSTEM_INFO info;
@@ -58,7 +58,7 @@ static inline void __m_init_page_size(size_t *_page_size) {
     }
 }
 
-static inline void __m_init_cpu_info(size_t *_caches, size_t *_cache_size, size_t *_behavior_cache_size, size_t *_sector_size, size_t *_word_size) {
+static inline void m_init_cpu_info(size_t *_caches, size_t **_cache_size, size_t *_behavior_cache_size, size_t **_sector_size, size_t *_word_size) {
     // initialize cpu info based on data model
     #if ARCH_VARIANT == ARCH_X86_32
     // execute CPUID; fatalf if CPUID is unsupported
@@ -66,13 +66,23 @@ static inline void __m_init_cpu_info(size_t *_caches, size_t *_cache_size, size_
     cpuid_info = __x86_cpuid();
 
     *_caches = cpuid_info->cache_topologies;
+    // initialize cache and sector size
+    *_cache_size = malloc(7 * sizeof(size_t));
+    *_sector_size = &(*_cache_size)[3];
     // 1KiB = 1024 bytes
-    _cache_size[L1] = (size_t) (cpuid_info->L1DcSize * 1024u);
     *_behavior_cache_size = (size_t) (cpuid_info->L1IcSize * 1024u);
-    _cache_size[L2] = (size_t) (cpuid_info->L2Size * 1024u);
+    (*_cache_size)[L1] = (size_t) (cpuid_info->L1DcSize * 1024u);
+    (*_cache_size)[L2] = (size_t) (cpuid_info->L2Size * 1024u);
     // 512KiB = 524,288 bytes
-    _cache_size[L3] = (size_t) (cpuid_info->L3Size * 524288u);
-    *_sector_size = (size_t) cpuid_info->cache_topology[L1].CacheLineSize;
+    if (cpuid_info->L3Size == 8192)
+        (*_cache_size)[L3] = 0xFFFFFFFFu;
+    else
+        (*_cache_size)[L3] = (size_t) (cpuid_info->L3Size * 524288u);
+
+    (*_sector_size)[L1_DATA] = (size_t) cpuid_info->cache_topology[L1_DATA].CacheLineSize + 1;
+    (*_sector_size)[L1_INSTRUCTION] = (size_t) cpuid_info->cache_topology[L1_INSTRUCTION].CacheLineSize + 1;
+    (*_sector_size)[L2_UNIFIED] = (size_t) cpuid_info->cache_topology[L2_UNIFIED].CacheLineSize + 1;
+    (*_sector_size)[L3_UNIFIED] = (size_t) cpuid_info->cache_topology[L3_UNIFIED].CacheLineSize + 1;
     *_word_size = 32u;
     #elif ARCH_VARIANT == ARCH_X86_64
     // execute CPUID; fatalf if CPUID is unsupported
@@ -80,13 +90,19 @@ static inline void __m_init_cpu_info(size_t *_caches, size_t *_cache_size, size_
     cpuid_info = __x64_cpuid();
 
     *_caches = cpuid_info->cache_topologies;
+    // initialize cache and sector size
+    *_cache_size = malloc(7 * sizeof(size_t));
+    *_sector_size = &(*_cache_size)[3];
     // 1KiB = 1024 bytes
-    _cache_size[L1] = (size_t) (cpuid_info->L1DcSize * 1024u);
     *_behavior_cache_size = (size_t) (cpuid_info->L1IcSize * 1024u);
-    _cache_size[L2] = (size_t) (cpuid_info->L2Size * 1024u);
+    (*_cache_size)[L1] = (size_t) (cpuid_info->L1DcSize * 1024u);
+    (*_cache_size)[L2] = (size_t) (cpuid_info->L2Size * 1024u);
     // 512KiB = 524,288 bytes
-    _cache_size[L3] = (size_t) (cpuid_info->L3Size * 524288u);
-    *_sector_size = (size_t) cpuid_info->cache_topology[L1].CacheLineSize;
+    (*_cache_size)[L3] = (size_t) (cpuid_info->L3Size * 524288u);
+    (*_sector_size)[L1_DATA] = (size_t) cpuid_info->cache_topology[L1_DATA].CacheLineSize + 1;
+    (*_sector_size)[L1_INSTRUCTION] = (size_t) cpuid_info->cache_topology[L1_INSTRUCTION].CacheLineSize + 1;
+    (*_sector_size)[L2_UNIFIED] = (size_t) cpuid_info->cache_topology[L2_UNIFIED].CacheLineSize + 1;
+    (*_sector_size)[L3_UNIFIED] = (size_t) cpuid_info->cache_topology[L3_UNIFIED].CacheLineSize + 1;
     *_word_size = 64u;
     #elif ARCH == ARCH_ARM
     #error "ARM platform not yet supported by memory module"
@@ -97,9 +113,9 @@ static inline void __m_init_cpu_info(size_t *_caches, size_t *_cache_size, size_
 
 }
 
-void m_init() {
-    __m_init_page_size(&page_size);
-    __m_init_cpu_info(&caches, cache_size, &behavior_cache_size, sector_size, &word_size);
+void m_initialize() {
+    m_init_page_size(&page_size);
+    m_init_cpu_info(&caches, &cache_size, &behavior_cache_size, &sector_size, &word_size);
 }
 
 size_t m_get_page_size() {

@@ -112,17 +112,17 @@ static inline frac_t frc(register int32_t numerator, register int32_t denominato
     #undef max
 }
 
-static inline frac_t flt_to_frc(ieee_float32 a) {
-}
-
-static inline frac_t dbl_to_frc(ieee_float64 a) {
-}
-
-static inline ieee_float32 frc_to_flt(frac_t a) {
-}
-
-static inline ieee_float64 frc_to_dbl(frac_t a) {
-}
+//static inline frac_t flt_to_frc(ieee_float32 a) {
+//}
+//
+//static inline frac_t dbl_to_frc(ieee_float64 a) {
+//}
+//
+//static inline ieee_float32 frc_to_flt(frac_t a) {
+//}
+//
+//static inline ieee_float64 frc_to_dbl(frac_t a) {
+//}
 
 static inline int32_t frc_rdnum(register frac_t a) {
     return (-1 * a.sign) * (a.significand >> a.divider);
@@ -132,17 +132,9 @@ static inline int32_t frc_rdden(register frac_t a) {
     return (-1 * a.sign) * (a.significand & frc_bitmaskv(a.significand, 63 - a.divider));
 }
 
-static inline uword frc_wrnum(register frac_t a) {
-
-}
-
-static inline uword frc_wrden(register frac_t a) {
-
-}
-
-static inline uword frc_ctz10(register uword a) {
-
-}
+//static inline uword frc_ctz10(register uword a) {
+//
+//}
 
 static inline frac_t frc_add(register frac_t a, register frac_t b) {
     register int32_t a_num = frc_rdnum(a);
@@ -257,12 +249,11 @@ static inline uword frc_gcd(register frac_t a) {
 /*
  * Simplifies the given value without loss of information.
  */
-static inline frac_t frc_simplify(register frac_t a) {
-    register uword gcd = frc_gcd(a);
-    register uint32_t numerator = frc_rdnum(a);
-    register uint32_t denominator = frc_rdden(a);
-
-
-}
+//static inline frac_t frc_simplify(register frac_t a) {
+//    register uword gcd = frc_gcd(a);
+//    register uint32_t numerator = frc_rdnum(a);
+//    register uint32_t denominator = frc_rdden(a);
+//
+//}
 
 #endif //CATHOLICUS_FRAC_MATH_H

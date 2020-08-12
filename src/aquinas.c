@@ -442,10 +442,19 @@ static void test_cpuid() {
 }
 
 static void test_memory() {
-    m_init();
-    info(__func__, "Memory module successfully initialized");
-
-
+    m_initialize();
+    info(__func__, "Memory module successfully initialized\n");
+    info(__func__, "\n");
+    infof(__func__, "cache_size[L1]: %llu\n", m_get_cache_size(L1));
+    infof(__func__, "cache_size[L2]: %llu\n", m_get_cache_size(L2));
+    infof(__func__, "cache_size[L3]: %llu\n", m_get_cache_size(L3));
+    infof(__func__, "behavior_cache_size: %llu\n", m_get_behavior_cache_size());
+    infof(__func__, "page_size: %llu\n", m_get_page_size());
+    infof(__func__, "sector_size[L1_DATA]: %llu\n", m_get_sector_size(L1_DATA));
+    infof(__func__, "sector_size[L1_INSTRUCTION]: %llu\n", m_get_sector_size(L1_INSTRUCTION));
+    infof(__func__, "sector_size[L2_UNIFIED]: %llu\n", m_get_sector_size(L2_UNIFIED));
+    infof(__func__, "sector_size[L3_UNIFIED]: %llu\n", m_get_sector_size(L3_UNIFIED));
+    infof(__func__, "word_size: %llu\n", m_get_word_size());
 }
 
 #pragma GCC diagnostic pop
@@ -461,8 +470,8 @@ int main(int argc, char **argv) {
     //test_bittrie();
     //test_binary_trie();
     //test_map();
-    test_cpuid();
-    //test_memory();
+    //test_cpuid();
+    test_memory();
 
     return R_SUCCESS;
 }
