@@ -15,16 +15,22 @@
 #define PROJECT_AQUINAS_MEMORY_H
 
 typedef enum cache {
+    // Use L1, L2, and L3 for accessing cache sizes
     L1 = 0,
     L2 = 1,
     L3 = 2,
+    // use L1_DATA, L1_INSTRUCTION, L2_UNIFIED, and L3_UNIFIED for accessing sector (cache line) sizes
     L1_DATA = 0,
     L1_INSTRUCTION = 1,
     L2_UNIFIED = 2,
     L3_UNIFIED = 3
 } cache;
 
-void m_initialize();
+struct heap_metadata {
+
+};
+
+void m_initialize(uword min_bytes, uword max_stack_size);
 
 void *m_create(uword bytes);
 

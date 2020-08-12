@@ -455,6 +455,9 @@ static void test_memory() {
     infof(__func__, "sector_size[L2_UNIFIED]: %llu\n", m_get_sector_size(L2_UNIFIED));
     infof(__func__, "sector_size[L3_UNIFIED]: %llu\n", m_get_sector_size(L3_UNIFIED));
     infof(__func__, "word_size: %llu\n", m_get_word_size());
+    info(__func__, "\n");
+
+
 }
 
 #pragma GCC diagnostic pop

@@ -23,6 +23,7 @@
 #include "memory.h"
 #include "platform.h"
 #include "asm.h"
+#include "bit_math.h"
 
 // the size of a page in bytes
 static size_t page_size; // in bytes
@@ -37,9 +38,9 @@ static size_t *cache_sectors;
 // cpuid info for x86
 static struct x86_cpuid_info *cpuid_info;
 
-//static void *stack_heap;
+static void *stack_heap;
 
-//static void *heap_metadata;
+static struct heap_metadata *heap_data;
 
 
 static inline void m_init_page_size(size_t *_page_size) {
@@ -113,10 +114,26 @@ static inline void m_init_cpu_info(size_t *_caches, size_t **_cache_size, size_t
 
 }
 
-void m_initialize() {
+static inline uword m_normalize(uword bytes) {
+    const uword sector_size_sigbits = sigbits(cache_sectors[L1_DATA]);
+    const uword bytes_sigbits = sigbits(bytes);
+    const uword sigbits_diff = max(sector_size_sigbits, bytes_sigbits) - min(sector_size_sigbits, bytes_sigbits);
+    const uword result = cache_sectors[L1_DATA] << sigbits_diff;
+    return result;
+}
+
+void m_initialize(uword min_bytes, uword max_stack_size) {
+    stack_heap = malloc(m_normalize(min_bytes));
+    heap_data = calloc(1, sizeof(struct heap_metadata));
     m_init_page_size(&page_size);
     m_init_cpu_info(&caches, &cache_size, &behavior_cache_size, &sector_size, &word_size);
 }
+
+
+void *m_create(uword bytes) {
+    bytes = m_normalize(bytes);
+}
+
 
 size_t m_get_page_size() {
     return page_size;
