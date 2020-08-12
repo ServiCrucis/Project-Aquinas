@@ -23,8 +23,8 @@
  *                                           AMD64 (x86_64 LP64 thru SILP64)										  *
  **********************************************************************************************************************/
 
-static inline unsigned long long __x64_bsrl(register unsigned long long volatile value) {
-    asm("bsrl %0, %0" : "=r" (value) : "r" (value));
+__attribute__((always_inline)) static inline unsigned long long __x64_bsrl(register unsigned long long volatile value) {
+    asm("bsrq %0, %0" : "=r" (value) : "r" (value));
     return value;
 }
 
@@ -360,7 +360,7 @@ struct x86_cpuid_info {
     unsigned int MinSevNoEsAsid;
 };
 
-__attribute__((always_inline, cold)) static inline unsigned long long __x86_64_cpuid_supported() {
+__attribute__((always_inline, cold)) static inline unsigned long long __x64_cpuid_supported() {
     register unsigned int eax asm("eax");
     register unsigned int ebx asm("ebx");
     // from AMD instruction manual
@@ -1072,12 +1072,12 @@ __attribute__((always_inline)) static inline struct x86_cpuid_info *__x64_cpuid(
 }
 
 __attribute__((always_inline)) static inline unsigned long __x64_lzcnt(register unsigned long volatile value) {
-    asm("lzcnt %0, %0" : "=r" (value) : "r" (value));
+    asm("lzcntq %0, %0" : "=r" (value) : "r" (value));
     return value;
 }
 
 __attribute__((always_inline)) static inline unsigned long __x64_tzcnt(register unsigned long volatile value) {
-    asm("tzcnt %0, %0" : "=r" (value) : "r" (value));
+    asm("tzcntq %0, %0" : "=r" (value) : "r" (value));
     return value;
 }
 
@@ -1090,17 +1090,40 @@ __attribute__((always_inline)) static inline unsigned long __x86_bsrl(register u
     return value;
 }
 
+__attribute__((always_inline, cold)) static inline unsigned long long __x86_cpuid_supported() {
+    register unsigned int eax asm("eax");
+    register unsigned int ebx asm("ebx");
+    // from AMD instruction manual
+    asm volatile (
+    // eax = EFLAGS
+    "pushfd\n"
+    "pop %eax\n"
+    // flip bit 21 of eax
+    "xorl $00200000, %eax\n"
+    // ebx = eax
+    "movl %eax, %ebx\n"
+    // EFLAGS = (stack[top] = eax)
+    "push %eax\n"
+    "popfq\n"
+    "pushfd\n"
+    // eax = EFLAGS
+    "pop %eax\n"
+    );
+    // cpuid supported if eax is not ebx
+    return eax != ebx;
+}
+
 __attribute__((always_inline)) static inline struct x86_cpuid_info *__x86_cpuid() {
     return __x86_x64_cpuid();
 }
 
-__attribute__((always_inline, cold)) static inline unsigned long __x86_lzcnt(register unsigned long volatile value) {
-    asm("lzcnt %0, %0" : "=r" (value) : "r" (value));
+__attribute__((always_inline)) static inline unsigned long __x86_lzcnt(register unsigned long volatile value) {
+    asm("lzcntl %0, %0" : "=r" (value) : "r" (value));
     return value;
 }
 
-__attribute__((always_inline, cold)) static inline unsigned long __x86_tzcnt(register unsigned long volatile value) {
-    asm("tzcnt %0, %0" : "=r" (value) : "r" (value));
+__attribute__((always_inline)) static inline unsigned long __x86_tzcnt(register unsigned long volatile value) {
+    asm("tzcntl %0, %0" : "=r" (value) : "r" (value));
     return value;
 }
 
