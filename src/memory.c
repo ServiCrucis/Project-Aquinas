@@ -32,15 +32,14 @@ static size_t *sector_size; // a cache sector in bytes
 static size_t word_size; // in bytes
 // number of CPU caches available
 static size_t caches = 0;
-// size of the heap in pages
-static size_t pages = 0;
 // number of sectors per cache
 static size_t *cache_sectors;
 // cpuid info for x86
-static struct x86_cpuid_info *cpu_info;
+static struct x86_cpuid_info *cpuid_info;
 
-static void *stacks;
-static void *metadata;
+//static void *stack_heap;
+
+//static void *heap_metadata;
 
 
 static inline void __m_init_page_size(size_t *_page_size) {
@@ -60,14 +59,40 @@ static inline void __m_init_page_size(size_t *_page_size) {
 }
 
 static inline void __m_init_cpu_info(size_t *_caches, size_t *_cache_size, size_t *_behavior_cache_size, size_t *_sector_size, size_t *_word_size) {
-    // initialize cpuid based on data model
-    #if ARCH == ARCH_X86_32
+    // initialize cpu info based on data model
+    #if ARCH_VARIANT == ARCH_X86_32
+    // execute CPUID; fatalf if CPUID is unsupported
+    if (!__x86_cpuid_supported()) fatalf(__func__, "Unable to initialize CPU info: CPUID instruction not supported");
+    cpuid_info = __x86_cpuid();
+
+    *_caches = cpuid_info->cache_topologies;
+    // 1KiB = 1024 bytes
+    _cache_size[L1] = (size_t) (cpuid_info->L1DcSize * 1024u);
+    *_behavior_cache_size = (size_t) (cpuid_info->L1IcSize * 1024u);
+    _cache_size[L2] = (size_t) (cpuid_info->L2Size * 1024u);
+    // 512KiB = 524,288 bytes
+    _cache_size[L3] = (size_t) (cpuid_info->L3Size * 524288u);
+    *_sector_size = (size_t) cpuid_info->cache_topology[L1].CacheLineSize;
+    *_word_size = 32u;
+    #elif ARCH_VARIANT == ARCH_X86_64
     // execute CPUID; fatalf if CPUID is unsupported
     if (!__x64_cpuid_supported()) fatalf(__func__, "Unable to initialize CPU info: CPUID instruction not supported");
-    cpu_info = __x64_cpuid();
-    // execute CPUID; fatalf if CPUID is unsupported
-    if (!__x64_cpuid_supported()) fatalf(__func__, "Unable to initialize CPU info: CPUID instruction not supported");
-    cpu_info = __x64_cpuid();
+    cpuid_info = __x64_cpuid();
+
+    *_caches = cpuid_info->cache_topologies;
+    // 1KiB = 1024 bytes
+    _cache_size[L1] = (size_t) (cpuid_info->L1DcSize * 1024u);
+    *_behavior_cache_size = (size_t) (cpuid_info->L1IcSize * 1024u);
+    _cache_size[L2] = (size_t) (cpuid_info->L2Size * 1024u);
+    // 512KiB = 524,288 bytes
+    _cache_size[L3] = (size_t) (cpuid_info->L3Size * 524288u);
+    *_sector_size = (size_t) cpuid_info->cache_topology[L1].CacheLineSize;
+    *_word_size = 64u;
+    #elif ARCH == ARCH_ARM
+    #error "ARM platform not yet supported by memory module"
+    #else
+    #error "This platform is not currently supported by the memory module"
+    #endif
 
 
 }

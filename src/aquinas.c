@@ -461,8 +461,8 @@ int main(int argc, char **argv) {
     //test_bittrie();
     //test_binary_trie();
     //test_map();
-    //test_cpuid();
-    test_memory();
+    test_cpuid();
+    //test_memory();
 
     return R_SUCCESS;
 }

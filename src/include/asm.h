@@ -219,12 +219,12 @@ struct x86_cpuid_info {
     unsigned char L2DTlb4KSize;
     unsigned char L2ITlb4KSize;
 
-    unsigned char L2Size;
+    unsigned short L2Size;
     unsigned char L2Assoc:4;
     unsigned char L2LinesPerTag:4;
     unsigned char L2LineSize;
 
-    unsigned char L3Size;
+    unsigned short L3Size;
     unsigned char L3Assoc:4;
     unsigned char L3LinesPerTag:4;
     unsigned char L3LineSize;
