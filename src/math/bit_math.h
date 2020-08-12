@@ -103,7 +103,7 @@ static inline uword sigbits(register uword bit_string) {
 #else
 #error "Unsupported data model"
 #endif
-#elif ARCH == ARCH_INTEL_X86
+#elif ARCH == ARCH_X86_32
     // must check CPU compatibility first
     return bitwidth(typeof(bit_string)) - __x86_lzcnt((((unsigned long) bit_string) | 1u));
 #elif ARCH == ARCH_AMD64

@@ -36,6 +36,12 @@ static size_t caches = 0;
 static size_t pages = 0;
 // number of sectors per cache
 static size_t *cache_sectors;
+// cpuid info for x86
+static struct x86_cpuid_info *cpu_info;
+
+static void *stacks;
+static void *metadata;
+
 
 static inline void __m_init_page_size(size_t *_page_size) {
     //  set `page_size`
@@ -54,9 +60,14 @@ static inline void __m_init_page_size(size_t *_page_size) {
 }
 
 static inline void __m_init_cpu_info(size_t *_caches, size_t *_cache_size, size_t *_behavior_cache_size, size_t *_sector_size, size_t *_word_size) {
+    // initialize cpuid based on data model
+    #if ARCH == ARCH_X86_32
     // execute CPUID; fatalf if CPUID is unsupported
     if (!__x64_cpuid_supported()) fatalf(__func__, "Unable to initialize CPU info: CPUID instruction not supported");
-    struct x86_cpuid_info *cpu_info = __x64_cpuid();
+    cpu_info = __x64_cpuid();
+    // execute CPUID; fatalf if CPUID is unsupported
+    if (!__x64_cpuid_supported()) fatalf(__func__, "Unable to initialize CPU info: CPUID instruction not supported");
+    cpu_info = __x64_cpuid();
 
 
 }

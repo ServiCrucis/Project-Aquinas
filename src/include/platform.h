@@ -1109,7 +1109,7 @@
  * 													ARCHITECTURE VARIABLES
  **********************************************************************************************************************/
 
-#define ARCH_INTEL_X86         1
+#define ARCH_X86_32            1
 #define ARCH_X86_64            2
 #define ARCH_AMD64 ARCH_X86_64
 #define ARCH_ARM64             3
@@ -1170,7 +1170,7 @@
 
 
 #if defined(i386) || defined(__i386) || defined(__i386__) || defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__)
-#define ARCHITECTURE ARCH_INTEL_X86
+#define ARCHITECTURE ARCH_X86_32
 #define ARCHITECTURE_NAME "Intel x86"
 #endif
 
