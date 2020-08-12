@@ -94,7 +94,6 @@ static inline uword bitmask(register uword value) {
 static inline uword sigbits(register uword bit_string) {
 #if defined(__GNUC__)
 #if DATA_MODEL == LLP64 || DATA_MODEL == ILP64 || DATA_MODEL == SILP64
-    r_info("LLP64 or ILP64 or SILP64");
     return bitwidth(typeof(bit_string)) - __builtin_clzll((bit_string | 1ull));
 #elif DATA_MODEL == LP64
     return bitwidth(typeof(bit_string)) - __builtin_clzll((bit_string | 1ul));
@@ -104,15 +103,14 @@ static inline uword sigbits(register uword bit_string) {
 #error "Unsupported data model"
 #endif
 #elif ARCH == ARCH_X86_32
-    // must check CPU compatibility first
     return bitwidth(typeof(bit_string)) - __x86_lzcnt((((unsigned long) bit_string) | 1u));
 #elif ARCH == ARCH_AMD64
-    return __x64_bsrl((unsigned long long) bit_string);
+    return __x64_bsrq((unsigned long long) bit_string);
 #elif ARCH == ARCH_ARM
 #if ARCH_VARIANT == ARCH_ARM32
-        return bitwidth(typeof(bit_string)) - __arm32_clz(~(((unsigned long) bit_string) | 1u));
+        return bitwidth(typeof(bit_string)) - __arm32_clz((((unsigned long) bit_string) | 1u));
 #elif ARCH_VARIANT == ARCH_ARM64
-        return bitwidth(typeof(bit_string)) - __arm64_clz(~(((unsigned long) bit_string) | 1u));
+        return bitwidth(typeof(bit_string)) - __arm64_clz((((unsigned long) bit_string) | 1u));
 #else
 #error "ARM variant not supported"
 #endif
