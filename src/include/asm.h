@@ -384,7 +384,7 @@ __attribute__((always_inline, cold)) static inline unsigned long long __x64_cpui
 }
 
 /*
- * Collates the output of every functional execution of CPUID on the native AMD 64-bit x86 CPU.
+ * Collates the output of every functional execution of CPUID on the native x86(_64) CPU.
  * If for some reason the rax register is corrupted during execution of this (inline) function
  * (e.g. due to CPU instability, or radiation), then the function returns the x86_cpuid_info
  * struct in whatever state it was left in before it encountered an invalid function.
