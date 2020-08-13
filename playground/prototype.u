@@ -74,28 +74,13 @@
 *      or more principles.
 */
 
-module module :
-{
-    module inner_module : {}
+// Reminder to self: formal trees: anamorphic, catamorphic
 
-    object object :
-    {
-        type member_identifier;
-        ...
-    }
+// define x as value
+x(1)
+// define y as value
+y(1)
+// define + as sum (... here in-place for an implementation, not actual syntax)
++(a, b : ... : c)
 
-    // global precedence for types
-    // identifiers become names for objects as unique types
-    object instance : {
-
-    }
-
-    function expand(x) : {
-
-    }
-
-    function function_return_object(a,b,c) : {
-
-    }
-
-}
+(x :+: y) // generate sum of x and y
