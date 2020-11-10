@@ -26,8 +26,7 @@
 #include "memory.h"
 #include "tests.h"
 
-int main(int argc, char **argv) {
-    info(__func__, "Running.\n");
+void run_tests() {
     test_expi();
     //test_lni();
     //test_log10i();
@@ -38,7 +37,13 @@ int main(int argc, char **argv) {
     //test_binary_trie();
     //test_map();
     //test_cpuid();
-    //test_memory();
+    //test_dynarray();
+}
+
+int main(int argc, char **argv) {
+    info(__func__, "Running.\n");
+    
+    run_tests();
     
     return R_SUCCESS;
 }
