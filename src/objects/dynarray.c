@@ -64,5 +64,6 @@ dynarray *dynarray_resize(dynarray *restrict array, uint32_t size) {
     if (!array)
         fatalf(__func__, "failed to reallocate memory to resize array\n");
     
+    array->data_length = size;
     return array;
 }
