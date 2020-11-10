@@ -89,32 +89,103 @@ static inline uword bitmask(register uword value) {
 }
 
 /*
+ * Compute number of significant base 10 digits in a given base 2 word
+ */
+static inline uword digits(register uword bit_string) {
+    // ln(10) / ln(2) ~= 3.3219280948873623478703194294894
+    const usuperword numerator   = 10000ull;
+    const usuperword denominator = 33219ull;
+    const usuperword x           = bit_string;
+    return (uword) ((((usuperword) sigbits(x)) * numerator) / denominator + 1);
+}
+
+/*
+ * Count the number of leading zeroes in bit_string.
+ */
+static inline uword cntlz(register uword bit_string) {
+    #if ARCH == ARCH_X86_32
+    return __x86_lzcnt(bit_string);
+    #elif ARCH == ARCH_X86_64
+    return __x64_lzcnt(bit_string);
+    #else
+    ubyte zeroes = 0;
+    // zeroes to ones
+    bit_string = ~bit_string;
+    ubyte loop_condition;
+    for (uword i = bitwidth(bit_string) - 1u; i < bitwidth(bit_string) && (loop_condition = (bit_string >> i) & 1u); i++) {
+        zeroes += loop_condition;
+    }
+    return zeroes;
+    #endif
+}
+
+/*
+ * Count the number of trailing zeroes in bit_string.
+ */
+static inline uword cnttz(register uword bit_string) {
+    #if ARCH == ARCH_X86_32
+    return __x86_tzcnt(bit_string);
+    #elif ARCH == ARCH_X86_64
+    return __x64_tzcnt(bit_string);
+    #else
+    ubyte zeroes = 0;
+    // zeroes to ones
+    bit_string = ~bit_string;
+    ubyte loop_condition;
+    for (uword i = 0; i < bitwidth(bit_string) && (loop_condition = (bit_string >> i) & 1u); i++) {
+        zeroes += loop_condition;
+    }
+    return zeroes;
+    #endif
+}
+
+/*
+ * Count the number of ones in a bit_string
+ */
+static inline uword ones(register uword bit_string) {
+    #if ARCH == ARCH_X86_32
+    return __x86_popcnt(bit_string);
+    #elif ARCH == ARCH_X86_64
+    return __x64_popcnt(bit_string);
+    #else
+    ubyte zeroes = 0;
+    // zeroes to ones
+    bit_string = ~bit_string;
+    ubyte loop_condition;
+    for (uword i = 0; i < bitwidth(bit_string) && (loop_condition = (bit_string >> i) & 1u); i++) {
+        zeroes += loop_condition;
+    }
+    return zeroes;
+    #endif
+}
+
+/*
  * Compute the number of significant bits in the given word
  */
 static inline uword sigbits(register uword bit_string) {
-#if defined(__GNUC__)
-#if DATA_MODEL == LLP64 || DATA_MODEL == ILP64 || DATA_MODEL == SILP64
+    #if defined(__GNUC__)
+        #if DATA_MODEL == LLP64 || DATA_MODEL == ILP64 || DATA_MODEL == SILP64
     return bitwidth(typeof(bit_string)) - __builtin_clzll((bit_string | 1ull));
-#elif DATA_MODEL == LP64
+        #elif DATA_MODEL == LP64
     return bitwidth(typeof(bit_string)) - __builtin_clzll((bit_string | 1ul));
-#elif DATA_MODEL == ILP32 || DATA_MODEL == LP32
+        #elif DATA_MODEL == ILP32 || DATA_MODEL == LP32
     return bitwidth(typeof(bit_string)) - __builtin_clz((bit_string | 1u));
-#else
-#error "Unsupported data model"
-#endif
-#elif ARCH == ARCH_X86_32
+        #else
+            #error "Unsupported data model"
+        #endif
+    #elif ARCH == ARCH_X86_32
     return bitwidth(typeof(bit_string)) - __x86_lzcnt((((unsigned long) bit_string) | 1u));
-#elif ARCH == ARCH_AMD64
+    #elif ARCH == ARCH_AMD64
     return __x64_bsrq((unsigned long long) bit_string);
-#elif ARCH == ARCH_ARM
-#if ARCH_VARIANT == ARCH_ARM32
+    #elif ARCH == ARCH_ARM
+        #if ARCH_VARIANT == ARCH_ARM32
         return bitwidth(typeof(bit_string)) - __arm32_clz((((unsigned long) bit_string) | 1u));
-#elif ARCH_VARIANT == ARCH_ARM64
+            #elif ARCH_VARIANT == ARCH_ARM64
         return bitwidth(typeof(bit_string)) - __arm64_clz((((unsigned long) bit_string) | 1u));
-#else
-#error "ARM variant not supported"
-#endif
-#else
+            #else
+                #error "ARM variant not supported"
+            #endif
+        #else
     ubyte  k = 0;
     if (bit_string > 0xFFFFFFFFu) { bit_string >>= 32; k  = 32; }
     if (bit_string > 0x0000FFFFu) { bit_string >>= 16; k |= 16; }
@@ -123,18 +194,7 @@ static inline uword sigbits(register uword bit_string) {
     if (bit_string > 0x00000003u) { bit_string >>= 2;  k |= 2;  }
     k |= (bit_string & 2u) >> 1u;
     return k;
-#endif
-}
-
-/*
- * Compute number of significant base 10 digits in a given base 2 word
- */
-static inline uword digits(register uword bit_string) {
-    // ln(10) / ln(2) ~= 3.3219280948873623478703194294894
-    const usuperword numerator = 10000ull;
-    const usuperword denominator = 33219ull;
-    const usuperword x = bit_string;
-    return (uword) ((((usuperword) sigbits(x)) * numerator) / denominator + 1);
+    #endif
 }
 
 static inline uword lerp(register uword lower_bound, register uword upper_bound, register uword x) {
@@ -157,8 +217,8 @@ static inline uword sigbitss(register word bit_string) {
  * Compute the number of significant bits in the given bit string.
  */
 static inline uword sigbitsn(register uword *bit_string, register size_t words) {
-    uword result = 0;
-    for (word i = (words - 1u); i >= 0u; i--) {
+    uword     result = 0;
+    for (word i      = (words - 1u); i >= 0u; i--) {
         result += sigbits(bit_string[i]);
     }
     return result;
@@ -197,63 +257,76 @@ static inline uword pow10i(register uword exponent) {
             1000000000000000000ull,
             10000000000000000000ull
     };
-
+    
     return pow10[exponent];
+}
+
+#include <math.h>
+static inline float fexp(float x) {
+    return exp2f(x * 1.4426950408889634073599246810019f);
 }
 
 /*
  * Compute e to the power of exponent using integer bit math with truncated results for overflow.
  */
 static inline uword expi(register uword exponent) {
-    static const uword expi[45] = {
-            1ull,
-            2ull,
-            7ull,
-            20ull,
-            54ull,
-            148ull,
-            403ull,
-            1096ull,
-            2980ull,
-            8103ull,
-            22026ull,
-            59874ull,
-            162754ull,
-            442413ull,
-            1202604ull,
-            3269017ull,
-            8886110ull,
-            24154952ull,
-            65659969ull,
-            178482300ull,
-            485165195ull,
-            1318815734ull,
-            3584912846ull,
-            9744803446ull,
-            26489122129ull,
-            72004899337ull,
-            195729609428ull,
-            532048240601ull,
-            1446257064291ull,
-            3931334297144ull,
-            10686474581524ull,
-            29048849665247ull,
-            78962960182680ull,
-            214643579785916ull,
-            583461742527454ull,
-            1586013452313430ull,
-            4311231547115195ull,
-            11719142372802611ull,
-            31855931757113756ull,
-            86593400423993746ull,
-            235385266837019985ull,
-            639843493530054949ull,
-            1739274941520501047ull,
-            4727839468229346561ull,
-            12851600114359308275ull
-    };
-
-    return expi[exponent];
+    //    static const uword expi[45] = {
+    //            1ull,
+    //            2ull,
+    //            7ull,
+    //            20ull,
+    //            54ull,
+    //            148ull,
+    //            403ull,
+    //            1096ull,
+    //            2980ull,
+    //            8103ull,
+    //            22026ull,
+    //            59874ull,
+    //            162754ull,
+    //            442413ull,
+    //            1202604ull,
+    //            3269017ull,
+    //            8886110ull,
+    //            24154952ull,
+    //            65659969ull,
+    //            178482300ull,
+    //            485165195ull,
+    //            1318815734ull,
+    //            3584912846ull,
+    //            9744803446ull,
+    //            26489122129ull,
+    //            72004899337ull,
+    //            195729609428ull,
+    //            532048240601ull,
+    //            1446257064291ull,
+    //            3931334297144ull,
+    //            10686474581524ull,
+    //            29048849665247ull,
+    //            78962960182680ull,
+    //            214643579785916ull,
+    //            583461742527454ull,
+    //            1586013452313430ull,
+    //            4311231547115195ull,
+    //            11719142372802611ull,
+    //            31855931757113756ull,
+    //            86593400423993746ull,
+    //            235385266837019985ull,
+    //            639843493530054949ull,
+    //            1739274941520501047ull,
+    //            4727839468229346561ull,
+    //            12851600114359308275ull
+    //    };
+    //
+    //    return expi[exponent];
+    
+    
+//    // log2(e) = 1.4426950408889634073599246810019
+//    const usuperword numerator   = 10000000000000000000ull;
+//    const usuperword denominator = 14426950408889634073ull;
+//    const usuperword x           = exponent;
+//    return pow2i(((uword) ((x * numerator) / denominator)));
+    return (uword) fexp((float) exponent);
 }
 
 /*
@@ -261,17 +334,17 @@ static inline uword expi(register uword exponent) {
  */
 static inline uword powni(register uword base, register uword exponent) {
     uword result = 1;
-
+    
     while (exponent) {
         if (exponent & 1u)
             result *= base;
         exponent >>= 1u;
         base *= base;
     }
-
+    
     return result;
     // TODO implement powni using exp()
-//    return expi(exponent * lni(base));
+    //    return expi(exponent * lni(base));
 }
 
 /*
@@ -286,9 +359,9 @@ static inline uword log2i(register uword bit_string) {
  */
 static inline uword log10i(register uword bit_string) {
     // ln(10) / ln(2) ~= 3.3219280948873623478703194294894
-    const usuperword numerator = 10000ull;
+    const usuperword numerator   = 10000ull;
     const usuperword denominator = 33219ull;
-    const usuperword x = bit_string;
+    const usuperword x           = bit_string;
     return (uword) ((((usuperword) sigbits(x)) * numerator) / denominator);
 }
 
@@ -304,9 +377,9 @@ static inline uword logni(register uword base, register uword bit_string) {
  */
 static inline uword lni(register uword bit_string) {
     // ln(10) / ln(2) * log(e) ~= 1.4426950408889634073599246810019
-    const usuperword numerator = 10000000000000000ull;
+    const usuperword numerator   = 10000000000000000ull;
     const usuperword denominator = 14426950408889634ull;
-    const usuperword x = bit_string;
+    const usuperword x           = bit_string;
     // log(bit_string) / log(e)
     return (uword) (((sigbits(x)) * numerator) / denominator);
 }
@@ -375,36 +448,37 @@ static inline uword bin_index(register uword address) {
 
 static inline uword get_bita(uword const *restrict bitarray, uword const words, uword const bit_index) {
     uword bits = sizeof(uword) * sizeof(uintmin_t) * MIN_BITS;
-
+    
     uword index = bit_index / bits;
     if (!in_buffer(0, words, index))
         fatalf("buffer overflow", __func__, "index out of range: 0 <= index=%u < %u\n", index, words);
-
+    
     uword word = bitarray[index];
-    uword bit = (word >> (bit_index % bits)) & ((uword) 1u);
+    uword bit  = (word >> (bit_index % bits)) & ((uword) 1u);
     return bit;
 }
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
 static inline uword *get_bitsa(uword const *restrict bitarray, uword const words, uword const bit_index, uword const value_bits) {
     // TODO implement get_bits
     uword bits = sizeof(uword) * sizeof(uintmin_t) * MIN_BITS;
-
+    
     uword start = bit_index / bits;
     if (!in_buffer(0, words, start))
         fatalf("buffer overflow", __func__, "start out of range: 0 <= start=%u < %u\n", start, words);
-
+    
     uword end = (bit_index + value_bits - 1u) / bits;
     if (!in_buffer(0, words, end))
         fatalf("buffer overflow", __func__, "end out of range: 0 <= end=%u < %u\n", end, words);
-
+    
     for (uword i = start; i < end; i++) {
     }
 }
 
 static inline void set_bita(uword *restrict bitarray, uword const words, uword const bit_offset, uword const value) {
-    uword bits = sizeof(uword) * sizeof(uintmin_t) * MIN_BITS;
+    uword bits  = sizeof(uword) * sizeof(uintmin_t) * MIN_BITS;
     uword index = bit_offset / bits;
     // guard
     if (!in_buffer(0, words, index))
