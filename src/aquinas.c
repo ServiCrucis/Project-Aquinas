@@ -19,15 +19,10 @@
 #define DYNAMIC_HEAP true
 
 #include "state.h"
-#include "compiler.h"
-#include "bit_math.h"
-#include "bit_trie.h"
-#include "sigbits_map.h"
-#include "memory.h"
 #include "tests.h"
 
 void run_tests() {
-    test_expi();
+    //test_expi();
     //test_lni();
     //test_log10i();
     //test_sigbits();
@@ -37,7 +32,7 @@ void run_tests() {
     //test_binary_trie();
     //test_map();
     //test_cpuid();
-    //test_dynarray();
+    test_dynarray();
 }
 
 int main(int argc, char **argv) {

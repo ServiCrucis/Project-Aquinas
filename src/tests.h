@@ -10,6 +10,7 @@
 #ifndef PROJECT_AQUINAS_TESTS_H
 #define PROJECT_AQUINAS_TESTS_H
 
+#include <dynarray.h>
 #include "state.h"
 #include "compiler.h"
 #include "bit_math.h"
@@ -148,9 +149,82 @@ static void test_map() {
 }
 
 static void test_cpuid() {
-    if (!__x86_cpuid_supported())
+#if DATA_MODEL == LP64 || DATA_MODEL == ILP64 || DATA_MODEL == LLP64 || DATA_MODEL == SILP64
+    if (!__x64_cpuid_supported())
+#elif DATA_MODEL == LP32 || DATA_MODEL == ILP32
+        if (!__x86_cpuid_supported())
+#else
+    #error "This (x86?) platform is not currently supported"
+#endif
         fatalf(__func__, "Unable to initialize CPU info: CPUID instruction not supported");
+    
     info(__func__, "CPUID is supported on this platform\n");
+}
+
+static void test_dynarray() {
+    dynarray *array    = dynarray_create(32u);
+    ubyte test_data[4] = { 0x12, 0x34, 0xAB, 0xCD };
+    // print dynarray
+    info(__func__, "dynarray before filling:\n");
+    for (uword i = 0; i < 32u; i++) {
+        infof(__func__, "dynarray[%u]: %#x\n", i, array->data[i]);
+    }
+    
+    // fill dynarray
+    dynarray_fill(array, (ubyte *) test_data, sizeof(test_data));
+    
+    // print dynarray
+    info(__func__, "dynarray after filling:\n");
+    for (uword i = 0; i < 32u; i++) {
+        infof(__func__, "dynarray[%u]: %#x\n", i, array->data[i]);
+    }
+    
+    // test dynarray_get
+    info(__func__, "test_get before dynarray_get(): \n");
+    ubyte *test_get = calloc(32u, sizeof(*test_get));
+    if (!test_get)
+        fatalf(__func__, "failed to allocate memory for test_get\n");
+    for (uword i = 0; i < 32u; i++) {
+        infof(__func__,"test_get[%u]: %#x\n", i, test_get[i]);
+    }
+    
+    info(__func__, "dynarray_get():\n");
+    dynarray_get(array, 0, 32u, test_get, 0, 32u);
+    for (uword i = 0; i < 32u; i++) {
+        infof(__func__,"test_get[%u]: %#x\n", i, test_get[i]);
+    }
+    free(test_get);
+    
+    // test dynarray_set
+    ubyte *test_set = calloc(32u, sizeof(*test_set));
+    if (!test_set)
+        fatalf(__func__, "failed to allocate memory for test_set\n");
+    memset(test_set, 0x11, 32u);
+    dynarray_set(array, 0, 32u, test_set, 0, 32u);
+    for (uword i = 0; i < 32u; i++) {
+        infof(__func__, "dynarray[%u]: %#x\n", i, array->data[i]);
+    }
+    free(test_set);
+    
+    // test dynarray_resize
+    // should resize to 16 bytes from 32 bytes
+    array = dynarray_resize(array, 16u);
+    info(__func__, "after dynarray_resize() from 32 to 16 bytes:\n");
+    // undefined behavior; test results may vary
+    for (uword i = 0; i < 32u; i++) {
+        infof(__func__, "dynarray[%u]: %#x\n", i, array->data[i]);
+    }
+    
+    array = dynarray_resize(array, 64u);
+    info(__func__, "after dynarray_resize() from 16 to 64 bytes:\n");
+    // undefined behavior; test results may vary
+    for (uword i = 0; i < 64u; i++) {
+        infof(__func__, "dynarray[%u]: %#x\n", i, array->data[i]);
+    }
+    
+    free(array);
+    
+    info(__func__, "dynarray test completed\n");
 }
 
 #pragma GCC diagnostic pop
