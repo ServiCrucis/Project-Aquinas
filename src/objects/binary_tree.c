@@ -23,7 +23,7 @@ void binary_tree_free(binary_tree *restrict tree) {
 
 }
 
-static inline binode *b_traverse(binode *node, uword address) {
+static inline binode *b_traverse(binode *restrict node, uword address) {
 traverse:
     node = (address & 1) ? node->one : node->zero;
     address >>= 1;
@@ -42,7 +42,7 @@ void binary_tree_set(binary_tree *restrict tree, uword address, uword value) {
     b_traverse((binode *) tree, address)->value = value;
 }
 
-uword *b_get_all(binary_tree *restrict tree, uword *addresses, uword length) {
+uword *b_get_all(binary_tree *restrict tree, uword *restrict addresses, uword length) {
     uword *values = malloc(sizeof(uword) * length);
     binode *node;
 

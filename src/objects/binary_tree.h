@@ -44,8 +44,8 @@ uword binary_tree_get(binary_tree *restrict tree, uword address);
  */
 void binary_tree_set(binary_tree *restrict tree, uword address, uword value);
 
-uword *b_get_all(binary_tree *restrict tree, uword *addresses, uword length);
+uword *b_get_all(binary_tree *restrict tree, uword *restrict addresses, uword length);
 
-void b_set_all(binary_tree *restrict tree, pair *values, uword length);
+void b_set_all(binary_tree *restrict tree, pair *restrict values, uword length);
 
 #endif //PROJECT_AQUINAS_BINARY_TREE_H
