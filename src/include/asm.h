@@ -43,6 +43,11 @@ __attribute__((always_inline)) static inline unsigned long long __x64_bsrq(unsig
     return value;
 }
 
+__attribute__((always_inline)) static inline unsigned long long __x64_bzhiq(unsigned long long dst, unsigned long long src, unsigned long long index) {
+    asm("bzhiq %0, %1, %2" : "=r" (dst) : "rm" (src), "r" (index));
+    return dst;
+}
+
 __attribute__((always_inline, cold)) static inline unsigned long long __x64_cpuid_supported() {
     register unsigned int eax asm("eax");
     register unsigned int ebx asm("ebx");
@@ -108,6 +113,11 @@ __attribute__((always_inline)) static inline unsigned long __x64_tzcnt(unsigned 
 __attribute__((always_inline)) static inline unsigned long __x86_bsrl(unsigned long value) {
     asm("bsrl %0, %0" : "+X" (value) : "X" (value));
     return value;
+}
+
+__attribute__((always_inline)) static inline unsigned long __x86_bzhil(unsigned long dst, unsigned long src, unsigned long index) {
+    asm("bzhil %0, %1, %2" : "=r" (dst) : "rm" (src), "r" (index));
+    return dst;
 }
 
 __attribute__((always_inline, cold)) static inline unsigned long long __x86_cpuid_supported() {

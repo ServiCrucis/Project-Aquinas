@@ -100,6 +100,20 @@ static inline uword digits(register uword bit_string) {
 }
 
 /*
+ * Zeroes all bits above the given bit index in src.
+ */
+static inline uword zero_high_bits(register uword src, register uword index) {
+#if ARCH == ARCH_X86_64
+    return __x64_bzhiq(src, src, index);
+#elif ARCH == ARCH_X86_32
+    return __x86_bzhil(src, src, index);
+#else
+    index = 64 - index;
+    return (src << index) >> index;
+    #endif
+}
+
+/*
  * Count the number of leading zeroes in bit_string.
  */
 static inline uword cntlz(register uword bit_string) {
