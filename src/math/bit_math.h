@@ -110,18 +110,18 @@ static inline uword zero_high_bits(register uword src, register uword index) {
 #else
     index = 64 - index;
     return (src << index) >> index;
-    #endif
+#endif
 }
 
 /*
  * Count the number of leading zeroes in bit_string.
  */
 static inline uword cntlz(register uword bit_string) {
-    #if ARCH == ARCH_X86_32
+#if ARCH == ARCH_X86_32
     return __x86_lzcnt(bit_string);
-    #elif ARCH == ARCH_X86_64
+#elif ARCH == ARCH_X86_64
     return __x64_lzcnt(bit_string);
-    #else
+#else
     ubyte zeroes = 0;
     // zeroes to ones
     bit_string = ~bit_string;
@@ -130,18 +130,18 @@ static inline uword cntlz(register uword bit_string) {
         zeroes += loop_condition;
     }
     return zeroes;
-    #endif
+#endif
 }
 
 /*
  * Count the number of trailing zeroes in bit_string.
  */
 static inline uword cnttz(register uword bit_string) {
-    #if ARCH == ARCH_X86_32
+#if ARCH == ARCH_X86_32
     return __x86_tzcnt(bit_string);
-    #elif ARCH == ARCH_X86_64
+#elif ARCH == ARCH_X86_64
     return __x64_tzcnt(bit_string);
-    #else
+#else
     ubyte zeroes = 0;
     // zeroes to ones
     bit_string = ~bit_string;
@@ -150,18 +150,18 @@ static inline uword cnttz(register uword bit_string) {
         zeroes += loop_condition;
     }
     return zeroes;
-    #endif
+#endif
 }
 
 /*
  * Count the number of ones in a bit_string
  */
 static inline uword ones(register uword bit_string) {
-    #if ARCH == ARCH_X86_32
+#if ARCH == ARCH_X86_32
     return __x86_popcnt(bit_string);
-    #elif ARCH == ARCH_X86_64
+#elif ARCH == ARCH_X86_64
     return __x64_popcnt(bit_string);
-    #else
+#else
     ubyte zeroes = 0;
     // zeroes to ones
     bit_string = ~bit_string;
@@ -170,36 +170,36 @@ static inline uword ones(register uword bit_string) {
         zeroes += loop_condition;
     }
     return zeroes;
-    #endif
+#endif
 }
 
 /*
  * Compute the number of significant bits in the given word
  */
 static inline uword sigbits(register uword bit_string) {
-    #if defined(__GNUC__)
-        #if DATA_MODEL == LLP64 || DATA_MODEL == ILP64 || DATA_MODEL == SILP64
+#if defined(__GNUC__)
+    #if DATA_MODEL == LLP64 || DATA_MODEL == ILP64 || DATA_MODEL == SILP64
     return bitwidth(typeof(bit_string)) - __builtin_clzll((bit_string | 1ull));
-        #elif DATA_MODEL == LP64
+    #elif DATA_MODEL == LP64
     return bitwidth(typeof(bit_string)) - __builtin_clzll((bit_string | 1ul));
-        #elif DATA_MODEL == ILP32 || DATA_MODEL == LP32
+    #elif DATA_MODEL == ILP32 || DATA_MODEL == LP32
     return bitwidth(typeof(bit_string)) - __builtin_clz((bit_string | 1u));
-        #else
-            #error "Unsupported data model"
-        #endif
-    #elif ARCH == ARCH_X86_32
+    #else
+        #error "Unsupported data model"
+    #endif
+#elif ARCH == ARCH_X86_32
     return bitwidth(typeof(bit_string)) - __x86_lzcnt((((unsigned long) bit_string) | 1u));
-    #elif ARCH == ARCH_AMD64
+#elif ARCH == ARCH_AMD64
     return __x64_bsrq((unsigned long long) bit_string);
-    #elif ARCH == ARCH_ARM
-        #if ARCH_VARIANT == ARCH_ARM32
+#elif ARCH == ARCH_ARM
+    #if ARCH_VARIANT == ARCH_ARM32
         return bitwidth(typeof(bit_string)) - __arm32_clz((((unsigned long) bit_string) | 1u));
-            #elif ARCH_VARIANT == ARCH_ARM64
+    #elif ARCH_VARIANT == ARCH_ARM64
         return bitwidth(typeof(bit_string)) - __arm64_clz((((unsigned long) bit_string) | 1u));
-            #else
-                #error "ARM variant not supported"
-            #endif
-        #else
+    #else
+        #error "ARM variant not supported"
+    #endif
+#else
     ubyte  k = 0;
     if (bit_string > 0xFFFFFFFFu) { bit_string >>= 32; k  = 32; }
     if (bit_string > 0x0000FFFFu) { bit_string >>= 16; k |= 16; }
@@ -208,7 +208,7 @@ static inline uword sigbits(register uword bit_string) {
     if (bit_string > 0x00000003u) { bit_string >>= 2;  k |= 2;  }
     k |= (bit_string & 2u) >> 1u;
     return k;
-    #endif
+#endif
 }
 
 static inline uword lerp(register uword lower_bound, register uword upper_bound, register uword x) {
@@ -276,6 +276,7 @@ static inline uword pow10i(register uword exponent) {
 }
 
 #include <math.h>
+
 static inline float fexp(float x) {
     return exp2f(x * 1.4426950408889634073599246810019f);
 }
@@ -335,11 +336,11 @@ static inline uword expi(register uword exponent) {
     //    return expi[exponent];
     
     
-//    // log2(e) = 1.4426950408889634073599246810019
-//    const usuperword numerator   = 10000000000000000000ull;
-//    const usuperword denominator = 14426950408889634073ull;
-//    const usuperword x           = exponent;
-//    return pow2i(((uword) ((x * numerator) / denominator)));
+    //    // log2(e) = 1.4426950408889634073599246810019
+    //    const usuperword numerator   = 10000000000000000000ull;
+    //    const usuperword denominator = 14426950408889634073ull;
+    //    const usuperword x           = exponent;
+    //    return pow2i(((uword) ((x * numerator) / denominator)));
     return (uword) fexp((float) exponent);
 }
 
