@@ -227,6 +227,10 @@ static void test_dynarray() {
     info(__func__, "dynarray test completed\n");
 }
 
+static void test_umap() {
+
+}
+
 #pragma GCC diagnostic pop
 
 #endif //PROJECT_AQUINAS_TESTS_H

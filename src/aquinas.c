@@ -32,7 +32,8 @@ void run_tests() {
     //test_binary_trie();
     //test_map();
     //test_cpuid();
-    test_dynarray();
+    //test_dynarray();
+    test_umap();
 }
 
 int main(int argc, char **argv) {
