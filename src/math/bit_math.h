@@ -232,7 +232,7 @@ static inline uword sigbitss(register word bit_string) {
  */
 static inline uword sigbitsn(register uword *bit_string, register size_t words) {
     uword     result = 0;
-    for (word i      = (words - 1u); i >= 0u; i--) {
+    for (word i      = (word) (words - 1u); i >= 0u; i--) {
         result += sigbits(bit_string[i]);
     }
     return result;
