@@ -33,50 +33,50 @@
  **********************************************************************************************************************/
 
 struct cpuid_function_values {
-    unsigned int eax;
-    unsigned int ebx;
-    unsigned int ecx;
-    unsigned int edx;
+    uint32_t eax;
+    uint32_t ebx;
+    uint32_t ecx;
+    uint32_t edx;
 };
 
-__attribute__((always_inline)) static inline unsigned long long __x64_bsrq(unsigned long long value) {
+__attribute__((always_inline)) static inline uint64_t __x64_bsrq(uint64_t value) {
     asm("bsrq %0, %0" : "+X" (value) : "X" (value));
     return value;
 }
 
-__attribute__((always_inline)) static inline unsigned long long __x64_bzhiq(unsigned long long dst, unsigned long long src, unsigned long long index) {
+__attribute__((always_inline)) static inline uint64_t __x64_bzhiq(uint64_t dst, uint64_t src, uint64_t index) {
     asm("bzhiq %0, %1, %2" : "=X" (dst) : "X" (src), "X" (index));
     return dst;
 }
 
-__attribute__((always_inline, cold)) static inline unsigned long long __x64_cpuid_supported() {
-    register unsigned int eax asm("eax");
-    register unsigned int ebx asm("ebx");
+__attribute__((always_inline, cold)) static inline uint64_t __x64_cpuid_supported() {
+    register uint32_t eax asm("eax");
+    register uint32_t ebx asm("ebx");
     // from AMD instruction manual
     asm volatile (
     // rax = RFLAGS
     "pushfq\n"
-    "pop %%rax\n"
+    "popq %%rax\n"
     // flip bit 21 of eax
     "xorl $00200000, %%eax\n"
     // ebx = eax
     "movl %%eax, %%ebx\n"
     // RFLAGS = (stack[top] = rax)
-    "push %%rax\n"
+    "pushq %%rax\n"
     "popfq\n"
     "pushfq\n"
     // rax = RFLAGS
-    "pop %%rax\n":: : "cc"
+    "popq %%rax\n":: : "cc"
     );
     // cpuid supported if rax is not rbx
     return eax != ebx;
 }
 
-__attribute__((always_inline, cold)) static inline struct cpuid_function_values __x64_cpuid(unsigned int function) {
-    register unsigned int eax asm("eax");
-    register unsigned int ebx asm("ebx");
-    register unsigned int ecx asm("ecx");
-    register unsigned int edx asm("edx");
+__attribute__((always_inline, cold)) static inline struct cpuid_function_values __x64_cpuid(uint32_t function) {
+    register uint32_t eax asm("eax");
+    register uint32_t ebx asm("ebx");
+    register uint32_t ecx asm("ecx");
+    register uint32_t edx asm("edx");
     
     struct cpuid_function_values values;
     eax = function;
@@ -92,72 +92,61 @@ __attribute__((always_inline, cold)) static inline struct cpuid_function_values 
     return values;
 }
 
-__attribute__((always_inline)) static inline unsigned long __x64_lzcnt(unsigned long long value) {
+__attribute__((always_inline)) static inline uint64_t __x64_lzcnt(uint64_t value) {
     asm("lzcntq %0, %0" : "+X" (value) : "X" (value));
     return value;
 }
 
-__attribute__((always_inline)) static inline unsigned long __x64_popcnt(unsigned long long value) {
+__attribute__((always_inline)) static inline uint64_t __x64_popcnt(uint64_t value) {
     asm("popcntq %0, %0" : "+X" (value) : "X" (value));
     return value;
 }
 
-__attribute__((always_inline)) static inline unsigned long __x64_tzcnt(unsigned long long value) {
+__attribute__((always_inline)) static inline uint64_t __x64_tzcnt(uint64_t value) {
     asm("tzcntq %0, %0" : "+X" (value) : "X" (value));
     return value;
-}
-
-__attribute__((always_inline)) static inline void __x64_pushfq() {
-    asm("pushfq" ::: "rsp");
-}
-
-__attribute__((always_inline)) static inline void __x64_popfq() {
-    asm("popfq" ::: "rsp", "cc");
-}
-
-// stack instructions
-
-__attribute__((always_inline)) static inline void __x64_pushq(unsigned long long value) {
-    asm("pushq %0" :: "X" (value) : "rsp");
-}
-
-__attribute__((always_inline)) static inline unsigned long long __x64_popq(unsigned long long location) {
-    asm("popq %0" : "=X" (location) :: "rsp");
-    return location;
 }
 
 // FLAGS register info
 
 // Convenience function to read rflags register
-__attribute__((always_inline)) static inline unsigned long long __x64_read_rflags() {
-    __x64_pushfq();
-    unsigned long long location = __x64_popq(location);
-    return location;
+__attribute__((always_inline)) static inline uint64_t __x64_read_rflags() {
+    register uint64_t rax asm("rax");
+    asm volatile (
+            "pushfq\n"
+            "popq %%rax\n" ::: "cc"
+            );
+    return rax;
 }
 
 // Convenience function to write rflags register
-__attribute__((always_inline)) static inline void __x64_write_rflags(unsigned long long value) {
-    __x64_pushq(value);
-    __x64_popfq();
+__attribute__((always_inline)) static inline void __x64_write_rflags(uint64_t value) {
+    asm volatile (
+            "push %0\n"
+            "popfq\n"
+            :
+            : "X" (value)
+            : "cc"
+            );
 }
 
 /**********************************************************************************************************************
  *                                         Intel x86 (32-bit LP32 and ILP32)   										  *
  **********************************************************************************************************************/
 
-__attribute__((always_inline)) static inline unsigned long __x86_bsrl(unsigned long value) {
+__attribute__((always_inline)) static inline uint32_t __x86_bsrl(uint32_t value) {
     asm("bsrl %0, %0" : "+X" (value) : "X" (value));
     return value;
 }
 
-__attribute__((always_inline)) static inline unsigned long __x86_bzhil(unsigned long dst, unsigned long src, unsigned long index) {
+__attribute__((always_inline)) static inline uint32_t __x86_bzhil(uint32_t dst, uint32_t src, uint32_t index) {
     asm("bzhil %0, %1, %2" : "=X" (dst) : "X" (src), "X" (index));
     return dst;
 }
 
-__attribute__((always_inline, cold)) static inline unsigned long long __x86_cpuid_supported() {
-    register unsigned int eax asm("eax");
-    register unsigned int ebx asm("ebx");
+__attribute__((always_inline, cold)) static inline uint32_t __x86_cpuid_supported() {
+    register uint32_t eax asm("eax");
+    register uint32_t ebx asm("ebx");
     // from AMD instruction manual
     asm volatile (
     // eax = EFLAGS
@@ -172,13 +161,13 @@ __attribute__((always_inline, cold)) static inline unsigned long long __x86_cpui
     "popfq\n"
     "pushfd\n"
     // eax = EFLAGS
-    "pop %%eax\n":: :"cc"
+    "pop %%eax\n" ::: "cc"
     );
     // cpuid supported if eax is not ebx
     return eax != ebx;
 }
 
-__attribute__((always_inline, cold)) static inline struct cpuid_function_values __x86_cpuid(unsigned int function) {
+__attribute__((always_inline, cold)) static inline struct cpuid_function_values __x86_cpuid(uint32_t function) {
     register unsigned int eax asm("eax");
     register unsigned int ebx asm("ebx");
     register unsigned int ecx asm("ecx");
@@ -198,53 +187,42 @@ __attribute__((always_inline, cold)) static inline struct cpuid_function_values 
     return values;
 }
 
-__attribute__((always_inline)) static inline unsigned long __x86_lzcnt(unsigned long value) {
+__attribute__((always_inline)) static inline uint32_t __x86_lzcnt(uint32_t value) {
     asm("lzcntl %0, %0" : "+X" (value) : "X" (value));
     return value;
 }
 
-__attribute__((always_inline)) static inline unsigned long __x86_popcnt(unsigned long value) {
+__attribute__((always_inline)) static inline uint32_t __x86_popcnt(uint32_t value) {
     asm("popcntl %0, %0" : "+X" (value) : "X" (value));
     return value;
 }
 
-__attribute__((always_inline)) static inline unsigned long __x86_tzcnt(unsigned long value) {
+__attribute__((always_inline)) static inline uint32_t __x86_tzcnt(uint32_t value) {
     asm("tzcntl %0, %0" : "+X" (value) : "X" (value));
     return value;
-}
-
-__attribute__((always_inline)) static inline void __x86_pushfd() {
-    asm("pushfd" ::: "esp");
-}
-
-__attribute__((always_inline)) static inline void __x86_popfd() {
-    asm("popfd" ::: "esp", "cc");
-}
-
-// stack instructions
-
-__attribute__((always_inline)) static inline void __x86_pushd(unsigned long value) {
-    asm("pushd %0" :: "X" (value) : "esp");
-}
-
-__attribute__((always_inline)) static inline unsigned long __x86_popd(unsigned long location) {
-    asm("popd %0" : "=X" (location) :: "esp");
-    return location;
 }
 
 // FLAGS register info
 
 // Convenience function to read rflags register
-__attribute__((always_inline)) static inline unsigned long __x86_read_eflags() {
-    __x86_pushfd();
-    unsigned long location = __x86_popd(location);
-    return location;
+__attribute__((always_inline)) static inline uint32_t __x86_read_eflags() {
+    register uint32_t eax asm("eax");
+    asm volatile (
+    "pushfd\n"
+    "pop %%eax\n" ::: "cc"
+    );
+    return eax;
 }
 
 // Convenience function to write rflags register
-__attribute__((always_inline)) static inline void __x86_write_eflags(unsigned long value) {
-    __x86_pushd(value);
-    __x86_popfd();
+__attribute__((always_inline)) static inline void __x86_write_eflags(uint32_t value) {
+    asm volatile (
+    "push %0\n"
+    "popfd\n"
+    :
+    : "X" (value)
+    : "cc"
+    );
 }
 
 #endif //PROJECT_AQUINAS_ASM_H

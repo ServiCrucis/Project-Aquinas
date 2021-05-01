@@ -231,22 +231,6 @@ static void test_umap() {
 
 }
 
-static void test_overflow() {
-    ubyte tester = 255;
-    uword status = __x64_read_rflags();
-    
-    infof(__func__, "(unchanged) tester: %u; status: %#x\n", tester, status);
-    
-    tester++;
-    status = __x64_read_rflags();
-    infof(__func__, "(increment) tester: %u; status: %#x\n", tester, status);
-    
-    status = __x64_read_rflags();
-    infof(__func__, "(unchanged) tester: %u; status: %#x\n", tester, status);
-    
-    info(__func__, "overflow test completed\n");
-}
-
 #pragma GCC diagnostic pop
 
 #endif //PROJECT_AQUINAS_TESTS_H

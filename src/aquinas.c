@@ -34,7 +34,6 @@ void run_tests() {
     //test_cpuid();
     //test_dynarray();
 //    test_umap();
-    test_overflow();
 }
 
 
