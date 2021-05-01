@@ -13,6 +13,7 @@
  */
 
 #pragma clang diagnostic push
+#pragma ide diagnostic ignored "UnusedValue"
 #pragma ide diagnostic ignored "ConstantConditionsOC"
 #pragma ide diagnostic ignored "UnreachableCode"
 #pragma clang diagnostic ignored "-Wuninitialized"
@@ -44,7 +45,7 @@ __attribute__((always_inline)) static inline unsigned long long __x64_bsrq(unsig
 }
 
 __attribute__((always_inline)) static inline unsigned long long __x64_bzhiq(unsigned long long dst, unsigned long long src, unsigned long long index) {
-    asm("bzhiq %0, %1, %2" : "=r" (dst) : "rm" (src), "r" (index));
+    asm("bzhiq %0, %1, %2" : "=X" (dst) : "X" (src), "X" (index));
     return dst;
 }
 
@@ -106,6 +107,40 @@ __attribute__((always_inline)) static inline unsigned long __x64_tzcnt(unsigned 
     return value;
 }
 
+__attribute__((always_inline)) static inline void __x64_pushfq() {
+    asm("pushfq" ::: "rsp");
+}
+
+__attribute__((always_inline)) static inline void __x64_popfq() {
+    asm("popfq" ::: "rsp", "cc");
+}
+
+// stack instructions
+
+__attribute__((always_inline)) static inline void __x64_pushq(unsigned long long value) {
+    asm("pushq %0" :: "X" (value) : "rsp");
+}
+
+__attribute__((always_inline)) static inline unsigned long long __x64_popq(unsigned long long location) {
+    asm("popq %0" : "=X" (location) :: "rsp");
+    return location;
+}
+
+// FLAGS register info
+
+// Convenience function to read rflags register
+__attribute__((always_inline)) static inline unsigned long long __x64_read_rflags() {
+    __x64_pushfq();
+    unsigned long long location = __x64_popq(location);
+    return location;
+}
+
+// Convenience function to write rflags register
+__attribute__((always_inline)) static inline void __x64_write_rflags(unsigned long long value) {
+    __x64_pushq(value);
+    __x64_popfq();
+}
+
 /**********************************************************************************************************************
  *                                         Intel x86 (32-bit LP32 and ILP32)   										  *
  **********************************************************************************************************************/
@@ -116,7 +151,7 @@ __attribute__((always_inline)) static inline unsigned long __x86_bsrl(unsigned l
 }
 
 __attribute__((always_inline)) static inline unsigned long __x86_bzhil(unsigned long dst, unsigned long src, unsigned long index) {
-    asm("bzhil %0, %1, %2" : "=r" (dst) : "rm" (src), "r" (index));
+    asm("bzhil %0, %1, %2" : "=X" (dst) : "X" (src), "X" (index));
     return dst;
 }
 
@@ -176,6 +211,40 @@ __attribute__((always_inline)) static inline unsigned long __x86_popcnt(unsigned
 __attribute__((always_inline)) static inline unsigned long __x86_tzcnt(unsigned long value) {
     asm("tzcntl %0, %0" : "+X" (value) : "X" (value));
     return value;
+}
+
+__attribute__((always_inline)) static inline void __x86_pushfd() {
+    asm("pushfd" ::: "esp");
+}
+
+__attribute__((always_inline)) static inline void __x86_popfd() {
+    asm("popfd" ::: "esp", "cc");
+}
+
+// stack instructions
+
+__attribute__((always_inline)) static inline void __x86_pushd(unsigned long value) {
+    asm("pushd %0" :: "X" (value) : "esp");
+}
+
+__attribute__((always_inline)) static inline unsigned long __x86_popd(unsigned long location) {
+    asm("popd %0" : "=X" (location) :: "esp");
+    return location;
+}
+
+// FLAGS register info
+
+// Convenience function to read rflags register
+__attribute__((always_inline)) static inline unsigned long __x86_read_eflags() {
+    __x86_pushfd();
+    unsigned long location = __x86_popd(location);
+    return location;
+}
+
+// Convenience function to write rflags register
+__attribute__((always_inline)) static inline void __x86_write_eflags(unsigned long value) {
+    __x86_pushd(value);
+    __x86_popfd();
 }
 
 #endif //PROJECT_AQUINAS_ASM_H

@@ -211,6 +211,52 @@ static inline uword sigbits(register uword bit_string) {
 #endif
 }
 
+/*
+ * Determines if the last operation on the last value has resulted in an overflow.
+ */
+static inline uword overflow() {
+#if defined(__GNUC__)
+    #if DATA_MODEL == LP64 || DATA_MODEL == LLP64 || DATA_MODEL == ILP64 || DATA_MODEL == SILP64
+        return __x64_read_rflags() & 0x0800ull;
+    #elif DATA_MODEL == ILP32 || DATA_MODEL == LP32
+        return __x86_read_eflags() & 0x0800ul;
+    #endif
+#else
+    #error "Other C compilers are not currently supported"
+#endif
+}
+
+/*
+ * Determines if the last operation on the last value has resulted in a carry.
+ */
+static inline uword carry() {
+#if defined(__GNUC__)
+    #if DATA_MODEL == LP64 || DATA_MODEL == LLP64 || DATA_MODEL == ILP64 || DATA_MODEL == SILP64
+    return __x64_read_rflags() & 0x0001ull;
+    #elif DATA_MODEL == ILP32 || DATA_MODEL == LP32
+    return __x86_read_eflags() & 0x0001ul;
+    #endif
+#else
+    #error "Other C compilers are not currently supported"
+#endif
+}
+
+/*
+ * Increments using add with immediate byte 1. The next call to carry() immediately after add_inc() is guaranteed to not
+ * be zero if the immediately following instructions check the carry state of the processor.
+ */
+static inline uword add_inc(uword value) {
+#if defined(__GNUC__)
+    #if DATA_MODEL == LP64 || DATA_MODEL == LLP64 || DATA_MODEL == ILP64 || DATA_MODEL == SILP64
+    return __x64_add_inc(value);
+    #elif DATA_MODEL == ILP32 || DATA_MODEL == LP32
+    return __x86_add_inc(value);
+    #endif
+#else
+    #error "Other C compilers are not currently supported"
+#endif
+}
+
 static inline uword lerp(register uword lower_bound, register uword upper_bound, register uword x) {
     return lower_bound + x * (upper_bound - lower_bound);
 }

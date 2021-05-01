@@ -33,8 +33,10 @@ void run_tests() {
     //test_map();
     //test_cpuid();
     //test_dynarray();
-    test_umap();
+//    test_umap();
+    test_overflow();
 }
+
 
 int main(int argc, char **argv) {
     info(__func__, "Running.\n");
