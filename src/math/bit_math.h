@@ -466,7 +466,7 @@ static inline uword get_bita(uword const *restrict bitarray, uword const words, 
     
     uword index = bit_index / bits;
     if (!in_buffer(0, words, index))
-        fatalf("buffer overflow", __func__, "index out of range: 0 <= index=%u < %u\n", index, words);
+        fatalf(__func__, "index out of range: 0 <= index=%u < %u\n", index, words);
     
     uword word = bitarray[index];
     uword bit  = (word >> (bit_index % bits)) & ((uword) 1u);
@@ -482,11 +482,11 @@ static inline uword *get_bitsa(uword const *restrict bitarray, uword const words
     
     uword start = bit_index / bits;
     if (!in_buffer(0, words, start))
-        fatalf("buffer overflow", __func__, "start out of range: 0 <= start=%u < %u\n", start, words);
+        fatalf(__func__, "start out of range: 0 <= start=%u < %u\n", start, words);
     
     uword end = (bit_index + value_bits - 1u) / bits;
     if (!in_buffer(0, words, end))
-        fatalf("buffer overflow", __func__, "end out of range: 0 <= end=%u < %u\n", end, words);
+        fatalf(__func__, "end out of range: 0 <= end=%u < %u\n", end, words);
     
     for (uword i = start; i < end; i++) {
     }
@@ -497,7 +497,7 @@ static inline void set_bita(uword *restrict bitarray, uword const words, uword c
     uword index = bit_offset / bits;
     // guard
     if (!in_buffer(0, words, index))
-        fatalf("buffer overflow", __func__, "index out of range: 0 <= index=%u < %u\n", index, words);
+        fatalf(__func__, "index out of range: 0 <= index=%u < %u\n", index, words);
     uword word = bitarray[index];
     word ^= (word ^ ((value & ((uword) 1u)) << (bit_offset % bits))) & (((uword) 1u) << (bit_offset % bits));
     bitarray[index] = word;
