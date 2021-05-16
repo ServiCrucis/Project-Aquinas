@@ -1404,7 +1404,7 @@
 #define LLP64 4
 #define ILP64 5
 #define SILP64 6
-#define M_OPTUMUS 7
+#define M_AQUINAS 7
 
 
 /***********************************************************************************************************************
@@ -1441,9 +1441,9 @@
 #define DATA_MODEL_NAME "SILP64"
 #endif
 
-#if defined(_OPTUMUS) || defined (__OPTUMUS__) || defined(_optumus) || defined(__optumus__)
-#define DATA_MODEL M_OPTUMUS
-#define DATA_MODEL_NAME "Optumus"
+#if defined(_AQUINAS) || defined (__AQUINAS__) || defined(_aquinas) || defined(__aquinas__)
+#define DATA_MODEL M_AQUINAS
+#define DATA_MODEL_NAME "Aquinas"
 #endif
 
 #ifndef DATA_MODEL
@@ -1545,7 +1545,7 @@ typedef enum p_time_resolution {
 } p_time_resolution;
 
 /*
- * # `char *p_getPLATFORM();`
+ * # `char *p_get_platform();`
  * Gets the platform (friendly) name string. Use the macro expansion `PLATFORM_NAME_LENGTH` for string length (with null terminator).
  *
  * You may alternatively use the `PLATFORM_NAME` macro when you do not need to retrieve the friendly platform name strictly
@@ -1554,7 +1554,7 @@ typedef enum p_time_resolution {
  * ## `return struct p_result`
  * A `struct p_result` containing a pointer of type `char *`, a null-terminated string containing the platform name.
  */
-char *p_getPLATFORM();
+char *p_get_platform();
 
 /*
  * # `char *p_get_env(char *var);`
