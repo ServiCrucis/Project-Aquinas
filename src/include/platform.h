@@ -117,7 +117,7 @@
 #define P_VXWORKS        66
 #define P_UNKNOWN        67
 
-// based on 0.1% percentile of word length distribution for English (16 * 4 = 64 characters)
+// based on 0.1% percentile of qword length distribution for English (16 * 4 = 64 characters)
 // source: <http://www.ravi.io/language-word-lengths>
 #define PLATFORM_NAME_LENGTH_MAX 64
 #define ENVIRONMENT_NAME_LENGTH_MAX 64
@@ -1460,63 +1460,70 @@
 #endif
 
 /* general word information */
-// usuperword: guaranteed to be at least twice the number of bits as uword
-// superword: guaranteed to be at least twice the number of bits as word
-// uword: an unsigned word; has the same number of bits as the native architecture's word
-// word: a signed word; has the same number of bits as the native architecture's word
-// uintmin_t: unsigned word with number of bits less than or equal to uword which represents the smallest natively
-// supported bit string and is a multiple of the number of bits in uword.
-// intmin_t: signed word with number of bits less than or equal to uword which represents the smallest natively
-// supported bit string and is a multiple of the number of bits in uword.
-// ubyte: an unsigned char containing 8 bits. Guaranteed same size as uint8_t
-// sbyte: a signed char containing 8 bits. Guaranteed same size as int8_t
-// udevptr_t: a uword containing a hardware address to a hardware device (implementation dependent), for example: to PCI,
+// udqword: unsigned 128-bit value
+// dqword: signed 128-bit value
+// uqword: unsigned 64-bit value
+// qword: signed 64-bit value
+// udword: unsigned 32-bit value
+// dword: signed 32-bit value
+// uword: unsigned 16-bit value
+// word: signed 16-bit value
+// ubyte: unsigned 8-bit value
+// sbyte: signed 8-bit value
+// uintmin_t: smallest supported unsigned integer type (may be ubyte or smaller)
+// intmin_t: smallest supported signed integer type (may be sbyte or smaller)
+// udevptr_t: a udqword containing a hardware address to a hardware device (implementation dependent), for example: to PCI,
 // SATA, SCSI, network, virtual (software) device, etc.
 
 // independent types
-//typedef uintmax_t     usuperword;
-//typedef intmax_t      superword;
-typedef uintptr_t uword;
-typedef intptr_t word;
-typedef unsigned char ubyte;
-typedef signed char sbyte;
-typedef unsigned char uintmin_t;
-typedef signed char intmin_t;
+//typedef uintmax_t     udqword;
+//typedef intmax_t      dqword;
+typedef uint64_t uqword;
+typedef int64_t  qword;
+typedef uint32_t udword;
+typedef int32_t dword;
+typedef uint16_t uword;
+typedef int16_t word;
+typedef uint8_t  ubyte;
+typedef int8_t sbyte;
+#define p_unybble 4
+#define p_nybble 4
+typedef uint8_t uintmin_t;
+typedef int8_t intmin_t;
 
 // data-model-specific types
 #if DATA_MODEL == ILP32
-typedef uint64_t usuperword;
-typedef int64_t superword;
+typedef uint64_t udqword;
+typedef int64_t dqword;
 #elif DATA_MODEL == LP64
-typedef unsigned __int128 usuperword;
-typedef signed __int128 superword;
+typedef unsigned __int128 udqword;
+typedef signed __int128   dqword;
 #elif DATA_MODEL == LP32
-typedef uint64_t usuperword;
-typedef int64_t  superword;
+typedef uint64_t udqword;
+typedef int64_t  dqword;
 #elif DATA_MODEL == LLP64
-typedef unsigned __int128 usuperword;
-typedef signed __int128   superword;
+typedef unsigned __int128 udqword;
+typedef signed __int128   dqword;
 #elif DATA_MODEL == ILP64
-typedef unsigned __int128 usuperword;
-typedef signed __int128   superword;
+typedef unsigned __int128 udqword;
+typedef signed __int128   dqword;
 #elif DATA_MODEL == SILP64
-typedef unsigned __int128 usuperword;
-typedef signed __int128   superword;
+typedef unsigned __int128 udqword;
+typedef signed __int128   dqword;
 #elif DATA_MODEL == M_OPTUMUS
-typedef unsigned bool usuperword[2];
-typedef signed bool   superword[2];
+typedef unsigned bool udqword[2];
+typedef signed bool   dqword[2];
 #else
 #endif
 
-// device pointer types should be twice the native word size in bits
-typedef usuperword udevptr_t;
-typedef superword devptr_t;
+// device pointer types should be twice the native qword size in bits
+typedef udqword udevptr_t;
 
-// common pair struct
-typedef struct uword_pair {
-    uword a;
-    uword b;
-} pair;
+// common uqword_pair struct
+typedef struct uqword_pair {
+    uqword a;
+    uqword b;
+} uqword_pair;
 
 #define MIN_BITS CHAR_BIT
 
