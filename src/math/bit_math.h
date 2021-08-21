@@ -24,7 +24,7 @@
 /* TYPES */
 
 typedef struct pair {
-    uword x, y;
+    uqword x, y;
 } point;
 
 /*
@@ -58,51 +58,57 @@ typedef struct pair {
 #define abs(value) ( (value) > 0 ? (value) : -(value) )
 //#define abs(value) ( ((value) ^ ((value) >> (bitwidth(typeof(value)) - 1u))) + (((value) >> (bitwidth(typeof(value)) - 1u)) & 1u) )
 
+
+/*
+ * Performs left or right shift on value if a is positive or negative respectively.
+ */
+#define shift(value, a) ( (!a ? value : (a < 0 ? value >> a : value << a)) )
+
 /*
  * Computes the absolute difference of the given values a and b
  */
 #define abs_diff(a, b) ( abs((a) - (b)) )
 
-//static inline uword sqrti(register uword a);
+//static inline uqword sqrti(register uqword a);
 // TODO dst and sqrti
-//static inline uword dst(register point a, register point b) {
+//static inline uqword dst(register point a, register point b) {
 //    return sqrti(abs_diff(b.y, a.y) - abs_diff(b.x, a.x));
 //}
 
 /*
  * Generates a bit mask from the given value that sets bit_count bits from the right to ones.
  */
-static inline uword bitmaskv(register uword value, register uword bit_count) {
+static inline uqword bitmaskv(register uqword value, register uqword bit_count) {
     return truncate(~value, bit_count) ^ value;
 }
 
 // maintain grouping of functions
-static inline uword sigbits(uword);
+static inline uqword sigbits(uqword);
 
 /*
  * Generates a bitmask from the given value that sets all significant bits to ones.
  *
  * Exactly equivalent to `bitmaskv(value, sigbits(value));`
  */
-static inline uword bitmask(register uword value) {
+static inline uqword bitmask(register uqword value) {
     return bitmaskv(value, sigbits(value));
 }
 
 /*
- * Compute number of significant base 10 digits in a given base 2 word
+ * Compute number of significant base 10 digits in a given base 2 qword
  */
-static inline uword digits(register uword bit_string) {
+static inline uqword digits(register uqword bit_string) {
     // ln(10) / ln(2) ~= 3.3219280948873623478703194294894
-    const usuperword numerator   = 10000ull;
-    const usuperword denominator = 33219ull;
-    const usuperword x           = bit_string;
-    return (uword) ((((usuperword) sigbits(x)) * numerator) / denominator + 1);
+    const udqword numerator   = 10000ull;
+    const udqword denominator = 33219ull;
+    const udqword x           = bit_string;
+    return (uqword) ((((udqword) sigbits(x)) * numerator) / denominator + 1);
 }
 
 /*
  * Zeroes all bits above the given bit index in src.
  */
-static inline uword zero_high_bits(register uword src, register uword index) {
+static inline uqword zero_high_bits(register uqword src, register uqword index) {
 #if ARCH == ARCH_X86_64
     return __x64_bzhiq(src, src, index);
 #elif ARCH == ARCH_X86_32
@@ -116,7 +122,7 @@ static inline uword zero_high_bits(register uword src, register uword index) {
 /*
  * Count the number of leading zeroes in bit_string.
  */
-static inline uword cntlz(register uword bit_string) {
+static inline uqword cntlz(register uqword bit_string) {
 #if ARCH == ARCH_X86_32
     return __x86_lzcnt(bit_string);
 #elif ARCH == ARCH_X86_64
@@ -126,7 +132,7 @@ static inline uword cntlz(register uword bit_string) {
     // zeroes to ones
     bit_string = ~bit_string;
     ubyte loop_condition;
-    for (uword i = bitwidth(bit_string) - 1u; i < bitwidth(bit_string) && (loop_condition = (bit_string >> i) & 1u); i++) {
+    for (uqword i = bitwidth(bit_string) - 1u; i < bitwidth(bit_string) && (loop_condition = (bit_string >> i) & 1u); i++) {
         zeroes += loop_condition;
     }
     return zeroes;
@@ -136,7 +142,7 @@ static inline uword cntlz(register uword bit_string) {
 /*
  * Count the number of trailing zeroes in bit_string.
  */
-static inline uword cnttz(register uword bit_string) {
+static inline uqword cnttz(register uqword bit_string) {
 #if ARCH == ARCH_X86_32
     return __x86_tzcnt(bit_string);
 #elif ARCH == ARCH_X86_64
@@ -146,7 +152,7 @@ static inline uword cnttz(register uword bit_string) {
     // zeroes to ones
     bit_string = ~bit_string;
     ubyte loop_condition;
-    for (uword i = 0; i < bitwidth(bit_string) && (loop_condition = (bit_string >> i) & 1u); i++) {
+    for (uqword i = 0; i < bitwidth(bit_string) && (loop_condition = (bit_string >> i) & 1u); i++) {
         zeroes += loop_condition;
     }
     return zeroes;
@@ -156,7 +162,7 @@ static inline uword cnttz(register uword bit_string) {
 /*
  * Count the number of ones in a bit_string
  */
-static inline uword ones(register uword bit_string) {
+static inline uqword ones(register uqword bit_string) {
 #if ARCH == ARCH_X86_32
     return __x86_popcnt(bit_string);
 #elif ARCH == ARCH_X86_64
@@ -166,7 +172,7 @@ static inline uword ones(register uword bit_string) {
     // zeroes to ones
     bit_string = ~bit_string;
     ubyte loop_condition;
-    for (uword i = 0; i < bitwidth(bit_string) && (loop_condition = (bit_string >> i) & 1u); i++) {
+    for (uqword i = 0; i < bitwidth(bit_string) && (loop_condition = (bit_string >> i) & 1u); i++) {
         zeroes += loop_condition;
     }
     return zeroes;
@@ -174,9 +180,9 @@ static inline uword ones(register uword bit_string) {
 }
 
 /*
- * Compute the number of significant bits in the given word
+ * Compute the number of significant bits in the given qword
  */
-static inline uword sigbits(register uword bit_string) {
+static inline uqword sigbits(register uqword bit_string) {
 #if defined(__GNUC__)
     #if DATA_MODEL == LLP64 || DATA_MODEL == ILP64 || DATA_MODEL == SILP64
     return bitwidth(typeof(bit_string)) - __builtin_clzll((bit_string | 1ull));
@@ -211,7 +217,7 @@ static inline uword sigbits(register uword bit_string) {
 #endif
 }
 
-static inline uword lerp(register uword lower_bound, register uword upper_bound, register uword x) {
+static inline uqword lerp(register uqword lower_bound, register uqword upper_bound, register uqword x) {
     return lower_bound + x * (upper_bound - lower_bound);
 }
 
@@ -221,18 +227,18 @@ static inline uword lerp(register uword lower_bound, register uword upper_bound,
 #define dst(a, b) ( (a) > (b) ? (a) - (b) : (b) - (a) )
 
 /*
- * Compute the number of significant bits in the given signed word.
+ * Compute the number of significant bits in the given signed qword.
  */
-static inline uword sigbitss(register word bit_string) {
-    return sigbits((uword) bit_string);
+static inline uqword sigbitss(register qword bit_string) {
+    return sigbits((uqword) bit_string);
 }
 
 /*
  * Compute the number of significant bits in the given bit string.
  */
-static inline uword sigbitsn(register uword *bit_string, register size_t words) {
-    uword     result = 0;
-    for (word i      = (word) (words - 1u); i >= 0u; i--) {
+static inline uqword sigbitsn(register uqword *bit_string, register size_t words) {
+    uqword      result = 0;
+    for (qword i = (qword) (words - 1u); i >= 0u; i--) {
         result += sigbits(bit_string[i]);
     }
     return result;
@@ -241,15 +247,22 @@ static inline uword sigbitsn(register uword *bit_string, register size_t words) 
 /*
  * Compute 2 to the power of exponent using integer bit math with truncated results for overflow.
  */
-static inline uword pow2i(register uword exponent) {
+static inline uqword pow2i(register uqword exponent) {
     return 1ull << exponent;
+}
+
+/*
+ * Compute 2 to the power of exponent for all integers using bit math with truncated results for overflow.
+ */
+static inline uqword pow2si(register qword exponent) {
+    return pow2i(abs(exponent));
 }
 
 /*
  * Compute 10 to the power of exponent using integer bit math with truncated results for overflow.
  */
-static inline uword pow10i(register uword exponent) {
-    static const uword pow10[20] = {
+static inline uqword pow10i(register uqword exponent) {
+    static const uqword pow10[20] = {
             1ull,
             10ull,
             100ull,
@@ -284,8 +297,8 @@ static inline float fexp(float x) {
 /*
  * Compute e to the power of exponent using integer bit math with truncated results for overflow.
  */
-static inline uword expi(register uword exponent) {
-    //    static const uword expi[45] = {
+static inline uqword expi(register uqword exponent) {
+    //    static const uqword expi[45] = {
     //            1ull,
     //            2ull,
     //            7ull,
@@ -337,18 +350,18 @@ static inline uword expi(register uword exponent) {
     
     
     //    // log2(e) = 1.4426950408889634073599246810019
-    //    const usuperword numerator   = 10000000000000000000ull;
-    //    const usuperword denominator = 14426950408889634073ull;
-    //    const usuperword x           = exponent;
-    //    return pow2i(((uword) ((x * numerator) / denominator)));
-    return (uword) fexp((float) exponent);
+    //    const udqword numerator   = 10000000000000000000ull;
+    //    const udqword denominator = 14426950408889634073ull;
+    //    const udqword x           = exponent;
+    //    return pow2i(((uqword) ((x * numerator) / denominator)));
+    return (uqword) fexp((float) exponent);
 }
 
 /*
  * Compute base to the power of exponent using integer bit math.
  */
-static inline uword powni(register uword base, register uword exponent) {
-    uword result = 1;
+static inline uqword powni(register uqword base, register uqword exponent) {
+    uqword result = 1;
     
     while (exponent) {
         if (exponent & 1u)
@@ -365,51 +378,51 @@ static inline uword powni(register uword base, register uword exponent) {
 /*
  * Compute log base 2 of the given bit string using integer bit math.
  */
-static inline uword log2i(register uword bit_string) {
+static inline uqword log2i(register uqword bit_string) {
     return sigbits(bit_string) - 1ull;
 }
 
 /*
  * Compute log base 10 of the given bit string using integer bit math.
  */
-static inline uword log10i(register uword bit_string) {
+static inline uqword log10i(register uqword bit_string) {
     // ln(10) / ln(2) ~= 3.3219280948873623478703194294894
-    const usuperword numerator   = 10000ull;
-    const usuperword denominator = 33219ull;
-    const usuperword x           = bit_string;
-    return (uword) ((((usuperword) sigbits(x)) * numerator) / denominator);
+    const udqword numerator   = 10000ull;
+    const udqword denominator = 33219ull;
+    const udqword x           = bit_string;
+    return (uqword) ((((udqword) sigbits(x)) * numerator) / denominator);
 }
 
 /*
  * Computes log_<base>(bit_string) with base as the base, and the given bit string using integer bit math.
  */
-static inline uword logni(register uword base, register uword bit_string) {
+static inline uqword logni(register uqword base, register uqword bit_string) {
     return log10i(bit_string) / log10i(base);
 }
 
 /*
  * Computes log base e of the given bit string using integer bit math.
  */
-static inline uword lni(register uword bit_string) {
+static inline uqword lni(register uqword bit_string) {
     // ln(10) / ln(2) * log(e) ~= 1.4426950408889634073599246810019
-    const usuperword numerator   = 10000000000000000ull;
-    const usuperword denominator = 14426950408889634ull;
-    const usuperword x           = bit_string;
+    const udqword numerator   = 10000000000000000ull;
+    const udqword denominator = 14426950408889634ull;
+    const udqword x           = bit_string;
     // log(bit_string) / log(e)
-    return (uword) (((sigbits(x)) * numerator) / denominator);
+    return (uqword) (((sigbits(x)) * numerator) / denominator);
 }
 
 /*
  * Computes the value of a single bit at a given digit offset from the right.
  */
-static inline uword get_digit2i(uword value, uword digit) {
+static inline uqword get_digit2i(uqword value, uqword digit) {
     return (value >> digit) & 1;
 }
 
 /*
  * Computes the value of a single base 10 digit at the given digit offset.
  */
-static inline uword get_digit10i(uword value, uword digit) {
+static inline uqword get_digit10i(uqword value, uqword digit) {
     value /= pow10i(digit);
     return value % 10ull;
 }
@@ -417,14 +430,14 @@ static inline uword get_digit10i(uword value, uword digit) {
 /*
  * Doubles the given value using bit math.
  */
-static inline uword dbl(register uword const value) {
+static inline uqword dbl(register uqword const value) {
     return value << 1u;
 }
 
 /*
  * Halves the given value using bit math.
  */
-static inline uword hlv(register uword const value) {
+static inline uqword hlv(register uqword const value) {
     return value >> 1u;
 }
 
@@ -433,14 +446,14 @@ static inline uword hlv(register uword const value) {
 /*
  * Compute if given value is within the range [min, max].
  */
-static inline bool in_range(register uword const min, register uword const max, register uword const value) {
+static inline bool in_range(register uqword const min, register uqword const max, register uqword const value) {
     return (min <= value) & (value <= max);
 }
 
 /*
  * Compute if given value is within the range [min, max).
  */
-static inline bool in_buffer(register uword const min, register uword const max, register uword const value) {
+static inline bool in_buffer(register uqword const min, register uqword const max, register uqword const value) {
     return (min <= value) & (value < max);
 }
 
@@ -451,55 +464,64 @@ static inline bool in_buffer(register uword const min, register uword const max,
  * right-most bit determines which side of the binary_tree will be accessed, either 0 for left, or 1 for right.
  * (See <https://www.desmos.com/calculator/z8l7kyskro>)
  */
-static inline uword bin_index(register uword address) {
-    uword side = address & 1u;
+static inline uqword bin_index(register uqword address) {
+    uqword side = address & 1u;
     address >>= 1u;
     if (!address)
         return side;
-    uword address_bits = log2i(address);
+    uqword address_bits = log2i(address);
     // 2 * pow2i(address_bits) - 2u + address - side * pow2i(address_bits)
     return address == 1 ? side : (2ull << address_bits) - 2u + address - side * (1ull << address_bits);
 }
 
-static inline uword get_bita(uword const *restrict bitarray, uword const words, uword const bit_index) {
-    uword bits = sizeof(uword) * sizeof(uintmin_t) * MIN_BITS;
+static inline uqword get_bita(uqword const *restrict bitarray, uqword const words, uqword const bit_index) {
+    uqword bits = sizeof(uqword) * sizeof(uintmin_t) * MIN_BITS;
     
-    uword index = bit_index / bits;
+    uqword index = bit_index / bits;
     if (!in_buffer(0, words, index))
         fatalf(__func__, "index out of range: 0 <= index=%u < %u\n", index, words);
     
-    uword word = bitarray[index];
-    uword bit  = (word >> (bit_index % bits)) & ((uword) 1u);
+    uqword word = bitarray[index];
+    uqword bit  = (word >> (bit_index % bits)) & ((uqword) 1u);
     return bit;
 }
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-static inline uword *get_bitsa(uword const *restrict bitarray, uword const words, uword const bit_index, uword const value_bits) {
+static inline uqword get_bit(uqword bit_string, ubyte bit) {
+    return (bit_string >> bit) & 1ull;
+}
+
+static inline uqword set_bit(uqword bit_string, ubyte bit, ubyte value) {
+    bit_string ^= (-value ^ bit_string) & (1ull << bit);
+    return bit_string;
+}
+
+static inline uqword *get_bitsa(uqword const *restrict bitarray, uqword const words, uqword const bit_index, uqword const value_bits) {
     // TODO implement get_bits
-    uword bits = sizeof(uword) * sizeof(uintmin_t) * MIN_BITS;
+    uqword bits = sizeof(uqword) * sizeof(uintmin_t) * MIN_BITS;
     
-    uword start = bit_index / bits;
+    uqword start = bit_index / bits;
     if (!in_buffer(0, words, start))
         fatalf(__func__, "start out of range: 0 <= start=%u < %u\n", start, words);
     
-    uword end = (bit_index + value_bits - 1u) / bits;
+    uqword end = (bit_index + value_bits - 1u) / bits;
     if (!in_buffer(0, words, end))
         fatalf(__func__, "end out of range: 0 <= end=%u < %u\n", end, words);
     
-    for (uword i = start; i < end; i++) {
+    for (uqword i = start; i < end; i++) {
     }
 }
 
-static inline void set_bita(uword *restrict bitarray, uword const words, uword const bit_offset, uword const value) {
-    uword bits  = sizeof(uword) * sizeof(uintmin_t) * MIN_BITS;
-    uword index = bit_offset / bits;
+static inline void set_bita(uqword *restrict bitarray, uqword const words, uqword const bit_offset, uqword const value) {
+    uqword bits  = sizeof(uqword) * sizeof(uintmin_t) * MIN_BITS;
+    uqword index = bit_offset / bits;
     // guard
     if (!in_buffer(0, words, index))
         fatalf(__func__, "index out of range: 0 <= index=%u < %u\n", index, words);
-    uword word = bitarray[index];
-    word ^= (word ^ ((value & ((uword) 1u)) << (bit_offset % bits))) & (((uword) 1u) << (bit_offset % bits));
+    uqword word = bitarray[index];
+    word ^= (word ^ ((value & ((uqword) 1u)) << (bit_offset % bits))) & (((uqword) 1u) << (bit_offset % bits));
     bitarray[index] = word;
 }
 
@@ -507,17 +529,14 @@ static inline void set_bitsa() {
     // TODO implement set_bits
 }
 
-static inline uword get_bit(uword bit_string, ubyte bit) {
-    return (bit_string >> bit) & 1ull;
-}
-
-static inline uword set_bit(uword bit_string, ubyte bit, ubyte value) {
-    bit_string ^= (bit_string ^ ((value & ((uword) 1u)) << bit)) & (((uword) 1u) << bit);
+static inline uqword clear_bit(uqword bit_string, ubyte bit) {
+    bit_string &= ~(1ull << bit);
     return bit_string;
 }
 
-static inline uword clear_bit(uword bit_string, ubyte bit) {
-    return set_bit(bit_string, bit, 0);
+static inline uqword toggle_bit(uqword bit_string, ubyte bit) {
+    bit_string ^= (1ull << bit);
+    return bit_string;
 }
 
 #endif //PROJECT_AQUINAS_BIT_MATH_H
