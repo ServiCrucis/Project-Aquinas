@@ -58,16 +58,13 @@ static inline void clear_context() {
     _global_context = _global_previous_context;
 }
 
-__attribute__((format_arg(2)))
 void info(char const *restrict fn_name, char const *information, ...);
 
-__attribute__((format_arg(2)))
 void infof(char const *restrict fn_name, char const *restrict information, ...);
 
-__attribute__((format_arg(2)))
 void warnf(char const *restrict fn_name, char const *restrict warning, ...);
 
-__attribute__((noreturn, format_arg(2)))
+__attribute__((noreturn))
 void fatalf(char const *restrict fn_name, char const *restrict error_message, ...);
 
 #endif /* PROJECT_AQUINAS_DEBUG_H */
