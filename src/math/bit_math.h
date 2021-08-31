@@ -194,14 +194,14 @@ static inline uqword log2i(register uqword);
 /*
  * Evaluates fast modulus as a mod b to machine precision using bit math.
  */
-__attribute__((noinline))
+__attribute__((const))
 static inline uqword umodq(register uqword a, register uqword b) {
     register uqword a2, b2;
     // define x mod 0 to be 0 given that lim_{n -> 0} x mod n = 0
     if (!b) return 0;
     
     // reduce a by the largest power of two coefficient of b which satisfies b * 2**n <= a
-    a = shift(a, sigbits(a) - sigbits(b));
+    a = (uqword) shift(a, (qword) sigbits(a) - (qword) sigbits(b));
     // compute a/(2**(floor(log_2(b)) + 1))
     a2 = a >> (log2i(b) + 1);
     // compute 2**(floor(log_2(b)) + 1) mod b
