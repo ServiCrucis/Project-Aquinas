@@ -194,12 +194,14 @@ static inline uqword log2i(register uqword);
 /*
  * Evaluates fast modulus as a mod b to machine precision using bit math.
  */
-__attribute__((const))
+__attribute__((noinline))
 static inline uqword umodq(register uqword a, register uqword b) {
     register uqword a2, b2;
     // define x mod 0 to be 0 given that lim_{n -> 0} x mod n = 0
     if (!b) return 0;
-
+    
+    // reduce a by the largest power of two coefficient of b which satisfies b * 2**n <= a
+    a = shift(a, sigbits(a) - sigbits(b));
     // compute a/(2**(floor(log_2(b)) + 1))
     a2 = a >> (log2i(b) + 1);
     // compute 2**(floor(log_2(b)) + 1) mod b
@@ -210,16 +212,16 @@ static inline uqword umodq(register uqword a, register uqword b) {
     b2 = (uqword) ((udqword) (1ull << (log2i(b) + 1)) - (udqword) b);
     // compute a mod 2**(floor(log_2(b)) + 1)
     a = (uqword) ((udqword) a & (udqword) ((1ull << (log2i(b) + 1)) - 1));
-    
+
     // (a mod base) + (base mod b) * floor(a/base)
     // SSE2 pmaddwd on x86
     a += b2 * a2;
-    
+
     // a mod b (final step)
     while (a >= b) {
         a -= b;
     }
-    
+
     return a;
 }
 
@@ -290,11 +292,12 @@ static inline udqword umulq(register uqword multiplicand, register uqword multip
 }
 
 /*
- * Uses a fast division algorithm to compute divides using bit math.
+ * Uses a fast division algorithm to compute divides to machine using bit math.
  */
 __attribute__((const))
 static inline uqword udivq(register uqword dividend, register uqword divisor) {
-
+    // square wave implementation
+    
 }
 
 /*
