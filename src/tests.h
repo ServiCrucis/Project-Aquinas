@@ -239,13 +239,13 @@ static void test_square_wave() {
     info(__func__, "beginning test of square_wave()\n");
     
     for(ubyte i = 0; i < 32; i++) {
-        infof(__func__, "square_wave(period=1, time=loop_index) = %u\n", square_wave(3, i));
+        infof(__func__, "square_wave(period=3, time=loop_index) = %u\n", square_wave(3, i));
     }
     
     info(__func__, "-----------------------\n");
     
     for(ubyte i = 0; i < 32; i++) {
-        infof(__func__, "square_wave_ext(period=1, time=loop_index) = %u\n", square_wave_ext(2, i));
+        infof(__func__, "square_wave_ext(period=2, time=loop_index) = %u\n", square_wave_ext(2, i));
     }
     
     info(__func__, "square_wave() test complete\n");

@@ -58,6 +58,10 @@ typedef struct pair {
 #define abs(value) ( (value) > 0 ? (value) : -(value) )
 //#define abs(value) ( ((value) ^ ((value) >> (bitwidth(typeof(value)) - 1u))) + (((value) >> (bitwidth(typeof(value)) - 1u)) & 1u) )
 
+/*
+ * Computes the sign of the given value (accepts signed or unsigned input)
+ */
+#define sign(value) ( (value) > 0 ? 1 : -1 )
 
 /*
  * Performs left or right shift on value if a is positive or negative respectively.
@@ -222,23 +226,38 @@ static inline uqword umodq(register uqword a, register uqword b) {
 /*
  * Evaluates a square wave function of the given periodicity at the given time. Valid periodicity range is equivalent to
  * the number of values supported by uqword.
+ *
+ * The input is two integers. The returned value is a fixed-point u32.32 value.
  */
 __attribute__((hot,const))
-static inline ubyte square_wave(register ubyte period, register uqword time) {
-    // implements -(2 floor(ft
+static inline uqword square_wave(register uqword period, register uqword time) {
+    // implements sgn( (time mod period) - (period - 1)/2 )
+    // a = (time mod period)
+    register qword a = (qword) (umodq(time, period));
+    // --- begin signed arithmetic
+    // a - (period - 1)/2
+    a -= ((qword) (period - 1ull) >> 1ull);
+    return ((uqword) (sign(a) >= 0)) << 31ull;
+    // --- end signed arithmetic
 }
 
 /*
+ * TODO implement square_wave_ext
+ *
  * Evaluates a square wave function of the given periodicity at the given time. Valid periodicity range is equivalent to
  * the number of values supported by udqword. Provides no semantic difference over square_wave, but allows a greater
  * periodicity range.
+ *
+ * The input is two integers. The returned value is a fixed-point u64.64 value.
  */
 __attribute__((const))
-static inline ubyte square_wave_ext(register ubyte period, register udqword time) {
-    return (time >> (period - 1)) & 1ull;
+static inline udqword square_wave_ext(register udqword period, register udqword time) {
 }
 
 /*
+ *
+ * TODO implement square wave function valid for all rationals
+ *
  * Evaluates a square wave function of the given periodicity at the given time. Valid periodicity range is equivalent to
  * the number of values supported by the current platform. Provides no semantic difference over square_wave
  * nor square_wave_ext, but allows a virtually infinite range of periodicities by providing an exponent denoting
@@ -248,7 +267,7 @@ static inline ubyte square_wave_ext(register ubyte period, register udqword time
  *
  */
 __attribute__((pure))
-static inline ubyte square_wave_ext_infty(register ubyte period, register ubyte time, register udqword exponent) {
+static inline ubyte square_wave_ext_infty(register udqword period, register udqword time, register udqword exponent) {
 }
 
 #ifndef BIT_MATH_USE_HW_MUL
