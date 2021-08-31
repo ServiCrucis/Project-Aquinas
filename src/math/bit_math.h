@@ -78,6 +78,7 @@ typedef struct pair {
 /*
  * Generates a bit mask from the given value that sets bit_count bits from the right to ones.
  */
+__attribute__((hot,const))
 static inline uqword bitmaskv(register uqword value, register uqword bit_count) {
     return truncate(~value, bit_count) ^ value;
 }
@@ -90,6 +91,7 @@ static inline uqword sigbits(uqword);
  *
  * Exactly equivalent to `bitmaskv(value, sigbits(value));`
  */
+__attribute__((hot,const))
 static inline uqword bitmask(register uqword value) {
     return bitmaskv(value, sigbits(value));
 }
@@ -97,6 +99,7 @@ static inline uqword bitmask(register uqword value) {
 /*
  * Compute number of significant base 10 digits in a given base 2 qword
  */
+__attribute__((hot,const))
 static inline uqword digits(register uqword bit_string) {
     // ln(10) / ln(2) ~= 3.3219280948873623478703194294894
     const udqword numerator   = 10000ull;
@@ -108,26 +111,28 @@ static inline uqword digits(register uqword bit_string) {
 /*
  * Zeroes all bits above the given bit index in src.
  */
+__attribute__((hot,const))
 static inline uqword zero_high_bits(register uqword src, register uqword index) {
-#if ARCH == ARCH_X86_64
+    #if ARCH == ARCH_X86_64
     return __x64_bzhiq(src, src, index);
-#elif ARCH == ARCH_X86_32
+    #elif ARCH == ARCH_X86_32
     return __x86_bzhil(src, src, index);
-#else
+    #else
     index = 64 - index;
     return (src << index) >> index;
-#endif
+    #endif
 }
 
 /*
  * Count the number of leading zeroes in bit_string.
  */
+__attribute__((hot,const))
 static inline uqword cntlz(register uqword bit_string) {
-#if ARCH == ARCH_X86_32
+    #if ARCH == ARCH_X86_32
     return __x86_lzcnt(bit_string);
-#elif ARCH == ARCH_X86_64
+    #elif ARCH == ARCH_X86_64
     return __x64_lzcnt(bit_string);
-#else
+    #else
     ubyte zeroes = 0;
     // zeroes to ones
     bit_string = ~bit_string;
@@ -136,18 +141,19 @@ static inline uqword cntlz(register uqword bit_string) {
         zeroes += loop_condition;
     }
     return zeroes;
-#endif
+    #endif
 }
 
 /*
  * Count the number of trailing zeroes in bit_string.
  */
+__attribute__((hot,const))
 static inline uqword cnttz(register uqword bit_string) {
-#if ARCH == ARCH_X86_32
+    #if ARCH == ARCH_X86_32
     return __x86_tzcnt(bit_string);
-#elif ARCH == ARCH_X86_64
+    #elif ARCH == ARCH_X86_64
     return __x64_tzcnt(bit_string);
-#else
+    #else
     ubyte zeroes = 0;
     // zeroes to ones
     bit_string = ~bit_string;
@@ -156,18 +162,19 @@ static inline uqword cnttz(register uqword bit_string) {
         zeroes += loop_condition;
     }
     return zeroes;
-#endif
+    #endif
 }
 
 /*
  * Count the number of ones in a bit_string
  */
+__attribute__((hot,const))
 static inline uqword ones(register uqword bit_string) {
-#if ARCH == ARCH_X86_32
+    #if ARCH == ARCH_X86_32
     return __x86_popcnt(bit_string);
-#elif ARCH == ARCH_X86_64
+    #elif ARCH == ARCH_X86_64
     return __x64_popcnt(bit_string);
-#else
+    #else
     ubyte zeroes = 0;
     // zeroes to ones
     bit_string = ~bit_string;
@@ -176,36 +183,129 @@ static inline uqword ones(register uqword bit_string) {
         zeroes += loop_condition;
     }
     return zeroes;
+    #endif
+}
+
+static inline uqword log2i(register uqword);
+/*
+ * Evaluates fast modulus as a mod b to machine precision using bit math.
+ */
+__attribute__((const))
+static inline uqword umodq(register uqword a, register uqword b) {
+    register uqword a2, b2;
+    // define x mod 0 to be 0 given that lim_{n -> 0} x mod n = 0
+    if (!b) return 0;
+
+    // compute a/(2**(floor(log_2(b)) + 1))
+    a2 = a >> (log2i(b) + 1);
+    // compute 2**(floor(log_2(b)) + 1) mod b
+    // 2**(floor(log_2(b)) + 1) and b will always have a floored quotient of 1
+    // using udqword to account for overflow during arithmetic
+    // we're using an identity of modulus:
+    // 2**(floor(log_2(b)) + 1) - b * floor((2**(floor(log_2(b)) + 1))/b)
+    b2 = (uqword) ((udqword) (1ull << (log2i(b) + 1)) - (udqword) b);
+    // compute a mod 2**(floor(log_2(b)) + 1)
+    a = (uqword) ((udqword) a & (udqword) ((1ull << (log2i(b) + 1)) - 1));
+    
+    // (a mod base) + (base mod b) * floor(a/base)
+    // SSE2 pmaddwd on x86
+    a += b2 * a2;
+    
+    // a mod b (final step)
+    while (a >= b) {
+        a -= b;
+    }
+    
+    return a;
+}
+
+/*
+ * Evaluates a square wave function of the given periodicity at the given time. Valid periodicity range is equivalent to
+ * the number of values supported by uqword.
+ */
+__attribute__((hot,const))
+static inline ubyte square_wave(register ubyte period, register uqword time) {
+    // implements -(2 floor(ft
+}
+
+/*
+ * Evaluates a square wave function of the given periodicity at the given time. Valid periodicity range is equivalent to
+ * the number of values supported by udqword. Provides no semantic difference over square_wave, but allows a greater
+ * periodicity range.
+ */
+__attribute__((const))
+static inline ubyte square_wave_ext(register ubyte period, register udqword time) {
+    return (time >> (period - 1)) & 1ull;
+}
+
+/*
+ * Evaluates a square wave function of the given periodicity at the given time. Valid periodicity range is equivalent to
+ * the number of values supported by the current platform. Provides no semantic difference over square_wave
+ * nor square_wave_ext, but allows a virtually infinite range of periodicities by providing an exponent denoting
+ * a value for which two is raised to the power of.
+ *
+ * The time parameter should be aligned to ubyte.
+ *
+ */
+__attribute__((pure))
+static inline ubyte square_wave_ext_infty(register ubyte period, register ubyte time, register udqword exponent) {
+}
+
+#ifndef BIT_MATH_USE_HW_MUL
+  #define BIT_MATH_USE_HW_MUL 1
 #endif
+
+/*
+ * Uses the fastest multiplier available, either hardware if BIT_MATH_USE_HW_MUL macro is set to a value of 1 and is the
+ * default option, or software implementation using bit math.
+ */
+__attribute__((const))
+static inline udqword umulq(register uqword multiplicand, register uqword multiplier) {
+    #if BIT_MATH_USE_HW_MUL == 1
+    // optimizes to mul which is sufficiently fast
+    return multiplicand * multiplier;
+    #else
+    // TODO create faster SW mul (difficult, considering mul is already 3c, 1t on Ryzen Family 17h)
+    return multiplicand * multiplier;
+    #endif
+}
+
+/*
+ * Uses a fast division algorithm to compute divides using bit math.
+ */
+__attribute__((const))
+static inline uqword udivq(register uqword dividend, register uqword divisor) {
+
 }
 
 /*
  * Compute the number of significant bits in the given qword
  */
+__attribute__((hot,const))
 static inline uqword sigbits(register uqword bit_string) {
-#if defined(__GNUC__)
-    #if DATA_MODEL == LLP64 || DATA_MODEL == ILP64 || DATA_MODEL == SILP64
+    #if defined(__GNUC__)
+      #if DATA_MODEL == LLP64 || DATA_MODEL == ILP64 || DATA_MODEL == SILP64
     return bitwidth(typeof(bit_string)) - __builtin_clzll((bit_string | 1ull));
-    #elif DATA_MODEL == LP64
+      #elif DATA_MODEL == LP64
     return bitwidth(typeof(bit_string)) - __builtin_clzll((bit_string | 1ul));
-    #elif DATA_MODEL == ILP32 || DATA_MODEL == LP32
+      #elif DATA_MODEL == ILP32 || DATA_MODEL == LP32
     return bitwidth(typeof(bit_string)) - __builtin_clz((bit_string | 1u));
-    #else
+      #else
         #error "Unsupported data model"
-    #endif
-#elif ARCH == ARCH_X86_32
+      #endif
+    #elif ARCH == ARCH_X86_32
     return bitwidth(typeof(bit_string)) - __x86_lzcnt((((unsigned long) bit_string) | 1u));
-#elif ARCH == ARCH_AMD64
+    #elif ARCH == ARCH_AMD64
     return __x64_bsrq((unsigned long long) bit_string);
-#elif ARCH == ARCH_ARM
-    #if ARCH_VARIANT == ARCH_ARM32
+    #elif ARCH == ARCH_ARM
+      #if ARCH_VARIANT == ARCH_ARM32
         return bitwidth(typeof(bit_string)) - __arm32_clz((((unsigned long) bit_string) | 1u));
-    #elif ARCH_VARIANT == ARCH_ARM64
+          #elif ARCH_VARIANT == ARCH_ARM64
         return bitwidth(typeof(bit_string)) - __arm64_clz((((unsigned long) bit_string) | 1u));
-    #else
-        #error "ARM variant not supported"
-    #endif
-#else
+          #else
+            #error "ARM variant not supported"
+          #endif
+        #else
     ubyte  k = 0;
     if (bit_string > 0xFFFFFFFFu) { bit_string >>= 32; k  = 32; }
     if (bit_string > 0x0000FFFFu) { bit_string >>= 16; k |= 16; }
@@ -214,9 +314,10 @@ static inline uqword sigbits(register uqword bit_string) {
     if (bit_string > 0x00000003u) { bit_string >>= 2;  k |= 2;  }
     k |= (bit_string & 2u) >> 1u;
     return k;
-#endif
+    #endif
 }
 
+__attribute__((const))
 static inline uqword lerp(register uqword lower_bound, register uqword upper_bound, register uqword x) {
     return lower_bound + x * (upper_bound - lower_bound);
 }
@@ -229,6 +330,7 @@ static inline uqword lerp(register uqword lower_bound, register uqword upper_bou
 /*
  * Compute the number of significant bits in the given signed qword.
  */
+__attribute__((const))
 static inline uqword sigbitss(register qword bit_string) {
     return sigbits((uqword) bit_string);
 }
@@ -236,9 +338,10 @@ static inline uqword sigbitss(register qword bit_string) {
 /*
  * Compute the number of significant bits in the given bit string.
  */
+__attribute__((const))
 static inline uqword sigbitsn(register uqword *bit_string, register size_t words) {
-    uqword      result = 0;
-    for (qword i = (qword) (words - 1u); i >= 0u; i--) {
+    uqword     result = 0;
+    for (qword i      = (qword) (words - 1u); i >= 0u; i--) {
         result += sigbits(bit_string[i]);
     }
     return result;
@@ -247,6 +350,7 @@ static inline uqword sigbitsn(register uqword *bit_string, register size_t words
 /*
  * Compute 2 to the power of exponent using integer bit math with truncated results for overflow.
  */
+__attribute__((hot,const))
 static inline uqword pow2i(register uqword exponent) {
     return 1ull << exponent;
 }
@@ -254,6 +358,7 @@ static inline uqword pow2i(register uqword exponent) {
 /*
  * Compute 2 to the power of exponent for all integers using bit math with truncated results for overflow.
  */
+__attribute__((const))
 static inline uqword pow2si(register qword exponent) {
     return pow2i(abs(exponent));
 }
@@ -261,6 +366,7 @@ static inline uqword pow2si(register qword exponent) {
 /*
  * Compute 10 to the power of exponent using integer bit math with truncated results for overflow.
  */
+__attribute__((const))
 static inline uqword pow10i(register uqword exponent) {
     static const uqword pow10[20] = {
             1ull,
@@ -290,6 +396,7 @@ static inline uqword pow10i(register uqword exponent) {
 
 #include <math.h>
 
+__attribute__((const))
 static inline float fexp(float x) {
     return exp2f(x * 1.4426950408889634073599246810019f);
 }
@@ -297,6 +404,7 @@ static inline float fexp(float x) {
 /*
  * Compute e to the power of exponent using integer bit math with truncated results for overflow.
  */
+__attribute__((const))
 static inline uqword expi(register uqword exponent) {
     //    static const uqword expi[45] = {
     //            1ull,
@@ -360,6 +468,7 @@ static inline uqword expi(register uqword exponent) {
 /*
  * Compute base to the power of exponent using integer bit math.
  */
+__attribute__((const))
 static inline uqword powni(register uqword base, register uqword exponent) {
     uqword result = 1;
     
@@ -378,6 +487,7 @@ static inline uqword powni(register uqword base, register uqword exponent) {
 /*
  * Compute log base 2 of the given bit string using integer bit math.
  */
+__attribute__((hot,const))
 static inline uqword log2i(register uqword bit_string) {
     return sigbits(bit_string) - 1ull;
 }
@@ -385,6 +495,7 @@ static inline uqword log2i(register uqword bit_string) {
 /*
  * Compute log base 10 of the given bit string using integer bit math.
  */
+__attribute__((const))
 static inline uqword log10i(register uqword bit_string) {
     // ln(10) / ln(2) ~= 3.3219280948873623478703194294894
     const udqword numerator   = 10000ull;
@@ -396,6 +507,7 @@ static inline uqword log10i(register uqword bit_string) {
 /*
  * Computes log_<base>(bit_string) with base as the base, and the given bit string using integer bit math.
  */
+__attribute__((const))
 static inline uqword logni(register uqword base, register uqword bit_string) {
     return log10i(bit_string) / log10i(base);
 }
@@ -403,6 +515,7 @@ static inline uqword logni(register uqword base, register uqword bit_string) {
 /*
  * Computes log base e of the given bit string using integer bit math.
  */
+__attribute__((const))
 static inline uqword lni(register uqword bit_string) {
     // ln(10) / ln(2) * log(e) ~= 1.4426950408889634073599246810019
     const udqword numerator   = 10000000000000000ull;
@@ -415,6 +528,7 @@ static inline uqword lni(register uqword bit_string) {
 /*
  * Computes the value of a single bit at a given digit offset from the right.
  */
+__attribute__((hot,const))
 static inline uqword get_digit2i(uqword value, uqword digit) {
     return (value >> digit) & 1;
 }
@@ -422,6 +536,7 @@ static inline uqword get_digit2i(uqword value, uqword digit) {
 /*
  * Computes the value of a single base 10 digit at the given digit offset.
  */
+__attribute__((const))
 static inline uqword get_digit10i(uqword value, uqword digit) {
     value /= pow10i(digit);
     return value % 10ull;
@@ -430,6 +545,7 @@ static inline uqword get_digit10i(uqword value, uqword digit) {
 /*
  * Doubles the given value using bit math.
  */
+__attribute__((hot,const))
 static inline uqword dbl(register uqword const value) {
     return value << 1u;
 }
@@ -437,6 +553,7 @@ static inline uqword dbl(register uqword const value) {
 /*
  * Halves the given value using bit math.
  */
+__attribute__((hot,const))
 static inline uqword hlv(register uqword const value) {
     return value >> 1u;
 }
@@ -446,6 +563,7 @@ static inline uqword hlv(register uqword const value) {
 /*
  * Compute if given value is within the range [min, max].
  */
+__attribute__((hot,const))
 static inline bool in_range(register uqword const min, register uqword const max, register uqword const value) {
     return (min <= value) & (value <= max);
 }
@@ -453,6 +571,7 @@ static inline bool in_range(register uqword const min, register uqword const max
 /*
  * Compute if given value is within the range [min, max).
  */
+__attribute__((hot,const))
 static inline bool in_buffer(register uqword const min, register uqword const max, register uqword const value) {
     return (min <= value) & (value < max);
 }
@@ -464,6 +583,7 @@ static inline bool in_buffer(register uqword const min, register uqword const ma
  * right-most bit determines which side of the binary_tree will be accessed, either 0 for left, or 1 for right.
  * (See <https://www.desmos.com/calculator/z8l7kyskro>)
  */
+__attribute__((const))
 static inline uqword bin_index(register uqword address) {
     uqword side = address & 1u;
     address >>= 1u;
@@ -474,6 +594,7 @@ static inline uqword bin_index(register uqword address) {
     return address == 1 ? side : (2ull << address_bits) - 2u + address - side * (1ull << address_bits);
 }
 
+__attribute__((pure))
 static inline uqword get_bita(uqword const *restrict bitarray, uqword const words, uqword const bit_index) {
     uqword bits = sizeof(uqword) * sizeof(uintmin_t) * MIN_BITS;
     
@@ -488,16 +609,18 @@ static inline uqword get_bita(uqword const *restrict bitarray, uqword const word
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-
+__attribute__((hot,const))
 static inline uqword get_bit(uqword bit_string, ubyte bit) {
     return (bit_string >> bit) & 1ull;
 }
 
+__attribute__((hot,const))
 static inline uqword set_bit(uqword bit_string, ubyte bit, ubyte value) {
     bit_string ^= (-value ^ bit_string) & (1ull << bit);
     return bit_string;
 }
 
+__attribute__((pure))
 static inline uqword *get_bitsa(uqword const *restrict bitarray, uqword const words, uqword const bit_index, uqword const value_bits) {
     // TODO implement get_bits
     uqword bits = sizeof(uqword) * sizeof(uintmin_t) * MIN_BITS;

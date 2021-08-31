@@ -57,7 +57,7 @@ static void test_log10i() {
 }
 
 static void test_sigbits() {
-    for (uword i = 0; i < 256; i++) {
+    for (uqword i = 0; i < 256; i++) {
         infof(__func__, "sigbits(%llu): %llu\n", i, sigbits(i));
     }
 }
@@ -86,8 +86,8 @@ static void test_digits() {
 }
 
 static void test_to_digits() {
-    uword      value = UINT64_MAX;
-    ubyte      digits[20];
+    uqword value = UINT64_MAX;
+    ubyte  digits[20];
     for (ubyte i     = 19; i < 20; i--) {
         digits[i] = (ubyte) get_digit10i(value, i);
         infof(__func__, "digit[%llu] = %llu\n", i, digits[i]);
@@ -96,25 +96,25 @@ static void test_to_digits() {
 
 static void test_bittrie() {
     info(__func__, "Building bit_trie.\n");
-    pair     test[] = {
+    uqword_pair test[] = {
             { 23,  1 },
             { 237, 1 }
     };
-    bit_trie *trie  = btt_create(test, 8, 2);
-    uword    values = 256;
+    bit_trie    *trie  = btt_create(test, 8, 2);
+    uqword   values = 256;
     // 0: left; 1: right
-    uword    side   = 0ull;
+    uqword   side   = 0ull;
     info(__func__, "bit_trie side:left.\n");
-    for (uword address = 0; address < values; address++) {
+    for (uqword address = 0; address < values; address++) {
         
-        uword bit = btt_read(trie, (address << 1u) | side);
+        uqword bit = btt_read(trie, (address << 1u) | side);
         infof(__func__, "[%u] = %u\n", bin_index((address << 1u) | side), bit);
     }
     
     info(__func__, "bit_trie side:right.\n");
     side = 1ull;
-    for (uword address = 0; address < values; address++) {
-        uword bit = btt_read(trie, (address << 1u) | side);
+    for (uqword address = 0; address < values; address++) {
+        uqword bit = btt_read(trie, (address << 1u) | side);
         infof(__func__, "[%u]\n", bin_index((address << 1u) | side), bit);
     }
     
@@ -125,7 +125,7 @@ static void test_bittrie() {
 static void test_binary_trie() {
     binary_tree *btrie = binary_tree_create(31);
     
-    for (uword i = 0; i < btrie->nodes; i++) {
+    for (uqword i = 0; i < btrie->nodes; i++) {
         binary_tree_set(btrie, i, powni(i, i));
         infof(__func__, "binary_tree+%llu = %llu\n", i, binary_tree_get(btrie, i));
     }
@@ -133,15 +133,15 @@ static void test_binary_trie() {
 
 static void test_map() {
     sigbits_map *map = sbm_create(bitwidth(ubyte));
-    for (uword  i    = 0; i < 256; i++) {
-        sbm_set(map, (pair) { i, rand() });
+    for (uqword i = 0; i < 256; i++) {
+        sbm_set(map, (uqword_pair) { i, rand() });
         infof(__func__, "map[%llu] = %llu\n", i, sbm_get(map, i) & 255);
     }
     // undefined behavior
     infof(__func__, "(undefined behavior test) map[257]: %llu\n", sbm_get(map, 257));
     
-    //    for (ubyte i = 0; i < bitwidth(uword); i++) {
-    //        uword value = map_get(map, i);
+    //    for (ubyte i = 0; i < bitwidth(uqword); i++) {
+    //        uqword value = map_get(map, i);
     //        infof(__func__, "map[%llu] : %u\n", i, value);
     //    }
     
@@ -166,7 +166,7 @@ static void test_dynarray() {
     ubyte test_data[4] = { 0x12, 0x34, 0xAB, 0xCD };
     // print dynarray
     info(__func__, "dynarray before filling:\n");
-    for (uword i = 0; i < 32u; i++) {
+    for (uqword i = 0; i < 32u; i++) {
         infof(__func__, "dynarray[%u]: %#x\n", i, array->data[i]);
     }
     
@@ -175,7 +175,7 @@ static void test_dynarray() {
     
     // print dynarray
     info(__func__, "dynarray after filling:\n");
-    for (uword i = 0; i < 32u; i++) {
+    for (uqword i = 0; i < 32u; i++) {
         infof(__func__, "dynarray[%u]: %#x\n", i, array->data[i]);
     }
     
@@ -184,13 +184,13 @@ static void test_dynarray() {
     ubyte *test_get = calloc(32u, sizeof(*test_get));
     if (!test_get)
         fatalf(__func__, "failed to allocate memory for test_get\n");
-    for (uword i = 0; i < 32u; i++) {
+    for (uqword i = 0; i < 32u; i++) {
         infof(__func__,"test_get[%u]: %#x\n", i, test_get[i]);
     }
     
     info(__func__, "dynarray_get():\n");
     dynarray_get(array, 0, 32u, test_get, 0, 32u);
-    for (uword i = 0; i < 32u; i++) {
+    for (uqword i = 0; i < 32u; i++) {
         infof(__func__,"test_get[%u]: %#x\n", i, test_get[i]);
     }
     free(test_get);
@@ -201,7 +201,7 @@ static void test_dynarray() {
         fatalf(__func__, "failed to allocate memory for test_set\n");
     memset(test_set, 0x11, 32u);
     dynarray_set(array, 0, 32u, test_set, 0, 32u);
-    for (uword i = 0; i < 32u; i++) {
+    for (uqword i = 0; i < 32u; i++) {
         infof(__func__, "dynarray[%u]: %#x\n", i, array->data[i]);
     }
     free(test_set);
@@ -211,14 +211,14 @@ static void test_dynarray() {
     array = dynarray_resize(array, 16u);
     info(__func__, "after dynarray_resize() from 32 to 16 bytes:\n");
     // undefined behavior; test results may vary
-    for (uword i = 0; i < 32u; i++) {
+    for (uqword i = 0; i < 32u; i++) {
         infof(__func__, "dynarray[%u]: %#x\n", i, array->data[i]);
     }
     
     array = dynarray_resize(array, 64u);
     info(__func__, "after dynarray_resize() from 16 to 64 bytes:\n");
     // undefined behavior; test results may vary
-    for (uword i = 0; i < 64u; i++) {
+    for (uqword i = 0; i < 64u; i++) {
         infof(__func__, "dynarray[%u]: %#x\n", i, array->data[i]);
     }
     
@@ -228,6 +228,66 @@ static void test_dynarray() {
 }
 
 static void test_umap() {
+
+}
+
+static void test_memory_allocator() {
+
+}
+
+static void test_square_wave() {
+    info(__func__, "beginning test of square_wave()\n");
+    
+    for(ubyte i = 0; i < 32; i++) {
+        infof(__func__, "square_wave(period=1, time=loop_index) = %u\n", square_wave(3, i));
+    }
+    
+    info(__func__, "-----------------------\n");
+    
+    for(ubyte i = 0; i < 32; i++) {
+        infof(__func__, "square_wave_ext(period=1, time=loop_index) = %u\n", square_wave_ext(2, i));
+    }
+    
+    info(__func__, "square_wave() test complete\n");
+}
+
+static void test_udiv() {
+    info(__func__, "beginning unsigned integer division test\n");
+    
+    for(ubyte i = 1; i < 65; i++) {
+        for (ubyte j = 0; j < 64; j++) {
+            infof(__func__, "udiv(): %u / %u = %u\n", i, j, udivq((uqword) ((((udqword) 1) << i) - 1), j));
+        }
+    }
+    
+    for(ubyte i = 1; i < 65; i++) {
+        for (ubyte j = 0; j < 64; j++) {
+            infof(__func__, "using divide C syntax: %u / %u = %u\n", i, j, i / j);
+        }
+    }
+    
+    info(__func__, "unsigned integer division test complete\n");
+}
+
+static void test_umod() {
+    info(__func__, "beginning unsigned integer modulus test\n");
+    
+    for (uword i = 1; i < 257; i++) {
+        for (uword j = 0; j < 256; j++) {
+            infof(__func__, "umod(): %u %% %u = %u\n", j, i, umodq(j, i));
+        }
+    }
+    
+    for (uword i = 0; i < 256; i++) {
+        for (uword j = 0; j < 256; j++) {
+            infof(__func__, "using modulus C syntax: %u %% %u = %u\n", j, i, j % i);
+        }
+    }
+    
+    info(__func__, "unsigned integer modulus test complete\n");
+}
+
+static void test_fp_math() {
 
 }
 
