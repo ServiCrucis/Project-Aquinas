@@ -80,25 +80,24 @@ typedef struct pair {
 //}
 
 /*
- * Generates a bit mask from the given value that sets bit_count bits from the right to ones.
+ * Generates a mersenne number and shifts by `offset` bits relative to the lsb using the `shift macro function.
  */
 __attribute__((hot,const))
-static inline uqword bitmaskv(register uqword value, register uqword bit_count) {
-    return truncate(~value, bit_count) ^ value;
+static inline uqword mask(register uqword bits, register qword offset) {
+    return shift(((1ull << bits) - 1), offset);
+}
+
+/*
+ * Generates a bit filter from `value` by masking `bits` bits at `offset` offset relative to the lsb using the
+ * `shift macro function.
+ */
+__attribute__((hot,const))
+static inline uqword filter(register uqword value, register uqword bits, register qword offset) {
+    return value & mask(bits, offset);
 }
 
 // maintain grouping of functions
 static inline uqword sigbits(uqword);
-
-/*
- * Generates a bitmask from the given value that sets all significant bits to ones.
- *
- * Exactly equivalent to `bitmaskv(value, sigbits(value));`
- */
-__attribute__((hot,const))
-static inline uqword bitmask(register uqword value) {
-    return bitmaskv(value, sigbits(value));
-}
 
 /*
  * Compute number of significant base 10 digits in a given base 2 qword
