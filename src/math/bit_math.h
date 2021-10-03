@@ -80,7 +80,7 @@ typedef struct pair {
 //}
 
 /*
- * Generates a mersenne number and shifts by `offset` bits relative to the lsb using the `shift macro function.
+ * Generates a mersenne number and shifts by `offset` bits relative to the lsb using the `shift` macro function.
  */
 __attribute__((hot,const))
 static inline uqword mask(register uqword bits, register qword offset) {
@@ -89,7 +89,7 @@ static inline uqword mask(register uqword bits, register qword offset) {
 
 /*
  * Generates a bit filter from `value` by masking `bits` bits at `offset` offset relative to the lsb using the
- * `shift macro function.
+ * `shift` macro function.
  */
 __attribute__((hot,const))
 static inline uqword filter(register uqword value, register uqword bits, register qword offset) {
@@ -291,7 +291,7 @@ static inline udqword umulq(register uqword multiplicand, register uqword multip
 }
 
 /*
- * Uses a fast division algorithm to compute divides to machine using bit math.
+ * Uses a fast division algorithm to compute divides to machine precision using bit math.
  */
 __attribute__((const))
 static inline uqword udivq(register uqword dividend, register uqword divisor) {
@@ -300,7 +300,7 @@ static inline uqword udivq(register uqword dividend, register uqword divisor) {
 }
 
 /*
- * Compute the number of significant bits in the given qword
+ * Compute the number of significant bits in the given uqword
  */
 __attribute__((hot,const))
 static inline uqword sigbits(register uqword bit_string) {
