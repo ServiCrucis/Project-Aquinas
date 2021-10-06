@@ -25,7 +25,7 @@ typedef union decimal {
         uint_fast64_t significand: 57;
     };
 
-    uword value;
+    uqword value;
 } frac_t;
 
 typedef union ieee_float32 {
@@ -49,7 +49,7 @@ typedef union ieee_float64 {
 
 #define bitwidth(Type) (sizeof(Type) * MIN_BITS)
 #define truncate(value, bits) ( (value << (sizeof(typeof(value)) * MIN_BITS - bits)) >> (sizeof(typeof(value)) * MIN_BITS - bits) )
-static inline uword frc_sigbits(register uword bit_string) {
+static inline uqword frc_sigbits(register uqword bit_string) {
 #if defined(__GNUC__)
 #if DATA_MODEL == LLP64 || DATA_MODEL == ILP64 || DATA_MODEL == SILP64
     r_info("LLP64 or ILP64 or SILP64");
@@ -85,17 +85,17 @@ static inline uword frc_sigbits(register uword bit_string) {
     return k;
 #endif
 }
-static inline uword frc_bitmaskv(register uword value, register uword bit_count) {
+static inline uqword frc_bitmaskv(register uqword value, register uqword bit_count) {
     return truncate(~value, bit_count) ^ value;
 }
-static inline uword frc_gcdi(register uword a, register uword b);
+static inline uqword frc_gcdi(register uqword a, register uqword b);
 static inline frac_t frc(register int32_t numerator, register int32_t denominator) {
     #define max(a, b) ( (a) > (b) ? (a) : (b) )
     frac_t fraction;
     fraction.sign = numerator < 0;
     fraction.divider = frc_sigbits(denominator);
-    register uword r0 = frc_gcdi(numerator, denominator);
-    register uword r1;
+    register uqword r0 = frc_gcdi(numerator, denominator);
+    register uqword r1;
     numerator = numerator / r0;
     denominator = denominator / r0;
     r0 = frc_sigbits(denominator);
@@ -132,7 +132,7 @@ static inline int32_t frc_rdden(register frac_t a) {
     return (-1 * a.sign) * (a.significand & frc_bitmaskv(a.significand, 63 - a.divider));
 }
 
-//static inline uword frc_ctz10(register uword a) {
+//static inline uqword frc_ctz10(register uqword a) {
 //
 //}
 
@@ -140,7 +140,7 @@ static inline frac_t frc_add(register frac_t a, register frac_t b) {
     register int32_t a_num = frc_rdnum(a);
     register int32_t a_den = frc_rdden(a);
     register int32_t b_num = frc_rdnum(b);
-    register word b_den = frc_rdden(b);
+    register qword   b_den = frc_rdden(b);
     // normalize fractions
     if (b_den != a_den) {
         b_num = b_num * a_den;
@@ -149,7 +149,7 @@ static inline frac_t frc_add(register frac_t a, register frac_t b) {
 
     // add numerators
     a_num = a_num + b_num;
-    a.divider = frc_sigbits((uword) a_den);
+    a.divider = frc_sigbits((uqword) a_den);
     a.significand = (a_num << a.divider) | a_den;
     return a;
 }
@@ -167,7 +167,7 @@ static inline frac_t frc_sub(register frac_t a, register frac_t b) {
 
     // subtract numerators
     a_num = a_num - b_num;
-    a.divider = frc_sigbits((uword) a_den);
+    a.divider = frc_sigbits((uqword) a_den);
     a.significand = (a_num << a.divider) | a_den;
     return a;
 }
@@ -180,7 +180,7 @@ static inline frac_t frc_mul(register frac_t a, register frac_t b) {
     // multiply the fractions
     a_num = a_num * b_num;
     a_den = a_den * b_den;
-    a.divider = frc_sigbits((uword) a_den);
+    a.divider = frc_sigbits((uqword) a_den);
     a.significand = (a_num << a.divider) | a_den;
     return a;
 }
@@ -194,7 +194,7 @@ static inline frac_t frc_div(register frac_t a, register frac_t b) {
     // divide the fractions (via multiply)
     a_num = a_num * b_den;
     a_den = a_den * b_num;
-    a.divider = frc_sigbits((uword) a_den);
+    a.divider = frc_sigbits((uqword) a_den);
     a.significand = (a_num << a.divider) | a_den;
     return a;
 }
@@ -213,20 +213,20 @@ static inline frac_t frc_abs(register frac_t a) {
 #define abs(a) ( (a) > 0 ? (a) : -(a) )
 #define abs_diff(a, b) ( abs((a) - (b)) )
 
-static inline uword frc_log2i(register uword a) {
+static inline uqword frc_log2i(register uqword a) {
     return frc_sigbits(a) - 1u;
 }
 
 // 3c
-static inline void frc_swap_max(register uword *a, register uword *b) {
-    register uword c = *a;
+static inline void frc_swap_max(register uqword *a, register uqword *b) {
+    register uqword c = *a;
     *a = max(*a, *b);
     *b = min(c, *b);
 }
 
-static inline uword frc_gcdi(uword a, uword b) {
+static inline uqword frc_gcdi(uqword a, uqword b) {
     // 11c
-    register uword delta = min(frc_log2i(a), frc_log2i(b));
+    register uqword delta = min(frc_log2i(a), frc_log2i(b));
     a >>= delta;
     b >>= delta;
     a >>= __x64_tzcnt(a);
@@ -241,7 +241,7 @@ static inline uword frc_gcdi(uword a, uword b) {
     return a << delta;
 }
 
-static inline uword frc_gcd(register frac_t a) {
+static inline uqword frc_gcd(register frac_t a) {
     return frc_gcdi(frc_rdnum(a), frc_rdden(a));
 
 }
@@ -250,7 +250,7 @@ static inline uword frc_gcd(register frac_t a) {
  * Simplifies the given value without loss of information.
  */
 //static inline frac_t frc_simplify(register frac_t a) {
-//    register uword gcd = frc_gcd(a);
+//    register uqword gcd = frc_gcd(a);
 //    register uint32_t numerator = frc_rdnum(a);
 //    register uint32_t denominator = frc_rdden(a);
 //

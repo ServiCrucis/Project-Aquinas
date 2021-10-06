@@ -271,6 +271,50 @@ __attribute__((pure))
 static inline ubyte square_wave_ext_infty(register udqword period, register udqword time, register udqword exponent) {
 }
 
+/*
+ * Computes fixed point reciprocal with arbitrary base arithmetic via base two bit math. Supports values in [0, 2^64 - 1].
+ */
+__attribute__((noinline))
+static inline uqword urcpq(register uqword divisor) {
+    // used with the digit_bitwidth parameter of functions defined here
+    const static ubyte digit_width_quotient_table = {
+      0
+    };
+    const register uqword base = divisor;
+    const register bool divisor_is_power_of_two = ones(divisor) == 1;
+
+    if (divisor_is_power_of_two) {
+       return (1ull << (bitwidth(uqword) - 1)) >> log2i(divisor);
+    } else {
+        // initialize base `divisor` registers
+        register udqword erax, erbx, ercx, erdx;
+        // define base `divisor` operations necessary for computing reciprocals.
+        // apparently inner functions are a security hazard, but whatever--C is a means to an end
+
+        // digit shift in native base
+        __attribute__((hot,const,always_inline))
+        udqword base_div_shift(udqword reg, sbyte digits, ubyte digit_bitwidth) {
+            return shift(reg, digits / digit_bitwidth);
+        }
+        // 2**n in native base
+        __attribute__((hot,const,always_inline))
+        udqword base_div_pow2(udqword reg, ubyte exponent, ubyte digit_bitwidth) {
+
+        }
+    }
+    
+    // fixed point constant coefficients
+    // (-) 0.6296735
+    const uqword A = 0xA1325 << (31 - sigbits(0xA1325));
+    // (+) 2.726314
+    const uqword B = 0x2B9EFB << (31 - sigbits(0x2B9EFB));
+    // (-) 2.096641
+    const uqword C = 0x218BD7 << (31 - sigbits(0x218BD7));
+    
+    
+    
+}
+
 #ifndef BIT_MATH_USE_HW_MUL
   #define BIT_MATH_USE_HW_MUL 1
 #endif
@@ -293,10 +337,38 @@ static inline udqword umulq(register uqword multiplicand, register uqword multip
 /*
  * Uses a fast division algorithm to compute divides to machine precision using bit math.
  */
-__attribute__((const))
+//__attribute__((noinline))
+//static inline uqword udivq(register uqword dividend, register uqword divisor) {
+//    register uqword a, coefficient_accumulator = 0;
+//    if (dividend == divisor) return 1;
+//    if (dividend < divisor) return 0;
+//
+//    // compute largest power of two greater than divisor and less than or equal to dividend
+//    const uqword divisor_log = log2i(divisor) + 1;
+//    const uqword divisor_pow = 1 << divisor_log;
+//algorithm_start:
+//    a = dividend >> divisor_log;
+//    coefficient_accumulator += a;
+//    a *= divisor_pow - divisor;
+//
+//    if (divisor > a) {
+//        return coefficient_accumulator;
+//    } else {
+//        dividend = a;
+//        goto algorithm_start;
+//    }
+//}
+
+/*
+ * Uses a fast division algorithm to compute divides to machine precision using bit math.
+ */
+__attribute__((noinline))
 static inline uqword udivq(register uqword dividend, register uqword divisor) {
-    // square wave implementation
-    
+    return (uqword)
+    ((((udqword) urcpq(divisor)) << bitwidth(urcpq(divisor))) *
+    ((udqword) dividend << (bitwidth(urcpq(divisor)))) >>
+    bitwidth(urcpq(divisor)))
+    ;
 }
 
 /*

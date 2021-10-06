@@ -19,7 +19,7 @@
 
 typedef struct tree_node {
 	struct tree_node *children;
-	uword order;
+	uqword           order;
 } tree_node;
 
 typedef tree_node pattern_tree;

@@ -12,9 +12,9 @@
 #include "dynarray.h"
 
 dynarray *dynarray_create(uint32_t data_length) {
-    // ensure alignment of uword for array
-    if (data_length % sizeof(uword))
-        data_length = data_length - (data_length % sizeof(uword)) + sizeof(uword);
+    // ensure alignment of uqword for array
+    if (data_length % sizeof(uqword))
+        data_length = data_length - (data_length % sizeof(uqword)) + sizeof(uqword);
     dynarray *array = calloc(1, sizeof(*array) + data_length);
     array->data_length = data_length;
     return array;

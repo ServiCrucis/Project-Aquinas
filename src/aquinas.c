@@ -34,10 +34,11 @@ void run_tests() {
     //test_cpuid();
     //test_dynarray();
 //    test_umap();
-    test_square_wave();
-//    test_udiv();
+//    test_square_wave();
+    test_udiv();
 //    test_umod();
 //    test_fp_math();
+
 }
 
 

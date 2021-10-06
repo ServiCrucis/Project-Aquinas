@@ -27,7 +27,7 @@ typedef struct map_node {
  *
  * Significant bits map objects are pure as they only need to store the direct indices into an unordered list of values.
  * As such, a significant bits map object can be reused or recycled, but it is not strictly necessary to store values
- * indirectly unless using a value greater than the size of an unsigned word for the target platform.
+ * indirectly unless using a value greater than the size of an unsigned qword for the target platform.
  *
  * Binary Key Format:
  *     sigbits:  __auto_type node_index;
@@ -48,19 +48,19 @@ void sbm_free(sigbits_map *map);
 /*
  * Gets the index associated with the given key in this map if it exists.
  */
-uint_fast32_t sbm_get(sigbits_map *map, uword key);
+uint_fast32_t sbm_get(sigbits_map *map, uqword key);
 
 /*
- * Sets the associated key and value pair in the map whether or not the pair exists in the map. The allocated quantity
+ * Sets the associated key and value uqword_pair in the map whether or not the uqword_pair exists in the map. The allocated quantity
  * of memory associated with the map does not necessarily increase.
  */
-void sbm_set(sigbits_map *map, pair key_and_value);
+void sbm_set(sigbits_map *map, uqword_pair key_and_value);
 
 /*
- * Deletes the associated key and value pair in the map if the pair exists in the map. The allocated quantity of
+ * Deletes the associated key and value uqword_pair in the map if the uqword_pair exists in the map. The allocated quantity of
  * memory associated with the map does not necessarily decrease. Be wary, therefore, of the possibility of memory leaks.
  */
-pair sbm_delete(sigbits_map *map, pair pair);
+uqword_pair sbm_delete(sigbits_map *map, uqword_pair pair);
 
 // TODO map_optimize
 

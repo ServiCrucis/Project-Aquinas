@@ -16,25 +16,33 @@
 #include <platform.h>
 #include "dynarray.h"
 
-typedef struct umap_node {
-    
-    struct umap_node *branches;
-    
-} umap_node;
+
 typedef struct universal_map {
-    dynarray *values;
+    uint32_t levels;
+    union {
+        struct universal_map **map;
+        uqword               value;
+    } nodes;
 } umap;
 
+typedef struct universal_map_key {
+    uint32_t length;
+    ubyte *value;
+} umap_key;
 
+typedef struct universal_map_value {
+    uint32_t length;
+    ubyte *bytes;
+} umap_value;
 
 umap *umap_create();
 
 void umap_free(umap *map);
 
-uword umap_get(umap map, uint32_t key);
+uqword umap_get(umap *map, umap_key key);
 
-void umap_set(umap map, uint32_t key, uint32_t value);
+void umap_set(umap *map, umap_key key, umap_value value);
 
-bool umap_exists(umap map, uint32_t key);
+bool umap_exists(umap *map, umap_key key);
 
 #endif //PROJECT_AQUINAS_UNIVERSAL_MAP_H

@@ -14,30 +14,30 @@
 #include "bit_math.h"
 #include "state.h"
 
-uword btt_read(bit_trie *trie, uword address) {
+uqword btt_read(bit_trie *trie, uqword address) {
     return get_bita(trie->binodes, (2u << trie->depth) / BITS, bin_index(address));
 }
 
-void btt_write(bit_trie *trie, uword address, uword bit) {
+void btt_write(bit_trie *trie, uqword address, uqword bit) {
     set_bita(trie->binodes, (2u << trie->depth) / BITS, bin_index(address), bit);
 }
 
-bit_trie *btt_create(pair const *pairs, uword depth, uword length) {
+bit_trie *btt_create(uqword_pair const *pairs, uqword depth, uqword length) {
     bit_trie *result = malloc(sizeof(bit_trie));
     
     if (!result) {
         fatalf(__func__, "failed to allocate memory for binary_trie");
     }
     
-    result->binodes = calloc((2u << depth) / BITS, sizeof(uword));
+    result->binodes = calloc((2u << depth) / BITS, sizeof(uqword));
     result->depth   = depth;
     
     if (!result->binodes) {
         fatalf(__func__, "failed to allocate memory for binary_trie binodes");
     }
     
-    for (uword i = 0; i < length; i++) {
-        pair pair = pairs[i];
+    for (uqword i = 0; i < length; i++) {
+        uqword_pair pair = pairs[i];
         btt_write(result, pair.a, pair.b);
     }
     

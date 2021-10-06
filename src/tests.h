@@ -254,17 +254,18 @@ static void test_square_wave() {
 static void test_udiv() {
     info(__func__, "beginning unsigned integer division test\n");
     
-    for(ubyte i = 1; i < 65; i++) {
-        for (ubyte j = 0; j < 64; j++) {
-            infof(__func__, "udiv(): %u / %u = %u\n", i, j, udivq((uqword) ((((udqword) 1) << i) - 1), j));
-        }
-    }
-    
-    for(ubyte i = 1; i < 65; i++) {
-        for (ubyte j = 0; j < 64; j++) {
-            infof(__func__, "using divide C syntax: %u / %u = %u\n", i, j, i / j);
-        }
-    }
+    infof(__func__, "udiv(): %u / %u = %u\n", 0xFFFFFFFFFFFFFFFF, 3, udivq(0xFFFFFFFFFFFFFFFF, 3));
+//    for(ubyte i = 1; i < 65; i++) {
+//        for (ubyte j = 1; j < 64; j++) {
+//            infof(__func__, "udiv(): %u / %u = %u\n", j, i, udivq(j, i));
+//        }
+//    }
+//
+//    for(ubyte i = 1; i < 65; i++) {
+//        for (ubyte j = 1; j < 64; j++) {
+//            infof(__func__, "using divide C syntax: %u / %u = %u\n", j, i, j / i);
+//        }
+//    }
     
     info(__func__, "unsigned integer division test complete\n");
 }

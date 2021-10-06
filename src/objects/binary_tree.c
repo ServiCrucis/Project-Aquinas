@@ -13,8 +13,8 @@
 #include "bit_math.h"
 
 
-binary_tree *binary_tree_create(uword nodes) {
-    binary_tree *tree = calloc((2u << sigbits(nodes)), sizeof(uword));
+binary_tree *binary_tree_create(uqword nodes) {
+    binary_tree *tree = calloc((2u << sigbits(nodes)), sizeof(uqword));
     tree->nodes = nodes;
     return tree;
 }
@@ -23,7 +23,7 @@ void binary_tree_free(binary_tree *restrict tree) {
 
 }
 
-static inline binode *b_traverse(binode *restrict node, uword address) {
+static inline binode *b_traverse(binode *restrict node, uqword address) {
 traverse:
     node = (address & 1) ? node->one : node->zero;
     address >>= 1;
@@ -34,19 +34,19 @@ traverse:
         goto traverse;
 }
 
-uword binary_tree_get(binary_tree *restrict tree, uword address) {
+uqword binary_tree_get(binary_tree *restrict tree, uqword address) {
     return b_traverse((binode *) tree, address)->value;
 }
 
-void binary_tree_set(binary_tree *restrict tree, uword address, uword value) {
+void binary_tree_set(binary_tree *restrict tree, uqword address, uqword value) {
     b_traverse((binode *) tree, address)->value = value;
 }
 
-uword *b_get_all(binary_tree *restrict tree, uword *restrict addresses, uword length) {
-    uword *values = malloc(sizeof(uword) * length);
+uqword *b_get_all(binary_tree *restrict tree, uqword *restrict addresses, uqword length) {
+    uqword *values = malloc(sizeof(uqword) * length);
     binode *node;
 
-    for (uword i = 0; i < length; i++) {
+    for (uqword i = 0; i < length; i++) {
         node = b_traverse((binode *) tree, addresses[i]);
         values[i] = node->value;
     }
@@ -54,8 +54,8 @@ uword *b_get_all(binary_tree *restrict tree, uword *restrict addresses, uword le
     return values;
 }
 
-//void b_set_all(binary_tree *restrict tree, pair *values, uword length) {
+//void b_set_all(binary_tree *restrict tree, uqword_pair *values, uqword length) {
 //    binode *node;
-//    pair *pair;
+//    uqword_pair *uqword_pair;
 //
 //}

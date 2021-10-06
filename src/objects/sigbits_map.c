@@ -70,12 +70,12 @@ void sbm_free(register sigbits_map *restrict map) {
 
 }
 
-uint_fast32_t sbm_get(register sigbits_map *restrict map, register uword key) {
+uint_fast32_t sbm_get(register sigbits_map *restrict map, register uqword key) {
     #define end_of_key() ( !bit_index )
     #define next_node_is_NULL() ( node_index < 0 )
-    register uword bit_index = sigbits(key) - 1;
+    register uqword                     bit_index = sigbits(key) - 1;
     register typeof(*map->node_indices) node_index;
-    register map_node *current = map;
+    register map_node                   *current  = map;
 
 next_node:
     if (end_of_key()) {
@@ -98,12 +98,12 @@ get_node_value:
     #undef end_of_key
 }
 
-void sbm_set(register sigbits_map *restrict map, register pair key_and_value) {
+void sbm_set(register sigbits_map *restrict map, register uqword_pair key_and_value) {
     #define end_of_key() ( !bit_index )
     #define next_node_is_NULL() ( node_index < 0 )
-    register uword key = key_and_value.a;
-    register const typeof(*map->values) value = (typeof(*map->values)) key_and_value.b;
-    register uword bit_index = sigbits(key) - 1;
+    register uqword                     key       = key_and_value.a;
+    register const typeof(*map->values) value     = (typeof(*map->values)) key_and_value.b;
+    register uqword                     bit_index = sigbits(key) - 1;
     register typeof(*map->node_indices) node_index;
     register map_node *current = map;
 
@@ -115,7 +115,7 @@ next_node:
     node_index = current->node_indices[bit_index];
     if (next_node_is_NULL()) {
         if (current->length > current->bits)
-            fatalf(__func__, "Key/Value pair out of range: supported bits: %llu; required bits: %llu\n", current->bits, current->length);
+            fatalf(__func__, "Key/Value uqword_pair out of range: supported bits: %llu; required bits: %llu\n", current->bits, current->length);
         // update the node index
         node_index = current->length;
         current->node_indices[bit_index] = node_index;
@@ -139,11 +139,11 @@ set_node_value:
 /*
  * This implementation has a fail-fast behavior: if the node is not initialized, we return.
  */
-pair sbm_delete(sigbits_map *restrict map, pair pair) {
+uqword_pair sbm_delete(sigbits_map *restrict map, uqword_pair pair) {
     #define end_of_key() ( !bit_index )
     #define next_node_is_NULL() ( node_index < 0 )
-    register typeof(*map->values) key = (typeof(*map->values)) pair.a;
-    register uword bit_index = sigbits(key) - 1;
+    register typeof(*map->values)       key       = (typeof(*map->values)) pair.a;
+    register uqword                     bit_index = sigbits(key) - 1;
     register typeof(*map->node_indices) node_index;
     register map_node *current = map;
 

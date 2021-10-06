@@ -16,18 +16,18 @@
 
 typedef struct binode {
     struct binode *zero, *one;
-    uword value;
+    uqword        value;
 } binode;
 
 
-// A binary_tree implementation utilizing uword integer values aligned to data model
+// A binary_tree implementation utilizing uqword integer values aligned to data model
 typedef struct binary_tree {
     binode *zero, *one;
-    uword value;
-	uword nodes;
+    uqword value;
+	uqword nodes;
 } binary_tree;
 
-binary_tree *binary_tree_create(uword nodes);
+binary_tree *binary_tree_create(uqword nodes);
 
 void binary_tree_free(binary_tree *tree);
 
@@ -36,16 +36,16 @@ void binary_tree_free(binary_tree *tree);
  *
  * A bitmask is generated based on the number of nodes in the tree to handle buffer overflow.
  */
-uword binary_tree_get(binary_tree *restrict tree, uword address);
+uqword binary_tree_get(binary_tree *restrict tree, uqword address);
 /*
  * Sets the value at the given address in the tree to the given value.
  *
  * A bitmask is generated based on the number of nodes in the tree to handle buffer overflow.
  */
-void binary_tree_set(binary_tree *restrict tree, uword address, uword value);
+void binary_tree_set(binary_tree *restrict tree, uqword address, uqword value);
 
-uword *b_get_all(binary_tree *restrict tree, uword *restrict addresses, uword length);
+uqword *b_get_all(binary_tree *restrict tree, uqword *restrict addresses, uqword length);
 
-void b_set_all(binary_tree *restrict tree, pair *restrict values, uword length);
+void b_set_all(binary_tree *restrict tree, uqword_pair *restrict values, uqword length);
 
 #endif //PROJECT_AQUINAS_BINARY_TREE_H

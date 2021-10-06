@@ -15,20 +15,20 @@
 
 #include "platform.h"
 
-#define BITS (sizeof(uword) * sizeof(uintmin_t) * MIN_BITS)
+#define BITS (sizeof(uqword) * sizeof(uintmin_t) * MIN_BITS)
 
 typedef struct bit_trie {
 	// the binary data
-	uword *binodes;
+	uqword *binodes;
 	// the size of the value
-	uword depth;
+	uqword depth;
 } bit_trie;
 
-uword btt_read(bit_trie *trie, uword address);
+uqword btt_read(bit_trie *trie, uqword address);
 
-void btt_write(bit_trie *trie, uword address, uword value);
+void btt_write(bit_trie *trie, uqword address, uqword value);
 
-bit_trie *btt_create(pair const *pairs, uword depth, uword length);
+bit_trie *btt_create(uqword_pair const *pairs, uqword depth, uqword length);
 
 void btt_free(bit_trie *trie);
 

@@ -25,7 +25,7 @@ typedef struct dynamic_array {
 /*
  * Allocates space for a dynarray with at minimum data_length bytes. If the length is not aligned to the data model of
  * the native architecture, then the amount of allocated space is
- *      data_length - (data_length % sizeof(uword)) + sizeof(uword)
+ *      data_length - (data_length % sizeof(uqword)) + sizeof(uqword)
  */
 dynarray *dynarray_create(uint32_t data_length);
 
@@ -54,7 +54,7 @@ void dynarray_fill(dynarray *restrict dst, ubyte *restrict src, uint32_t srclen)
  * Resizes the given dynarray using realloc to be at least size bytes. The function terminates the process if realloc
  * fails. As with dynarray_create, if the length is not aligned to the data model of the native architecture, then the
  * amount of allocated space is
- *      data_length - (data_length % sizeof(uword)) + sizeof(uword)
+ *      data_length - (data_length % sizeof(uqword)) + sizeof(uqword)
  *
  * The returned pointer is not guaranteed to be the original pointer.
  */
