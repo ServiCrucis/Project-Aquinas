@@ -68,6 +68,14 @@ typedef struct pair {
  */
 #define shift(value, a) ( (!a ? value : (a < 0 ? value >> a : value << a)) )
 
+
+/*
+ * Zeroes the value at the given location using bit math.
+ */
+static inline void zero(uqword *restrict in) {
+    *in ^= *in;
+}
+
 /*
  * Computes the absolute difference of the given values a and b
  */
@@ -195,33 +203,8 @@ static inline uqword log2i(register uqword);
  */
 __attribute__((const))
 static inline uqword umodq(register uqword a, register uqword b) {
-    register uqword a2, b2;
-    // define x mod 0 to be 0 given that lim_{n -> 0} x mod n = 0
-    if (!b) return 0;
+    // 1. compute a mod b * 2**(log_2(a) - log_2(b)
     
-    // reduce a by the largest power of two coefficient of b which satisfies b * 2**n <= a
-    a = (uqword) shift(a, (qword) sigbits(a) - (qword) sigbits(b));
-    // compute a/(2**(floor(log_2(b)) + 1))
-    a2 = a >> (log2i(b) + 1);
-    // compute 2**(floor(log_2(b)) + 1) mod b
-    // 2**(floor(log_2(b)) + 1) and b will always have a floored quotient of 1
-    // using udqword to account for overflow during arithmetic
-    // we're using an identity of modulus:
-    // 2**(floor(log_2(b)) + 1) - b * floor((2**(floor(log_2(b)) + 1))/b)
-    b2 = (uqword) ((udqword) (1ull << (log2i(b) + 1)) - (udqword) b);
-    // compute a mod 2**(floor(log_2(b)) + 1)
-    a = (uqword) ((udqword) a & (udqword) ((1ull << (log2i(b) + 1)) - 1));
-
-    // (a mod base) + (base mod b) * floor(a/base)
-    // SSE2 pmaddwd on x86
-    a += b2 * a2;
-
-    // a mod b (final step)
-    while (a >= b) {
-        a -= b;
-    }
-
-    return a;
 }
 
 /*
