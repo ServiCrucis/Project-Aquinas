@@ -345,7 +345,7 @@ static inline uqword udiv6(register uqword x, register ubyte y) {
 static inline ubyte cmp2pN8(register ubyte exp, register uqword value) {
     const register udqword a = (1 << (exp % bitwidth(a)));
     const register udqword b = value << ((exp - log2i(value)) % bitwidth(b));
-    return (a - b);
+    return (a < b) << 1 | (a == 0) ;
 }
 
 /*
@@ -353,19 +353,26 @@ static inline ubyte cmp2pN8(register ubyte exp, register uqword value) {
  */
 __attribute__((hot,const))
 static inline udqword umod2pN8(register ubyte exp, register uqword modulus) {
-    if (exp < modulus) {
-        return (1 << exp);
-    } else if (exp == modulus) {
-        return 0;
-    } else {
-        // modular accumulator
-        uqword a = 0;
-        // first power of two greater than the modulus' power of two
-        uqword pow2_gt_modulus = log2i(modulus) + 1;
-        // modular decrementor
-        uqword d = 0;
-    algorithm_start:
+    register const ubyte cmp = cmp2pN8(exp, modulus);
     
+    if (cmp & 0b10u) { // if 2**exp < modulus
+        return (1 << exp);
+    } else if (cmp & 0b01u) { // if 2**exp == modulus
+        return 0;
+    } else { // if 2**exp > modulus
+        register uqword a = log2i(modulus);
+        register uqword b = ((uqword) exp) - a;
+        register udqword c;
+        register udqword d;
+        a = b;
+        a -= 1;
+        b -= 2;
+        c = ((udqword) modulus) << a;
+        d = ((udqword) modulus) << b;
+        d += c;
+        d = d - modulus;
+        // d is a power of two at this point in the algorithm
+        return umod2pN8(d, modulus);
     }
 }
 
