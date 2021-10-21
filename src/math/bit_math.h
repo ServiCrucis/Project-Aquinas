@@ -343,37 +343,17 @@ static inline uqword udiv6(register uqword x, register ubyte y) {
  * bit math.
  */
 static inline ubyte cmp2pN8(register ubyte exp, register uqword value) {
-    const register udqword a = (1 << (exp % bitwidth(a)));
-    const register udqword b = value << ((exp - log2i(value)) % bitwidth(b));
-    return (a < b) << 1 | (a == 0) ;
+    const register uqword a = (1 << (exp % bitwidth(a)));
+    const register uqword b = value << ((exp - log2i(value)) % bitwidth(b));
+    return (a < b) << 1 | (a == 0);
 }
 
 /*
- * Evaluates 2**exp mod modulus in O(log n) time using bit math.
+ * Evaluates 2**(sign * exp) mod modulus in O(log n) time using bit math. (TODO) sign=0 is interpreted as the imaginary unit .
  */
-__attribute__((hot,const))
-static inline udqword umod2pN8(register ubyte exp, register uqword modulus) {
-    register const ubyte cmp = cmp2pN8(exp, modulus);
-    
-    if (cmp & 0b10u) { // if 2**exp < modulus
-        return (1 << exp);
-    } else if (cmp & 0b01u) { // if 2**exp == modulus
-        return 0;
-    } else { // if 2**exp > modulus
-        register uqword a = log2i(modulus);
-        register uqword b = ((uqword) exp) - a;
-        register udqword c;
-        register udqword d;
-        a = b;
-        a -= 1;
-        b -= 2;
-        c = ((udqword) modulus) << a;
-        d = ((udqword) modulus) << b;
-        d += c;
-        d = d - modulus;
-        // d is a power of two at this point in the algorithm
-        return umod2pN8(d, modulus);
-    }
+__attribute__((hot, const))
+static inline udqword umod2pN8(register sbyte sign, register ubyte exp, register uqword modulus) {
+    uqword a
 }
 
 /*
@@ -381,9 +361,6 @@ static inline udqword umod2pN8(register ubyte exp, register uqword modulus) {
  */
 __attribute__((const))
 static inline uqword umodq(register uqword x, register uqword modulus) {
-    
-
-    
 }
 
 /*
