@@ -412,42 +412,12 @@ static inline ubyte square_wave_ext_infty(register udqword period, register udqw
 
 /*
  * Computes fixed point reciprocal with arbitrary base arithmetic via base two bit math. Supports values in [0, 2^64 - 1].
+ *
+ * The returned value is the mantissa of the fixed point reciprocal of a u64.64 fixed point value.
  */
 __attribute__((noinline))
 static inline uqword urcpq(register uqword divisor) {
-    // used with the digit_bitwidth parameter of functions defined here
-    const static ubyte    digit_width_quotient_table = {
-            0
-    };
-    const register uqword base                       = divisor;
-    const register bool   divisor_is_power_of_two    = ones(divisor) == 1;
-    
-    if (divisor_is_power_of_two) {
-        return (1ull << (bitwidth(uqword) - 1)) >> log2i(divisor);
-    } else {
-        // initialize base `divisor` registers
-        register udqword erax, erbx, ercx, erdx;
-        // define base `divisor` operations necessary for computing reciprocals.
-        // apparently inner functions are a security hazard, but whatever--C is a means to an end
-        
-        // digit shift in native base
-        __attribute__((hot, const, always_inline))
-        udqword base_div_shift(udqword reg, sbyte digits, ubyte digit_bitwidth) {
-            return shift(reg, digits / digit_bitwidth);
-        }
-        // 2**n in native base
-        __attribute__((hot, const, always_inline))
-        udqword base_div_pow2(udqword reg, ubyte exponent, ubyte digit_bitwidth) {
-        }
-    }
-    
-    // fixed point constant coefficients
-    // (-) 0.6296735
-    const uqword A = 0xA1325 << (31 - sigbits(0xA1325));
-    // (+) 2.726314
-    const uqword B = 0x2B9EFB << (31 - sigbits(0x2B9EFB));
-    // (-) 2.096641
-    const uqword C = 0x218BD7 << (31 - sigbits(0x218BD7));
+
 }
 
 #ifndef BIT_MATH_USE_HW_MUL
