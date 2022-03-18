@@ -4,8 +4,8 @@ set(CMAKE_MODULE_PATH ./build/)
 set(PROJECT_SOURCE_DIR ./src/)
 # compiler flags
 if (CYGWIN OR MINGW OR MSYS OR UNIX)
-    # set C standard to C18 revision for GNU C
-    add_compile_options(-std=gnu18)
+    # set C standard to C23 revision for GNU C
+    add_compile_options(-std=gnu2x)
     # set warnings
     add_compile_options(-Wall -Wfatal-errors -Wextra -Wno-unknown-pragmas)
     # ubsan (undefined, address, pointer-compare, pointer-subtract, leak)
