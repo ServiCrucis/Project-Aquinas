@@ -13,7 +13,6 @@
 
 #include "map.h"
 
-
-map_result map_set(uint64_t key, map_value value) {
+static void index(map map, map_key key) {
 
 }
