@@ -14,7 +14,6 @@
 #include "state.h"
 #include "compiler.h"
 #include "bit_math.h"
-#include "bit_trie.h"
 #include "sigbits_map.h"
 #include "memory.h"
 
@@ -94,42 +93,42 @@ static void test_to_digits() {
     }
 }
 
-static void test_bittrie() {
-    info(__func__, "Building bit_trie.\n");
-    uqword_pair test[] = {
-            { 23,  1 },
-            { 237, 1 }
-    };
-    bit_trie    *trie  = btt_create(test, 8, 2);
-    uqword   values = 256;
-    // 0: left; 1: right
-    uqword   side   = 0ull;
-    info(__func__, "bit_trie side:left.\n");
-    for (uqword address = 0; address < values; address++) {
-        
-        uqword bit = btt_read(trie, (address << 1u) | side);
-        infof(__func__, "[%u] = %u\n", bin_index((address << 1u) | side), bit);
-    }
-    
-    info(__func__, "bit_trie side:right.\n");
-    side = 1ull;
-    for (uqword address = 0; address < values; address++) {
-        uqword bit = btt_read(trie, (address << 1u) | side);
-        infof(__func__, "[%u]\n", bin_index((address << 1u) | side), bit);
-    }
-    
-    btt_free(trie);
-    info(__func__, "Done.\n");
-}
+//static void test_bittrie() {
+//    info(__func__, "Building bit_trie.\n");
+//    uqword_pair test[] = {
+//            { 23,  1 },
+//            { 237, 1 }
+//    };
+//    bit_trie    *trie  = btt_create(test, 8, 2);
+//    uqword   values = 256;
+//    // 0: left; 1: right
+//    uqword   side   = 0ull;
+//    info(__func__, "bit_trie side:left.\n");
+//    for (uqword address = 0; address < values; address++) {
+//
+//        uqword bit = btt_read(trie, (address << 1u) | side);
+//        infof(__func__, "[%u] = %u\n", bin_index((address << 1u) | side), bit);
+//    }
+//
+//    info(__func__, "bit_trie side:right.\n");
+//    side = 1ull;
+//    for (uqword address = 0; address < values; address++) {
+//        uqword bit = btt_read(trie, (address << 1u) | side);
+//        infof(__func__, "[%u]\n", bin_index((address << 1u) | side), bit);
+//    }
+//
+//    btt_free(trie);
+//    info(__func__, "Done.\n");
+//}
 
-static void test_binary_trie() {
-    binary_tree *btrie = binary_tree_create(31);
-    
-    for (uqword i = 0; i < btrie->nodes; i++) {
-        binary_tree_set(btrie, i, powni(i, i));
-        infof(__func__, "binary_tree+%llu = %llu\n", i, binary_tree_get(btrie, i));
-    }
-}
+//static void test_binary_trie() {
+//    binary_tree *btrie = binary_tree_create(31);
+//
+//    for (uqword i = 0; i < btrie->nodes; i++) {
+//        binary_tree_set(btrie, i, powni(i, i));
+//        infof(__func__, "binary_tree+%llu = %llu\n", i, binary_tree_get(btrie, i));
+//    }
+//}
 
 static void test_map() {
     sigbits_map *map = sbm_create(bitwidth(ubyte));
@@ -290,6 +289,42 @@ static void test_umod() {
 
 static void test_fp_math() {
 
+}
+
+static void test_pointer() {
+    infof(__func__, "pointer size: %u\n", sizeof(pointer24));
+    uqword ptr_size = 8;
+    void *test_ptr = malloc(ptr_size);
+    if (!test_ptr)
+        fatalf(__func__, "What is this, a microcontroller? Unable to allocate %u bytes.\n", ptr_size);
+    
+    infof(__func__, "test_ptr value: %p\n", test_ptr);
+    pointer test_ptr8 = ptr_compress(test_ptr, sizeof(pointer8));
+    pointer test_ptr16 = ptr_compress(test_ptr, sizeof(pointer16));
+    pointer test_ptr24 = ptr_compress(test_ptr, sizeof(pointer24));
+    pointer test_ptr32 = ptr_compress(test_ptr, sizeof(pointer32));
+    pointer test_ptr40 = ptr_compress(test_ptr, sizeof(pointer40));
+    pointer test_ptr48 = ptr_compress(test_ptr, sizeof(pointer48));
+    pointer test_ptr56 = ptr_compress(test_ptr, sizeof(pointer56));
+    pointer test_ptr64 = ptr_compress(test_ptr, sizeof(pointer64));
+    
+    info(__func__, "as pointer8: %#x\n", test_ptr8.offset);
+    info(__func__, "as pointer16: %#x\n", test_ptr16.offset);
+    info(__func__, "as pointer24: %#x\n", test_ptr24.offset);
+    info(__func__, "as pointer32: %#x\n", test_ptr32.offset);
+    info(__func__, "as pointer40: %#x\n", test_ptr40.offset);
+    info(__func__, "as pointer48: %#x\n", test_ptr48.offset);
+    info(__func__, "as pointer56: %#x\n", test_ptr56.offset);
+    info(__func__, "as pointer64: %#x\n", test_ptr64.offset);
+    
+    info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr8));
+    info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr16));
+    info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr24));
+    info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr32));
+    info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr40));
+    info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr48));
+    info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr56));
+    info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr64));
 }
 
 #pragma GCC diagnostic pop

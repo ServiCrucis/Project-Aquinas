@@ -13,39 +13,41 @@
 
 #include "platform.h"
 #include "bit_math.h"
+#include "../pointer.h"
 
-typedef struct binode {
-    struct binode *zero, *one;
-    uqword        value;
-} binode;
+enum binary_tree_node_type {
+    BRANCH = 0, LEAF = 1
+};
 
+typedef struct binary_tree_state_info {
+    uword state;
+} binary_tree_state_info;
 
-// A binary_tree implementation utilizing uqword integer values aligned to data model
+alignas(ubyte)
+typedef struct binary_tree_node {
+    // branch (0) or leaf (1) node
+    ubyte type;
+    ubyte values_length;
+    base_pointer values_target;
+    pointer8 values[];
+};
+
 typedef struct binary_tree {
-    binode *zero, *one;
-    uqword value;
-	uqword nodes;
+    // fixed (0) or arbitrary (1) storage class
+    // fixed: values are stored on the node directly
+    // arbitrary: the node contains a fixed-size pointer to the data
+    ubyte storage_class:1;
+    ubyte data_radix:7;
 } binary_tree;
 
-binary_tree *binary_tree_create(uqword nodes);
+binary_tree binary_tree_create();
 
-void binary_tree_free(binary_tree *tree);
+void binary_tree_destroy();
 
-/*
- * Gets the value at the given address in the tree.
- *
- * A bitmask is generated based on the number of nodes in the tree to handle buffer overflow.
- */
-uqword binary_tree_get(binary_tree *restrict tree, uqword address);
-/*
- * Sets the value at the given address in the tree to the given value.
- *
- * A bitmask is generated based on the number of nodes in the tree to handle buffer overflow.
- */
-void binary_tree_set(binary_tree *restrict tree, uqword address, uqword value);
+binary_tree_state_info binary_tree_linearize();
 
-uqword *b_get_all(binary_tree *restrict tree, uqword *restrict addresses, uqword length);
+binary_tree_state_info binary_tree_read();
 
-void b_set_all(binary_tree *restrict tree, uqword_pair *restrict values, uqword length);
+binary_tree_state_info binary_tree_write();
 
 #endif //PROJECT_AQUINAS_BINARY_TREE_H

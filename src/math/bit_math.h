@@ -71,7 +71,7 @@ typedef struct pair {
 /*
  * Zeroes the value at the given location using bit math.
  */
-__attribute__((hot, pure))
+__attribute__((hot))
 static inline void zero(uqword *restrict in) {
     *in ^= *in;
 }
@@ -343,8 +343,8 @@ static inline uqword udiv6(register uqword x, register ubyte y) {
  * bit math.
  */
 static inline ubyte cmp2pN8(register ubyte exp, register uqword value) {
-    const register uqword a = (1 << (exp % bitwidth(a)));
-    const register uqword b = value << ((exp - log2i(value)) % bitwidth(b));
+    register const uqword a = (1 << (exp % bitwidth(a)));
+    register const uqword b = value << ((exp - log2i(value)) % bitwidth(b));
     return (a < b) << 1 | (a == 0);
 }
 
@@ -353,7 +353,7 @@ static inline ubyte cmp2pN8(register ubyte exp, register uqword value) {
  */
 __attribute__((hot, const))
 static inline udqword umod2pN8(register sbyte sign, register ubyte exp, register uqword modulus) {
-    uqword a
+//    uqword a
 }
 
 /*
