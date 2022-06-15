@@ -28,31 +28,31 @@ static void test_expi() {
 
 static void test_lni() {
     for (ubyte i = 0; i < 45; i++) {
-        infof(__func__, "lni(%llu): %llu\n", expi(i), lni(expi(i)));
+        infof(__func__, "floor_lni(%llu): %llu\n", expi(i), floor_lni(expi(i)));
     }
 }
 
 static void test_log10i() {
-    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 1ull, log10i(1ull));
-    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 10ull, log10i(10ull));
-    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 100ull, log10i(100ull));
-    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 1000ull, log10i(1000ull));
-    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 10000ull, log10i(10000ull));
-    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 100000ull, log10i(100000ull));
-    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 1000000ull, log10i(1000000ull));
-    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 10000000ull, log10i(10000000ull));
-    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 100000000ull, log10i(100000000ull));
-    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 1000000000ull, log10i(1000000000ull));
-    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 10000000000ull, log10i(10000000000ull));
-    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 100000000000ull, log10i(100000000000ull));
-    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 1000000000000ull, log10i(1000000000000ull));
-    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 10000000000000ull, log10i(10000000000000ull));
-    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 100000000000000ull, log10i(100000000000000ull));
-    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 1000000000000000ull, log10i(1000000000000000ull));
-    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 10000000000000000ull, log10i(10000000000000000ull));
-    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 100000000000000000ull, log10i(100000000000000000ul));
-    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 1000000000000000000ull, log10i(1000000000000000000ull));
-    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 10000000000000000000ull, log10i(10000000000000000000ull));
+    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 1ull, floor_log10i(1ull));
+    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 10ull, floor_log10i(10ull));
+    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 100ull, floor_log10i(100ull));
+    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 1000ull, floor_log10i(1000ull));
+    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 10000ull, floor_log10i(10000ull));
+    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 100000ull, floor_log10i(100000ull));
+    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 1000000ull, floor_log10i(1000000ull));
+    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 10000000ull, floor_log10i(10000000ull));
+    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 100000000ull, floor_log10i(100000000ull));
+    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 1000000000ull, floor_log10i(1000000000ull));
+    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 10000000000ull, floor_log10i(10000000000ull));
+    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 100000000000ull, floor_log10i(100000000000ull));
+    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 1000000000000ull, floor_log10i(1000000000000ull));
+    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 10000000000000ull, floor_log10i(10000000000000ull));
+    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 100000000000000ull, floor_log10i(100000000000000ull));
+    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 1000000000000000ull, floor_log10i(1000000000000000ull));
+    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 10000000000000000ull, floor_log10i(10000000000000000ull));
+    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 100000000000000000ull, floor_log10i(100000000000000000ul));
+    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 1000000000000000000ull, floor_log10i(1000000000000000000ull));
+    infof(__func__, "Digits: value=%llu, digits()=%llu\n", 10000000000000000000ull, floor_log10i(10000000000000000000ull));
 }
 
 static void test_sigbits() {
