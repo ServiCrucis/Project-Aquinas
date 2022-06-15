@@ -22,7 +22,7 @@ pointer ptr_compress(register void *restrict const address, register uqword cons
     
     // Bruh, if you can just alloca FAMs... why not just standardize it?
     pointer *result = alloca(sizeof(pointer) + ptr_size);
-    result->base          = filter(address, abs_diff(sizeof(address), ptr_size) * 8, ptr_size * 8);
+    result->base          = (uintptr_t) filter((uqword) address, abs_diff(sizeof(address), ptr_size) * 8, ptr_size * 8);
     result->offset_bytes  = ptr_size;
     
     // Ugly FAM noise because associating intuitive semantics to syntax is too much for a committee
@@ -34,7 +34,7 @@ pointer ptr_compress(register void *restrict const address, register uqword cons
     
     // Ugly FAM noise because associating intuitive semantics to syntax is too much for a committee
     // to accomplish in twenty-three years. L+ratio, ISO.
-    for (dword i = 0; i < ptr_size; ++i) {
+    for (udword i = 0; i < ptr_size; ++i) {
         result->offset[i] = address_bytes.data[i];
     }
     
@@ -44,6 +44,13 @@ pointer ptr_compress(register void *restrict const address, register uqword cons
 void *ptr_decompress(pointer const address) {
     if (address.offset_bytes > sizeof(void *))
         fatalf(__func__, "pointer is greater than sizeof(void *): %u\n", address.offset_bytes);
-    return (void *) (address.base + (uintptr_t) address.offset);
+    
+    // read address offset
+    ubyte data[address.offset_bytes];
+    for (udword i = 0; i < address.offset_bytes; ++i) {
+        data[i] = address.offset[i];
+    }
+    
+    
 }
 

@@ -197,7 +197,7 @@ static inline uqword ones(register uqword bit_string) {
     #endif
 }
 
-static inline uqword log2i(register uqword);
+static inline uqword floor_log2i(register uqword);
 
 // computes 6-bit divide; returns ~0 for y=0 and 0 for y > 64
 // intended to be used for computing how many times we must shift.
@@ -344,7 +344,7 @@ static inline uqword udiv6(register uqword x, register ubyte y) {
  */
 static inline ubyte cmp2pN8(register ubyte exp, register uqword value) {
     register const uqword a = (1 << (exp % bitwidth(a)));
-    register const uqword b = value << ((exp - log2i(value)) % bitwidth(b));
+    register const uqword b = value << ((exp - floor_log2i(value)) % bitwidth(b));
     return (a < b) << 1 | (a == 0);
 }
 
@@ -449,7 +449,7 @@ static inline udqword umulq(register uqword multiplicand, register uqword multip
 //    if (dividend < divisor) return 0;
 //
 //    // compute largest power of two greater than divisor and less than or equal to dividend
-//    const uqword divisor_log = log2i(divisor) + 1;
+//    const uqword divisor_log = floor_log2i(divisor) + 1;
 //    const uqword divisor_pow = 1 << divisor_log;
 //algorithm_start:
 //    a = dividend >> divisor_log;
@@ -685,7 +685,7 @@ static inline uqword powni(register uqword base, register uqword exponent) {
  * Compute log base 2 of the given bit string using integer bit math.
  */
 __attribute__((hot, const))
-static inline uqword log2i(register uqword bit_string) {
+static inline uqword floor_log2i(register uqword bit_string) {
     return sigbits(bit_string) - 1ull;
 }
 
@@ -786,7 +786,7 @@ static inline uqword bin_index(register uqword address) {
     address >>= 1u;
     if (!address)
         return side;
-    uqword address_bits = log2i(address);
+    uqword address_bits = floor_log2i(address);
     // 2 * pow2i(address_bits) - 2u + address - side * pow2i(address_bits)
     return address == 1 ? side : (2ull << address_bits) - 2u + address - side * (1ull << address_bits);
 }

@@ -1162,6 +1162,12 @@
 #define ARCH_RISCV             49
 #define ARCH_OPTUMUS           50
 
+#define BYTE_ORDER_ASCENDING 0
+#define BYTE_ORDER_DESCENDING 1
+#define BYTE_ORDER_HYBRID 2
+#define BYTE_ORDER_UNDEFINED 3
+#define BYTE_ORDER_BIG_ENDIAN 0
+#define BYTE_ORDER_LITTLE_ENDIAN 1
 
 
 /***********************************************************************************************************************
@@ -1172,22 +1178,26 @@
 #if defined(i386) || defined(__i386) || defined(__i386__) || defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__)
 #define ARCHITECTURE ARCH_X86_32
 #define ARCHITECTURE_NAME "Intel x86"
+  #define ARCH_BYTE_ORDER BYTE_ORDER_DESCENDING
 #endif
 
 #if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64) || defined(_M_AMD64)
 #define ARCH ARCH_AMD64
+  #define ARCH_BYTE_ORDER BYTE_ORDER_DESCENDING
 #endif
 
 #if defined (__arm__) || defined(__thumb__) || defined(__TARGET_ARCH_ARM) || defined(__TARGET_ARCH_THUMB) || defined(_ARM) || defined(_M_ARM) || defined(_M_ARMT) || defined(__arm)
 #define ARCHITECTURE ARCH_ARM
 #define ARCHITECTURE_VARIANT ARCH_ARM32
 #define ARCHITECTURE_NAME "ARM"
+#define ARCH_POPULAR_BYTE_ORDER BYTE_ORDER_DESCENDING
 #endif
 
 #if defined(__aarch64__)
 #define ARCHITECTURE ARCH_ARM
 #define ARCHITECTURE_VARIANT ARCH_ARM64
 #define ARCHITECTURE_NAME "ARM64"
+#define ARCH_POPULAR_BYTE_ORDER BYTE_ORDER_DESCENDING
 #endif
 
 #if defined(__ia64__) || defined(_IA64) || defined(__IA64__) || defined(__ia64) || defined(_M_IA64) || defined (__itanium__)

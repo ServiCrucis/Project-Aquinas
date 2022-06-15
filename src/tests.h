@@ -85,8 +85,8 @@ static void test_digits() {
 }
 
 static void test_to_digits() {
-    uqword value = UINT64_MAX;
-    ubyte  digits[20];
+    uqword     value = UINT64_MAX;
+    ubyte      digits[20];
     for (ubyte i     = 19; i < 20; i--) {
         digits[i] = (ubyte) get_digit10i(value, i);
         infof(__func__, "digit[%llu] = %llu\n", i, digits[i]);
@@ -132,7 +132,7 @@ static void test_to_digits() {
 
 static void test_map() {
     sigbits_map *map = sbm_create(bitwidth(ubyte));
-    for (uqword i = 0; i < 256; i++) {
+    for (uqword i    = 0; i < 256; i++) {
         sbm_set(map, (uqword_pair) { i, rand() });
         infof(__func__, "map[%llu] = %llu\n", i, sbm_get(map, i) & 255);
     }
@@ -148,21 +148,21 @@ static void test_map() {
 }
 
 static void test_cpuid() {
-#if DATA_MODEL == LP64 || DATA_MODEL == ILP64 || DATA_MODEL == LLP64 || DATA_MODEL == SILP64
+    #if DATA_MODEL == LP64 || DATA_MODEL == ILP64 || DATA_MODEL == LLP64 || DATA_MODEL == SILP64
     if (!__x64_cpuid_supported())
-#elif DATA_MODEL == LP32 || DATA_MODEL == ILP32
+            #elif DATA_MODEL == LP32 || DATA_MODEL == ILP32
         if (!__x86_cpuid_supported())
-#else
-    #error "This (x86?) platform is not currently supported"
-#endif
+        #else
+          #error "This (x86?) platform is not currently supported"
+            #endif
         fatalf(__func__, "Unable to initialize CPU info: CPUID instruction not supported");
     
     info(__func__, "CPUID is supported on this platform\n");
 }
 
 static void test_dynarray() {
-    dynarray *array    = dynarray_create(32u);
-    ubyte test_data[4] = { 0x12, 0x34, 0xAB, 0xCD };
+    dynarray *array       = dynarray_create(32u);
+    ubyte    test_data[4] = { 0x12, 0x34, 0xAB, 0xCD };
     // print dynarray
     info(__func__, "dynarray before filling:\n");
     for (uqword i = 0; i < 32u; i++) {
@@ -184,13 +184,13 @@ static void test_dynarray() {
     if (!test_get)
         fatalf(__func__, "failed to allocate memory for test_get\n");
     for (uqword i = 0; i < 32u; i++) {
-        infof(__func__,"test_get[%u]: %#x\n", i, test_get[i]);
+        infof(__func__, "test_get[%u]: %#x\n", i, test_get[i]);
     }
     
     info(__func__, "dynarray_get():\n");
     dynarray_get(array, 0, 32u, test_get, 0, 32u);
     for (uqword i = 0; i < 32u; i++) {
-        infof(__func__,"test_get[%u]: %#x\n", i, test_get[i]);
+        infof(__func__, "test_get[%u]: %#x\n", i, test_get[i]);
     }
     free(test_get);
     
@@ -227,23 +227,21 @@ static void test_dynarray() {
 }
 
 static void test_umap() {
-
 }
 
 static void test_memory_allocator() {
-
 }
 
 static void test_square_wave() {
     info(__func__, "beginning test of square_wave()\n");
     
-    for(ubyte i = 0; i < 32; i++) {
+    for (ubyte i = 0; i < 32; i++) {
         infof(__func__, "square_wave(period=3, time=loop_index) = %u\n", square_wave(3, i));
     }
     
     info(__func__, "-----------------------\n");
     
-    for(ubyte i = 0; i < 32; i++) {
+    for (ubyte i = 0; i < 32; i++) {
         infof(__func__, "square_wave_ext(period=2, time=loop_index) = %u\n", square_wave_ext(2, i));
     }
     
@@ -254,17 +252,17 @@ static void test_udiv() {
     info(__func__, "beginning unsigned integer division test\n");
     
     infof(__func__, "udiv(): %u / %u = %u\n", 0xFFFFFFFFFFFFFFFF, 3, udivq(0xFFFFFFFFFFFFFFFF, 3));
-//    for(ubyte i = 1; i < 65; i++) {
-//        for (ubyte j = 1; j < 64; j++) {
-//            infof(__func__, "udiv(): %u / %u = %u\n", j, i, udivq(j, i));
-//        }
-//    }
-//
-//    for(ubyte i = 1; i < 65; i++) {
-//        for (ubyte j = 1; j < 64; j++) {
-//            infof(__func__, "using divide C syntax: %u / %u = %u\n", j, i, j / i);
-//        }
-//    }
+    //    for(ubyte i = 1; i < 65; i++) {
+    //        for (ubyte j = 1; j < 64; j++) {
+    //            infof(__func__, "udiv(): %u / %u = %u\n", j, i, udivq(j, i));
+    //        }
+    //    }
+    //
+    //    for(ubyte i = 1; i < 65; i++) {
+    //        for (ubyte j = 1; j < 64; j++) {
+    //            infof(__func__, "using divide C syntax: %u / %u = %u\n", j, i, j / i);
+    //        }
+    //    }
     
     info(__func__, "unsigned integer division test complete\n");
 }
@@ -288,34 +286,38 @@ static void test_umod() {
 }
 
 static void test_fp_math() {
+}
 
+static void test_data_order() {
+    info(__func__, "Beginning data order (endianness) test");
 }
 
 static void test_pointer() {
     infof(__func__, "pointer size: %u\n", sizeof(pointer24));
-    uqword ptr_size = 8;
-    void *test_ptr = malloc(ptr_size);
+    void   *test_ptr;
+    test_ptr = (void *) 0xffffabcddcbaffff;
+    
     if (!test_ptr)
-        fatalf(__func__, "What is this, a microcontroller? Unable to allocate %u bytes.\n", ptr_size);
+        fatalf(__func__, "What is this, a microcontroller? Unable to allocate %u bytes.\n", sizeof(void *));
     
     infof(__func__, "test_ptr value: %p\n", test_ptr);
-    pointer test_ptr8 = ptr_compress(test_ptr, sizeof(pointer8));
-    pointer test_ptr16 = ptr_compress(test_ptr, sizeof(pointer16));
-    pointer test_ptr24 = ptr_compress(test_ptr, sizeof(pointer24));
-    pointer test_ptr32 = ptr_compress(test_ptr, sizeof(pointer32));
-    pointer test_ptr40 = ptr_compress(test_ptr, sizeof(pointer40));
-    pointer test_ptr48 = ptr_compress(test_ptr, sizeof(pointer48));
-    pointer test_ptr56 = ptr_compress(test_ptr, sizeof(pointer56));
-    pointer test_ptr64 = ptr_compress(test_ptr, sizeof(pointer64));
+    volatile pointer test_ptr8  = ptr_compress(test_ptr, sizeof(pointer8));
+    volatile pointer test_ptr16 = ptr_compress(test_ptr, sizeof(pointer16));
+    volatile pointer test_ptr24 = ptr_compress(test_ptr, sizeof(pointer24));
+    volatile pointer test_ptr32 = ptr_compress(test_ptr, sizeof(pointer32));
+    volatile pointer test_ptr40 = ptr_compress(test_ptr, sizeof(pointer40));
+    volatile pointer test_ptr48 = ptr_compress(test_ptr, sizeof(pointer48));
+    volatile pointer test_ptr56 = ptr_compress(test_ptr, sizeof(pointer56));
+    volatile pointer test_ptr64 = ptr_compress(test_ptr, sizeof(pointer64));
     
-    info(__func__, "as pointer8: %#x\n", test_ptr8.offset);
-    info(__func__, "as pointer16: %#x\n", test_ptr16.offset);
-    info(__func__, "as pointer24: %#x\n", test_ptr24.offset);
-    info(__func__, "as pointer32: %#x\n", test_ptr32.offset);
-    info(__func__, "as pointer40: %#x\n", test_ptr40.offset);
-    info(__func__, "as pointer48: %#x\n", test_ptr48.offset);
-    info(__func__, "as pointer56: %#x\n", test_ptr56.offset);
-    info(__func__, "as pointer64: %#x\n", test_ptr64.offset);
+    info(__func__, "as pointer8: %p\n", (void *)(ubyte) test_ptr8.offset);
+    info(__func__, "as pointer16: %p\n", (void *)(uword) test_ptr16.offset);
+    info(__func__, "as pointer24: %p\n", (void *)(udword) test_ptr24.offset);
+    info(__func__, "as pointer32: %p\n", (void *)(udword) test_ptr32.offset);
+    info(__func__, "as pointer40: %p\n", (void *)(uqword) test_ptr40.offset);
+    info(__func__, "as pointer48: %p\n", (void *)(uqword) test_ptr48.offset);
+    info(__func__, "as pointer56: %p\n", (void *)(uqword) test_ptr56.offset);
+    info(__func__, "as pointer64: %p\n", (void *)(uqword) test_ptr64.offset);
     
     info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr8));
     info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr16));
@@ -325,6 +327,7 @@ static void test_pointer() {
     info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr48));
     info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr56));
     info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr64));
+    
 }
 
 #pragma GCC diagnostic pop

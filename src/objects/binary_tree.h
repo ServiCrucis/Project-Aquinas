@@ -23,13 +23,10 @@ typedef struct binary_tree_state_info {
     uword state;
 } binary_tree_state_info;
 
-alignas(ubyte)
 typedef struct binary_tree_node {
     // branch (0) or leaf (1) node
     ubyte type;
     ubyte values_length;
-    base_pointer values_target;
-    pointer8 values[];
 };
 
 typedef struct binary_tree {

@@ -35,10 +35,8 @@ typedef ubyte pointer56[7];
 
 typedef uqword pointer64;
 
-typedef void *base_pointer;
-
 typedef struct pointer {
-    base_pointer base;
+    uintptr_t base;
     ubyte        offset_bytes;
     ubyte        offset[];
 }            pointer;
@@ -52,5 +50,7 @@ pointer ptr_compress(register void *restrict const address, uqword const ptr_siz
  * A revolutionary function that sums a base and an offset into a single void pointer. Imagine that.
  */
 void *ptr_decompress(pointer const ptr);
+
+
 
 #endif //PROJECT_AQUINAS_POINTER_H
