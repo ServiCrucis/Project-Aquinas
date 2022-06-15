@@ -678,7 +678,7 @@ static inline uqword powni(register uqword base, register uqword exponent) {
     
     return result;
     // TODO implement powni using exp()
-    //    return expi(exponent * lni(base));
+    //    return expi(exponent * floor_lni(base));
 }
 
 /*
@@ -693,7 +693,7 @@ static inline uqword floor_log2i(register uqword bit_string) {
  * Compute log base 10 of the given bit string using integer bit math.
  */
 __attribute__((const))
-static inline uqword log10i(register uqword bit_string) {
+static inline uqword floor_log10i(register uqword bit_string) {
     // ln(10) / ln(2) ~= 3.3219280948873623478703194294894
     const udqword numerator   = 10000ull;
     const udqword denominator = 33219ull;
@@ -706,14 +706,14 @@ static inline uqword log10i(register uqword bit_string) {
  */
 __attribute__((const))
 static inline uqword logni(register uqword base, register uqword bit_string) {
-    return log10i(bit_string) / log10i(base);
+    return floor_log10i(bit_string) / floor_log10i(base);
 }
 
 /*
  * Computes log base e of the given bit string using integer bit math.
  */
 __attribute__((const))
-static inline uqword lni(register uqword bit_string) {
+static inline uqword floor_lni(register uqword bit_string) {
     // ln(10) / ln(2) * log(e) ~= 1.4426950408889634073599246810019
     const udqword numerator   = 10000000000000000ull;
     const udqword denominator = 14426950408889634ull;
