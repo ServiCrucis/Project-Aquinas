@@ -48,16 +48,16 @@
 // and available instructions, registers, or hardware functions in general for
 // configuring data byte order ("endianness").
 enum data_interpret_mode {
-    // maps read/write from lo to hi to byte order set with data_value_mode_set()
+    // maps read/write from lo to hi to byte order set with data_byte_order_set()
     BYTE_ORDER_VIRTUAL_LO_TO_HI = 0,
-    // maps read/write from hi to lo to byte order set with data_value_mode_set()
-    BYTE_ORDER_VIRTUAL_HI_TO_LO,
+    // maps read/write from hi to lo to byte order set with data_byte_order_set()
+    BYTE_ORDER_VIRTUAL_HI_TO_LO = 1,
     // maps read/write from current hardware-defined byte order at the time of read/write call
-    // (ignores byte order set with data_value_mode_set())
-    BYTE_ORDER_VIRTUAL_INVARIANT,
+    // (ignores byte order set with data_byte_order_set())
+    BYTE_ORDER_VIRTUAL_INVARIANT = 2,
     // maps read/write from hi to lo to current hardware-defined byte order at the time of read/write call
-    // (respects byte order set with data_value_mode_set()
-    BYTE_ORDER_VIRTUAL_UNKNOWN
+    // (respects byte order set with data_byte_order_set()
+    BYTE_ORDER_VIRTUAL_UNKNOWN = 3
 };
 
 // If the hardware supports a change in byte order, then the hardware state will be updated
@@ -77,11 +77,11 @@ void data_byte_order_set(enum data_byte_order);
 
 /*
  * Writes `elements` elements from `src` start to `dst` start based on the given `alignment`.
- * Both `src` and `dst` pointer variables are `restrict`. For writing into shared
- * memory from distinctly formed pointers, check compiler and runtime output
- * to ensure correct operation.
+ * The byte order of both arrays is determined by the `interpret_mode` (see enum data_interpret_mode).
+ * Both `src` and `dst` pointer variables are `restrict`. For writing into shared memory
+ * from distinctly formed pointers, check compiler and runtime output to ensure correct operation.
  */
-void data_write(register uqword const elements, register uqword const alignment, void *restrict src, void *restrict dst);
+void data_write(register uqword const elements, register uqword const alignment, enum data_interpret_mode, void *restrict src, void *restrict dst);
 
 /*
  * Writes `elements` elements from `src` start as `src_byte_order` to `dst` start as

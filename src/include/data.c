@@ -10,7 +10,7 @@
 #include "data.h"
 #include "bit_math.h"
 
-static enum data_byte_order local_byte_order =
+static volatile enum data_byte_order local_byte_order =
                                     #if ARCH_BYTE_ORDER == BYTE_ORDER_LO_TO_HI
                                     BYTE_ORDER_LITERAL_LO_TO_HI
 #elif ARCH_BYTE_ORDER == BYTE_ORDER_HI_TO_LO
@@ -30,9 +30,9 @@ static inline enum data_byte_order get_current_byte_order() {
 static inline udword compute_byte_index(udword current_byte, udword alignment, enum data_byte_order byte_order) {
     switch (byte_order) {
         case BYTE_ORDER_LITERAL_LO_TO_HI:
-            return current_byte;
+            return local_byte_order == BYTE_ORDER_LITERAL_LO_TO_HI ? current_byte : alignment - 1 - current_byte;
         case BYTE_ORDER_LITERAL_HI_TO_LO:
-            return alignment - 1 - current_byte;
+            return local_byte_order == BYTE_ORDER_LITERAL_HI_TO_LO ? current_byte : alignment - 1 - current_byte;
         default:
             fatalf(__func__, "system instability detected: byte order does not exist: %ull", (uqword) byte_order);
     }
@@ -73,4 +73,30 @@ void data_write_as(
     for (udword element_byte = 0; element_byte < (elements * alignment); element_byte += alignment) {
         write_element(element_byte, element_byte, src, src_byte_order, dst, dst_byte_order);
     }
+}
+
+void data_write(const uqword elements, const uqword alignment, enum data_interpret_mode interpret_mode, void *src, void *dst) {
+    enum data_byte_order src_byte_order, dst_byte_order;
+    switch (interpret_mode) {
+        case BYTE_ORDER_VIRTUAL_LO_TO_HI:
+            src_byte_order = BYTE_ORDER_LITERAL_LO_TO_HI;
+            dst_byte_order = get_current_byte_order();
+            break;
+        case BYTE_ORDER_VIRTUAL_HI_TO_LO:
+            src_byte_order = BYTE_ORDER_LITERAL_HI_TO_LO;
+            dst_byte_order = get_current_byte_order();
+            break;
+        case BYTE_ORDER_VIRTUAL_INVARIANT:
+            src_byte_order = get_current_byte_order();
+            dst_byte_order = get_current_byte_order();
+            break;
+        case BYTE_ORDER_VIRTUAL_UNKNOWN:
+            src_byte_order = BYTE_ORDER_LITERAL_HI_TO_LO;
+            dst_byte_order = get_current_byte_order();
+            break;
+        default:
+            fatalf(__func__, "system instability detected: unknown data_byte_order: %llu\n", interpret_mode);
+    }
+    
+    data_write_as(elements, alignment, src, src_byte_order, dst, dst_byte_order);
 }

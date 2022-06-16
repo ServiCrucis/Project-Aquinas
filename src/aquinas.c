@@ -39,7 +39,7 @@ void run_tests() {
 //    test_umod();
 //    test_fp_math();
 //    test_pointer();
-    test_data_byte_order();
+//    test_data_byte_order();
 }
 
 

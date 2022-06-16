@@ -1,3 +1,5 @@
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "performance-no-int-to-ptr"
 /*
 * Module: tests
 * File: tests.h
@@ -7,6 +9,8 @@
 * License: See LICENSE.txt
 */
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "IncompatibleTypes"
 #ifndef PROJECT_AQUINAS_TESTS_H
 #define PROJECT_AQUINAS_TESTS_H
 
@@ -363,3 +367,6 @@ static void test_data_byte_order() {
 #pragma GCC diagnostic pop
 
 #endif //PROJECT_AQUINAS_TESTS_H
+
+#pragma clang diagnostic pop
+#pragma clang diagnostic pop
