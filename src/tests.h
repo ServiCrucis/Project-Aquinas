@@ -16,6 +16,7 @@
 #include "bit_math.h"
 #include "sigbits_map.h"
 #include "memory.h"
+#include "data.h"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-function"
@@ -288,13 +289,9 @@ static void test_umod() {
 static void test_fp_math() {
 }
 
-static void test_data_order() {
-    info(__func__, "Beginning data order (endianness) test");
-}
-
 static void test_pointer() {
     infof(__func__, "pointer size: %u\n", sizeof(pointer24));
-    void   *test_ptr;
+    void *test_ptr;
     test_ptr = (void *) 0xffffabcddcbaffff;
     
     if (!test_ptr)
@@ -310,14 +307,14 @@ static void test_pointer() {
     volatile pointer test_ptr56 = ptr_compress(test_ptr, sizeof(pointer56));
     volatile pointer test_ptr64 = ptr_compress(test_ptr, sizeof(pointer64));
     
-    info(__func__, "as pointer8: %p\n", (void *)(ubyte) test_ptr8.offset);
-    info(__func__, "as pointer16: %p\n", (void *)(uword) test_ptr16.offset);
-    info(__func__, "as pointer24: %p\n", (void *)(udword) test_ptr24.offset);
-    info(__func__, "as pointer32: %p\n", (void *)(udword) test_ptr32.offset);
-    info(__func__, "as pointer40: %p\n", (void *)(uqword) test_ptr40.offset);
-    info(__func__, "as pointer48: %p\n", (void *)(uqword) test_ptr48.offset);
-    info(__func__, "as pointer56: %p\n", (void *)(uqword) test_ptr56.offset);
-    info(__func__, "as pointer64: %p\n", (void *)(uqword) test_ptr64.offset);
+    info(__func__, "as pointer8: %p\n", (void *) (ubyte) test_ptr8.offset);
+    info(__func__, "as pointer16: %p\n", (void *) (uword) test_ptr16.offset);
+    info(__func__, "as pointer24: %p\n", (void *) (udword) test_ptr24.offset);
+    info(__func__, "as pointer32: %p\n", (void *) (udword) test_ptr32.offset);
+    info(__func__, "as pointer40: %p\n", (void *) (uqword) test_ptr40.offset);
+    info(__func__, "as pointer48: %p\n", (void *) (uqword) test_ptr48.offset);
+    info(__func__, "as pointer56: %p\n", (void *) (uqword) test_ptr56.offset);
+    info(__func__, "as pointer64: %p\n", (void *) (uqword) test_ptr64.offset);
     
     info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr8));
     info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr16));
@@ -327,7 +324,26 @@ static void test_pointer() {
     info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr48));
     info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr56));
     info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr64));
+}
+
+static void test_data_byte_order() {
+    info(__func__, "beginning byte order write test\n");
+    uqword test_lo_to_hi = 0x0000AABBCCDDEEFF;
+    uqword test_hi_to_lo = 0xFFEEDDCCBBAA0000;
     
+    info(__func__, "beginning lo to hi interpret test\n");
+    infof(__func__, "\ttest_lo_to_hi before: %#16llx\n", test_lo_to_hi);
+    data_write_as(1, sizeof(test_lo_to_hi),
+                  &test_lo_to_hi, BYTE_ORDER_LITERAL_LO_TO_HI,
+                  &test_lo_to_hi, BYTE_ORDER_LITERAL_HI_TO_LO);
+    infof(__func__, "\ttest_lo_to_hi after: %#16llx\n", test_lo_to_hi);
+    
+    info(__func__, "beginning hi to lo interpret test\n");
+    infof(__func__, "\ttest_hi_to_lo before: %#16llx\n", test_hi_to_lo);
+    data_write_as(1, sizeof(test_hi_to_lo),
+                  &test_hi_to_lo, BYTE_ORDER_LITERAL_HI_TO_LO,
+                  &test_hi_to_lo, BYTE_ORDER_LITERAL_LO_TO_HI);
+    infof(__func__, "\ttest_hi_to_lo after: %#16llx\n", test_hi_to_lo);
 }
 
 #pragma GCC diagnostic pop
