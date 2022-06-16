@@ -344,6 +344,20 @@ static void test_data_byte_order() {
                   &test_hi_to_lo, BYTE_ORDER_LITERAL_HI_TO_LO,
                   &test_hi_to_lo, BYTE_ORDER_LITERAL_LO_TO_HI);
     infof(__func__, "\ttest_hi_to_lo after: %#16llx\n", test_hi_to_lo);
+    
+    // test unaligned
+    
+    ubyte test_unaligned[9] = {
+            (ubyte) 0x00, (ubyte) 0xAA, (ubyte) 0xBB, (ubyte) 0xCC, (ubyte) 0xDD, (ubyte) 0xEE, (ubyte) 0xFF, (ubyte) 0x00, (ubyte) 0x00
+    };
+    
+    info(__func__, "beginning unaligned hi to lo interpret test\n");
+    infof(__func__, "\ttest_unaligned before: %#16llx\n", *(uqword *)&test_unaligned[0]);
+    
+    data_write_as(1, 9,
+                  test_unaligned, BYTE_ORDER_LITERAL_LO_TO_HI,
+                  test_unaligned, BYTE_ORDER_LITERAL_HI_TO_LO);
+    infof(__func__, "\ttest_unaligned after: %#16llx\n", *(uqword *)&test_unaligned[0]);
 }
 
 #pragma GCC diagnostic pop

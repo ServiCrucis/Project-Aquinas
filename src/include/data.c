@@ -38,6 +38,7 @@ static inline udword compute_byte_index(udword current_byte, udword alignment, e
     }
 }
 
+// TODO optimize data_write_as(), etc.
 void data_write_as(
         register uqword const elements,
         register uqword const alignment,
