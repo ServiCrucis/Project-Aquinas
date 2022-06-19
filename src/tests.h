@@ -10,20 +10,20 @@
 */
 
 #pragma clang diagnostic push
-#pragma ide diagnostic ignored "IncompatibleTypes"
+//#pragma ide diagnostic ignored "IncompatibleTypes"
 #ifndef PROJECT_AQUINAS_TESTS_H
-#define PROJECT_AQUINAS_TESTS_H
-
-#include <dynarray.h>
-#include "state.h"
-#include "compiler.h"
-#include "bit_math.h"
-#include "sigbits_map.h"
-#include "memory.h"
-#include "data.h"
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-function"
+  #define PROJECT_AQUINAS_TESTS_H
+  
+  #include <dynarray.h>
+  #include "state.h"
+  #include "compiler.h"
+  #include "bit_math.h"
+  #include "sigbits_map.h"
+  #include "memory.h"
+  #include "data.h"
+  
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wunused-function"
 
 static void test_expi() {
     for (ubyte i = 0; i < 45; i++) {
@@ -294,40 +294,37 @@ static void test_fp_math() {
 }
 
 static void test_pointer() {
-    infof(__func__, "pointer size: %u\n", sizeof(pointer24));
-    void *test_ptr;
-    test_ptr = (void *) 0xffffabcddcbaffff;
+    auto volatile uintptr_t test_ptr_auto;
+    volatile void      *test_ptr_heap;
+    auto volatile void *test_ptr_stack;
+    // initialize pointers
+    test_ptr_heap = malloc(sizeof(test_ptr_heap));
+    if (!test_ptr_heap)
+        fatalf(__func__, "insufficient memory for test; could not allocate %llu bytes", sizeof(test_ptr_heap));
+    test_ptr_stack = alloca(sizeof(test_ptr_heap));
+    // test pointers
+    auto volatile relative_pointer test_relptr_auto  = pointer_deconstruct(&test_ptr_auto, 1);
+    volatile relative_pointer      test_relptr_heap  = pointer_deconstruct(test_ptr_heap, 3);
+    auto volatile relative_pointer test_relptr_stack = pointer_deconstruct(test_ptr_stack, 5);
+    info(__func__, "beginning pointer deconstruction test\n");
+    infof(__func__, "\t&test_ptr_auto: %p\n", &test_ptr_auto);
+    infof(__func__, "\ttest_ptr_heap: %p\n", test_ptr_heap);
+    infof(__func__, "\ttest_ptr_stack: %p\n", test_ptr_stack);
+    infof(__func__, "\n");
+    infof(__func__, "\ttest_relptr_auto offset: %p\n", test_relptr_auto.offset);
+    infof(__func__, "\test_relptr_heap offset: %p\n", test_relptr_heap.offset);
+    infof(__func__, "\ttest_relptr_stack offset: %p\n", test_relptr_stack.offset);
+    infof(__func__, "\n");
+    infof(__func__, "\ttest_relptr_auto base: %p\n", test_relptr_auto.base);
+    infof(__func__, "\ttest_relptr_heap base: %p\n", test_relptr_heap.base);
+    infof(__func__, "\ttest_relptr_stack base: %p\n", test_relptr_stack.base);
+    infof(__func__, "\n");
+    infof(__func__, "\ttest_relptr_auto reconstruction: %p\n", pointer_reconstruct(test_relptr_auto));
+    infof(__func__, "\ttest_relptr_heap reconstruction: %p\n", pointer_reconstruct(test_relptr_heap));
+    infof(__func__, "\ttest_relptr_stack reconstruction: %p\n", pointer_reconstruct(test_relptr_stack));
+    info(__func__, "pointer deconstruction test complete");
     
-    if (!test_ptr)
-        fatalf(__func__, "What is this, a microcontroller? Unable to allocate %u bytes.\n", sizeof(void *));
-    
-    infof(__func__, "test_ptr value: %p\n", test_ptr);
-    volatile pointer test_ptr8  = ptr_compress(test_ptr, sizeof(pointer8));
-    volatile pointer test_ptr16 = ptr_compress(test_ptr, sizeof(pointer16));
-    volatile pointer test_ptr24 = ptr_compress(test_ptr, sizeof(pointer24));
-    volatile pointer test_ptr32 = ptr_compress(test_ptr, sizeof(pointer32));
-    volatile pointer test_ptr40 = ptr_compress(test_ptr, sizeof(pointer40));
-    volatile pointer test_ptr48 = ptr_compress(test_ptr, sizeof(pointer48));
-    volatile pointer test_ptr56 = ptr_compress(test_ptr, sizeof(pointer56));
-    volatile pointer test_ptr64 = ptr_compress(test_ptr, sizeof(pointer64));
-    
-    info(__func__, "as pointer8: %p\n", (void *) (ubyte) test_ptr8.offset);
-    info(__func__, "as pointer16: %p\n", (void *) (uword) test_ptr16.offset);
-    info(__func__, "as pointer24: %p\n", (void *) (udword) test_ptr24.offset);
-    info(__func__, "as pointer32: %p\n", (void *) (udword) test_ptr32.offset);
-    info(__func__, "as pointer40: %p\n", (void *) (uqword) test_ptr40.offset);
-    info(__func__, "as pointer48: %p\n", (void *) (uqword) test_ptr48.offset);
-    info(__func__, "as pointer56: %p\n", (void *) (uqword) test_ptr56.offset);
-    info(__func__, "as pointer64: %p\n", (void *) (uqword) test_ptr64.offset);
-    
-    info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr8));
-    info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr16));
-    info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr24));
-    info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr32));
-    info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr40));
-    info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr48));
-    info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr56));
-    info(__func__, "pointer back to void *: %p\n", ptr_decompress(test_ptr64));
+    free(test_ptr_heap);
 }
 
 static void test_data_byte_order() {
@@ -338,15 +335,15 @@ static void test_data_byte_order() {
     info(__func__, "beginning lo to hi interpret test\n");
     infof(__func__, "\ttest_lo_to_hi before: %#16llx\n", test_lo_to_hi);
     data_write_as(1, sizeof(test_lo_to_hi),
-                  &test_lo_to_hi, BYTE_ORDER_LITERAL_LO_TO_HI,
-                  &test_lo_to_hi, BYTE_ORDER_LITERAL_HI_TO_LO);
+                  &test_lo_to_hi, BYTE_ORDER_LITERAL_LO_AT_LO,
+                  &test_lo_to_hi, BYTE_ORDER_LITERAL_HI_AT_LO);
     infof(__func__, "\ttest_lo_to_hi after: %#16llx\n", test_lo_to_hi);
     
     info(__func__, "beginning hi to lo interpret test\n");
     infof(__func__, "\ttest_hi_to_lo before: %#16llx\n", test_hi_to_lo);
     data_write_as(1, sizeof(test_hi_to_lo),
-                  &test_hi_to_lo, BYTE_ORDER_LITERAL_HI_TO_LO,
-                  &test_hi_to_lo, BYTE_ORDER_LITERAL_LO_TO_HI);
+                  &test_hi_to_lo, BYTE_ORDER_LITERAL_HI_AT_LO,
+                  &test_hi_to_lo, BYTE_ORDER_LITERAL_LO_AT_LO);
     infof(__func__, "\ttest_hi_to_lo after: %#16llx\n", test_hi_to_lo);
     
     // test unaligned
@@ -356,17 +353,17 @@ static void test_data_byte_order() {
     };
     
     info(__func__, "beginning unaligned hi to lo interpret test\n");
-    infof(__func__, "\ttest_unaligned before: %#16llx\n", *(uqword *)&test_unaligned[0]);
+    infof(__func__, "\ttest_unaligned before: %#16llx\n", *(uqword *) &test_unaligned[0]);
     
     data_write_as(1, 9,
-                  test_unaligned, BYTE_ORDER_LITERAL_LO_TO_HI,
-                  test_unaligned, BYTE_ORDER_LITERAL_HI_TO_LO);
-    infof(__func__, "\ttest_unaligned after: %#16llx\n", *(uqword *)&test_unaligned[0]);
+                  test_unaligned, BYTE_ORDER_LITERAL_LO_AT_LO,
+                  test_unaligned, BYTE_ORDER_LITERAL_HI_AT_LO);
+    infof(__func__, "\ttest_unaligned after: %#16llx\n", *(uqword *) &test_unaligned[0]);
 }
-
-#pragma GCC diagnostic pop
+  
+  #pragma GCC diagnostic pop
 
 #endif //PROJECT_AQUINAS_TESTS_H
 
-#pragma clang diagnostic pop
+//#pragma clang diagnostic pop
 #pragma clang diagnostic pop

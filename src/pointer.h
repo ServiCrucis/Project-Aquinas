@@ -19,38 +19,40 @@
 
 #include "platform.h"
 
-typedef ubyte pointer8;
+typedef ubyte   pointer8;
+typedef uword   pointer16;
+typedef udword  pointer32;
+typedef uqword  pointer64;
+typedef udqword pointer128;
 
-typedef uword pointer16;
+typedef union pointer {
+    pointer8  u8;
+    pointer16 u16;
+    pointer32 u32;
+    pointer64 u64;
+}               pointer;
 
-typedef ubyte pointer24[3];
+// planned
+typedef union long_pointer {
+    pointer    u64;
+    pointer128 u128;
+}               long_pointer;
 
-typedef udword pointer32;
+typedef struct relative_pointer {
+    pointer base;
+    pointer offset;
+} __attribute__((aligned(16))) relative_pointer;
 
-typedef ubyte pointer40[5];
-
-typedef ubyte pointer48[6];
-
-typedef ubyte pointer56[7];
-
-typedef uqword pointer64;
-
-typedef struct pointer {
-    uintptr_t base;
-    ubyte        offset_bytes;
-    ubyte        offset[];
-}            pointer;
+relative_pointer pointer_form(register uintptr_t const base, register uintptr_t const offset);
 
 /*
  * A revolutionary function that splits an address into base and offset, deterministically even.
  */
-pointer ptr_compress(register void *restrict const address, uqword const ptr_size);
+relative_pointer pointer_deconstruct(void *restrict const address, uqword const pointer_size);
 
 /*
  * A revolutionary function that sums a base and an offset into a single void pointer. Imagine that.
  */
-void *ptr_decompress(pointer const ptr);
-
-
+void *pointer_reconstruct(relative_pointer const ptr);
 
 #endif //PROJECT_AQUINAS_POINTER_H

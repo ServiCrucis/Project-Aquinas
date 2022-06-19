@@ -66,7 +66,7 @@ typedef struct pair {
 /*
  * Performs left or right shift on value if a is positive or negative respectively.
  */
-#define shift(value, a) ( (!a ? value : (a < 0 ? value >> a : value << a)) )
+#define shift(value, a) ( (a < 0 ? value >> a : value << a) )
 
 /*
  * Zeroes the value at the given location using bit math.
@@ -467,12 +467,29 @@ static inline udqword umulq(register uqword multiplicand, register uqword multip
 /*
  * Uses a fast division algorithm to compute divides to machine precision using bit math.
  */
-__attribute__((noinline))
+//__attribute__((noinline))
+//static inline uqword udivq(register uqword dividend, register uqword divisor) {
+//    return (uqword)
+//            ((((udqword) urcpq(divisor)) << bitwidth(urcpq(divisor))) *
+//             ((udqword) dividend << (bitwidth(urcpq(divisor)))) >>
+//                                                                bitwidth(urcpq(divisor)));
+//}
+
+/*
+ * Uses a fast Euclidean division algorithm to compute divides to machine precision.
+ */
+static inline udqword euclid_udivq(register uqword dividend, register uqword divisor) {
+    // 64.64 fixed-point register
+   register udqword quotient = dividend;
+   register uqword remainder;
+   
+   
+   
+   
+}
+
 static inline uqword udivq(register uqword dividend, register uqword divisor) {
-    return (uqword)
-            ((((udqword) urcpq(divisor)) << bitwidth(urcpq(divisor))) *
-             ((udqword) dividend << (bitwidth(urcpq(divisor)))) >>
-                                                                bitwidth(urcpq(divisor)));
+    return (uqword) (euclid_udivq(dividend, divisor) >> sizeof(uqword));
 }
 
 /*

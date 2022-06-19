@@ -69,9 +69,15 @@ enum data_interpret_mode {
 // and available instructions, registers, or hardware functions in general for
 // configuring data byte order ("endianness").
 enum data_byte_order {
-    BYTE_ORDER_LITERAL_LO_TO_HI = 0,
-    BYTE_ORDER_LITERAL_HI_TO_LO = 1
+    BYTE_ORDER_LITERAL_LO_AT_LO = 0,
+    BYTE_ORDER_LITERAL_HI_AT_LO = 1,
+    BYTE_ORDER_LITERAL_HI_AT_HI = 0,
+    BYTE_ORDER_LITERAL_LO_AT_HI = 1
 };
+
+#define data_byte_order_invert(order) ( order == BYTE_ORDER_LITERAL_LO_TO_HI ? BYTE_ORDER_LITERAL_HI_TO_LO : BYTE_ORDER_LO_TO_HI )
+
+enum data_byte_order data_get_current_byte_order();
 
 void data_byte_order_set(enum data_byte_order);
 
@@ -89,6 +95,10 @@ void data_write(register uqword const elements, register uqword const alignment,
  * variables are marked as `restrict`. For writing into shared memory from distinctly
  * formed pointers, check compiler and runtime output to ensure correct operation.
  */
-void data_write_as(register uqword const elements, register uqword const alignment, void *restrict src, enum data_byte_order, void *restrict dst, enum data_byte_order);
+void data_write_as(register uqword const elements, register uqword const alignment, void *restrict const src, enum data_byte_order, void *restrict const dst, enum data_byte_order);
+
+void data_write_low_to_high(register uqword const elements, register uqword const alignment, void *restrict const src, void *restrict const dst);
+
+void data_write_high_to_low(register uqword const elements, register uqword const alignment, void *restrict const src, void *restrict const dst);
 
 #endif //PROJECT_AQUINAS_DATA_H

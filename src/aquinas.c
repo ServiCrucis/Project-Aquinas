@@ -22,23 +22,23 @@
 #include "tests.h"
 
 void run_tests() {
-    //test_expi();
-    //test_lni();
-    //test_log10i();
-    //test_sigbits();
-    //test_digits();
-    //test_to_digits();
-    //test_bittrie();
-    //test_binary_trie();
-    //test_map();
-    //test_cpuid();
-    //test_dynarray();
+//    test_expi();
+//    test_lni();
+//    test_log10i();
+//    test_sigbits();
+//    test_digits();
+//    test_to_digits();
+//    test_bittrie();
+//    test_binary_trie();
+//    test_map();
+//    test_cpuid();
+//    test_dynarray();
 //    test_umap();
 //    test_square_wave();
 //    test_udiv();
 //    test_umod();
 //    test_fp_math();
-//    test_pointer();
+    test_pointer();
 //    test_data_byte_order();
 }
 
