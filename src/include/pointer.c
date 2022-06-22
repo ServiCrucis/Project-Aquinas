@@ -21,8 +21,8 @@
 
 relative_pointer pointer_form(register uintptr_t const base, register uintptr_t const offset) {
     relative_pointer result = {
-            base: (pointer) base,
-            offset: (pointer) offset
+            base: base,
+            offset: offset
     };
     
     return result;
@@ -39,7 +39,7 @@ relative_pointer pointer_deconstruct(void *const address, uqword const pointer_s
 }
 
 void *pointer_reconstruct(relative_pointer const ptr) {
-    return (void *) (ptr.base.u64 + ptr.offset.u64);
+    return (void *) (ptr.base + ptr.offset);
 }
 
 #pragma clang diagnostic pop

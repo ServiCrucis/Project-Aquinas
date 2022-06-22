@@ -19,29 +19,18 @@
 
 #include "platform.h"
 
-typedef ubyte   pointer8;
-typedef uword   pointer16;
-typedef udword  pointer32;
-typedef uqword  pointer64;
-typedef udqword pointer128;
-
-typedef union pointer {
-    pointer8  u8;
-    pointer16 u16;
-    pointer32 u32;
-    pointer64 u64;
-}               pointer;
-
 // planned
 typedef union long_pointer {
-    pointer    u64;
-    pointer128 u128;
 }               long_pointer;
 
 typedef struct relative_pointer {
-    pointer base;
-    pointer offset;
+    uintptr_t base;
+    uintptr_t offset;
 } __attribute__((aligned(16))) relative_pointer;
+
+typedef struct pointer_group {
+    uqword identifier;
+} pointer_group;
 
 relative_pointer pointer_form(register uintptr_t const base, register uintptr_t const offset);
 
@@ -54,5 +43,7 @@ relative_pointer pointer_deconstruct(void *restrict const address, uqword const 
  * A revolutionary function that sums a base and an offset into a single void pointer. Imagine that.
  */
 void *pointer_reconstruct(relative_pointer const ptr);
+
+pointer_group pointer_group_create();
 
 #endif //PROJECT_AQUINAS_POINTER_H
