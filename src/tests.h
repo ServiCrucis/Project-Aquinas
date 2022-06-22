@@ -18,7 +18,6 @@
   #include "state.h"
   #include "compiler.h"
   #include "bit_math.h"
-  #include "sigbits_map.h"
   #include "memory.h"
   #include "data.h"
   
@@ -98,60 +97,6 @@ static void test_to_digits() {
     }
 }
 
-//static void test_bittrie() {
-//    info(__func__, "Building bit_trie.\n");
-//    uqword_pair test[] = {
-//            { 23,  1 },
-//            { 237, 1 }
-//    };
-//    bit_trie    *trie  = btt_create(test, 8, 2);
-//    uqword   values = 256;
-//    // 0: left; 1: right
-//    uqword   side   = 0ull;
-//    info(__func__, "bit_trie side:left.\n");
-//    for (uqword address = 0; address < values; address++) {
-//
-//        uqword bit = btt_read(trie, (address << 1u) | side);
-//        infof(__func__, "[%u] = %u\n", bin_index((address << 1u) | side), bit);
-//    }
-//
-//    info(__func__, "bit_trie side:right.\n");
-//    side = 1ull;
-//    for (uqword address = 0; address < values; address++) {
-//        uqword bit = btt_read(trie, (address << 1u) | side);
-//        infof(__func__, "[%u]\n", bin_index((address << 1u) | side), bit);
-//    }
-//
-//    btt_free(trie);
-//    info(__func__, "Done.\n");
-//}
-
-//static void test_binary_trie() {
-//    binary_tree *btrie = binary_tree_create(31);
-//
-//    for (uqword i = 0; i < btrie->nodes; i++) {
-//        binary_tree_set(btrie, i, powni(i, i));
-//        infof(__func__, "binary_tree+%llu = %llu\n", i, binary_tree_get(btrie, i));
-//    }
-//}
-
-static void test_map() {
-    sigbits_map *map = sbm_create(bitwidth(ubyte));
-    for (uqword i    = 0; i < 256; i++) {
-        sbm_set(map, (uqword_pair) { i, rand() });
-        infof(__func__, "map[%llu] = %llu\n", i, sbm_get(map, i) & 255);
-    }
-    // undefined behavior
-    infof(__func__, "(undefined behavior test) map[257]: %llu\n", sbm_get(map, 257));
-    
-    //    for (ubyte i = 0; i < bitwidth(uqword); i++) {
-    //        uqword value = map_get(map, i);
-    //        infof(__func__, "map[%llu] : %u\n", i, value);
-    //    }
-    
-    
-}
-
 static void test_cpuid() {
     #if DATA_MODEL == LP64 || DATA_MODEL == ILP64 || DATA_MODEL == LLP64 || DATA_MODEL == SILP64
     if (!__x64_cpuid_supported())
@@ -166,75 +111,9 @@ static void test_cpuid() {
 }
 
 static void test_dynarray() {
-    dynarray *array       = dynarray_create(32u);
-    ubyte    test_data[4] = { 0x12, 0x34, 0xAB, 0xCD };
-    // print dynarray
-    info(__func__, "dynarray before filling:\n");
-    for (uqword i = 0; i < 32u; i++) {
-        infof(__func__, "dynarray[%u]: %#x\n", i, array->data[i]);
-    }
-    
-    // fill dynarray
-    dynarray_fill(array, (ubyte *) test_data, sizeof(test_data));
-    
-    // print dynarray
-    info(__func__, "dynarray after filling:\n");
-    for (uqword i = 0; i < 32u; i++) {
-        infof(__func__, "dynarray[%u]: %#x\n", i, array->data[i]);
-    }
-    
-    // test dynarray_get
-    info(__func__, "test_get before dynarray_get(): \n");
-    ubyte *test_get = calloc(32u, sizeof(*test_get));
-    if (!test_get)
-        fatalf(__func__, "failed to allocate memory for test_get\n");
-    for (uqword i = 0; i < 32u; i++) {
-        infof(__func__, "test_get[%u]: %#x\n", i, test_get[i]);
-    }
-    
-    info(__func__, "dynarray_get():\n");
-    dynarray_get(array, 0, 32u, test_get, 0, 32u);
-    for (uqword i = 0; i < 32u; i++) {
-        infof(__func__, "test_get[%u]: %#x\n", i, test_get[i]);
-    }
-    free(test_get);
-    
-    // test dynarray_set
-    ubyte *test_set = calloc(32u, sizeof(*test_set));
-    if (!test_set)
-        fatalf(__func__, "failed to allocate memory for test_set\n");
-    memset(test_set, 0x11, 32u);
-    dynarray_set(array, 0, 32u, test_set, 0, 32u);
-    for (uqword i = 0; i < 32u; i++) {
-        infof(__func__, "dynarray[%u]: %#x\n", i, array->data[i]);
-    }
-    free(test_set);
-    
-    // test dynarray_resize
-    // should resize to 16 bytes from 32 bytes
-    array = dynarray_resize(array, 16u);
-    info(__func__, "after dynarray_resize() from 32 to 16 bytes:\n");
-    // undefined behavior; test results may vary
-    for (uqword i = 0; i < 32u; i++) {
-        infof(__func__, "dynarray[%u]: %#x\n", i, array->data[i]);
-    }
-    
-    array = dynarray_resize(array, 64u);
-    info(__func__, "after dynarray_resize() from 16 to 64 bytes:\n");
-    // undefined behavior; test results may vary
-    for (uqword i = 0; i < 64u; i++) {
-        infof(__func__, "dynarray[%u]: %#x\n", i, array->data[i]);
-    }
-    
-    free(array);
-    
-    info(__func__, "dynarray test completed\n");
 }
 
-static void test_umap() {
-}
-
-static void test_memory_allocator() {
+static void test_map() {
 }
 
 static void test_square_wave() {
@@ -295,8 +174,8 @@ static void test_fp_math() {
 
 static void test_pointer() {
     auto volatile uintptr_t test_ptr_auto;
-    volatile void      *test_ptr_heap;
-    auto volatile void *test_ptr_stack;
+    volatile void           *test_ptr_heap;
+    auto volatile void      *test_ptr_stack;
     // initialize pointers
     test_ptr_heap = malloc(sizeof(test_ptr_heap));
     if (!test_ptr_heap)
