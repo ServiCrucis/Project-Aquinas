@@ -18,7 +18,7 @@
   #include "state.h"
   #include "compiler.h"
   #include "bit_math.h"
-  #include "memory.h"
+  #include "memory/memory.h"
   #include "data.h"
   
   #pragma GCC diagnostic push

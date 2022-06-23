@@ -19,13 +19,14 @@
 
 #include "platform.h"
 
+typedef uintptr_t pointer;
 // planned
 typedef union long_pointer {
 }               long_pointer;
 
 typedef struct relative_pointer {
-    uintptr_t base;
-    uintptr_t offset;
+    pointer base;
+    pointer offset;
 } __attribute__((aligned(16))) relative_pointer;
 
 typedef struct pointer_group {

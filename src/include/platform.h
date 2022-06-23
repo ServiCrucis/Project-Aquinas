@@ -117,7 +117,7 @@
 #define P_VXWORKS        66
 #define P_UNKNOWN        67
 
-// based on 0.1% percentile of qword length distribution for English (16 * 4 = 64 characters)
+// based on 0.1% percentile of word length distribution for English (16 * 4 = 64 characters)
 // source: <http://www.ravi.io/language-word-lengths>
 #define PLATFORM_NAME_LENGTH_MAX 64
 #define ENVIRONMENT_NAME_LENGTH_MAX 64
