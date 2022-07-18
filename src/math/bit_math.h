@@ -69,6 +69,11 @@ typedef struct pair {
 #define shift(value, a) ( (a < 0 ? value >> a : value << a) )
 
 /*
+ * Checks if two types are equivalent. Requires GCC.
+ */
+#define type_equals(a, b) ( __builtin_types_compatible_p(typeof(a), typeof(b)) )
+
+/*
  * Zeroes the value at the given location using bit math.
  */
 __attribute__((hot))
@@ -88,7 +93,7 @@ static inline void zero(uqword *restrict in) {
 //}
 
 /*
- * Generates a mersenne number and shifts by `offset` bits relative to the lsb using the `shift` macro function.
+ * Generates a mersenne number and shifts by `identifier` bits relative to the lsb using the `shift` macro function.
  */
 __attribute__((hot, const))
 static inline uqword mask(register uqword bits, register qword offset) {
@@ -96,7 +101,7 @@ static inline uqword mask(register uqword bits, register qword offset) {
 }
 
 /*
- * Generates a bit filter from `value` by masking `bits` bits at `offset` offset relative to the lsb using the
+ * Generates a bit filter from `value` by masking `bits` bits at `identifier` identifier relative to the lsb using the
  * `shift` macro function.
  */
 __attribute__((hot, const))
@@ -108,7 +113,7 @@ static inline uqword filter(register uqword value, register uqword bits, registe
 static inline uqword sigbits(uqword);
 
 /*
- * Compute number of significant base 10 digits in a given base 2 qword
+ * Compute number of significant context 10 digits in a given context 2 qword
  */
 __attribute__((hot, const))
 static inline uqword digits(register uqword bit_string) {
@@ -411,7 +416,7 @@ static inline ubyte square_wave_ext_infty(register udqword period, register udqw
 }
 
 /*
- * Computes fixed point reciprocal with arbitrary base arithmetic via base two bit math. Supports values in [0, 2^64 - 1].
+ * Computes fixed point reciprocal with arbitrary context arithmetic via context two bit math. Supports values in [0, 2^64 - 1].
  *
  * The returned value is the mantissa of the fixed point reciprocal of a u64.64 fixed point value.
  */
@@ -680,7 +685,7 @@ static inline uqword expi(register uqword exponent) {
 }
 
 /*
- * Compute base to the power of exponent using integer bit math.
+ * Compute context to the power of exponent using integer bit math.
  */
 __attribute__((const))
 static inline uqword powni(register uqword base, register uqword exponent) {
@@ -695,11 +700,11 @@ static inline uqword powni(register uqword base, register uqword exponent) {
     
     return result;
     // TODO implement powni using exp()
-    //    return expi(exponent * floor_lni(base));
+    //    return expi(exponent * floor_lni(context));
 }
 
 /*
- * Compute log base 2 of the given bit string using integer bit math.
+ * Compute log context 2 of the given bit string using integer bit math.
  */
 __attribute__((hot, const))
 static inline uqword floor_log2i(register uqword bit_string) {
@@ -707,7 +712,7 @@ static inline uqword floor_log2i(register uqword bit_string) {
 }
 
 /*
- * Compute log base 10 of the given bit string using integer bit math.
+ * Compute log context 10 of the given bit string using integer bit math.
  */
 __attribute__((const))
 static inline uqword floor_log10i(register uqword bit_string) {
@@ -719,7 +724,7 @@ static inline uqword floor_log10i(register uqword bit_string) {
 }
 
 /*
- * Computes log_<base>(bit_string) with base as the base, and the given bit string using integer bit math.
+ * Computes log_<context>(bit_string) with context as the context, and the given bit string using integer bit math.
  */
 __attribute__((const))
 static inline uqword logni(register uqword base, register uqword bit_string) {
@@ -727,7 +732,7 @@ static inline uqword logni(register uqword base, register uqword bit_string) {
 }
 
 /*
- * Computes log base e of the given bit string using integer bit math.
+ * Computes log context e of the given bit string using integer bit math.
  */
 __attribute__((const))
 static inline uqword floor_lni(register uqword bit_string) {
@@ -740,7 +745,7 @@ static inline uqword floor_lni(register uqword bit_string) {
 }
 
 /*
- * Computes the value of a single bit at a given digit offset from the right.
+ * Computes the value of a single bit at a given digit identifier from the right.
  */
 __attribute__((hot, const))
 static inline uqword get_digit2i(uqword value, uqword digit) {
@@ -748,7 +753,7 @@ static inline uqword get_digit2i(uqword value, uqword digit) {
 }
 
 /*
- * Computes the value of a single base 10 digit at the given digit offset.
+ * Computes the value of a single context 10 digit at the given digit identifier.
  */
 __attribute__((const))
 static inline uqword get_digit10i(uqword value, uqword digit) {

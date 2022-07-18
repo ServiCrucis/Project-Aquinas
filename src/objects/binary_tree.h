@@ -11,40 +11,60 @@
 #ifndef PROJECT_AQUINAS_BINARY_TREE_H
 #define PROJECT_AQUINAS_BINARY_TREE_H
 
-#include "platform.h"
-#include "bit_math.h"
-#include "../pointer.h"
+#include "memory/m_object.h"
 
-enum binary_tree_node_type {
-    BRANCH = 0, LEAF = 1
-};
-
-typedef struct binary_tree_state_info {
-    uword state;
-} binary_tree_state_info;
+typedef struct binary_tree_data_header {
+    // identifier of first element that differs
+    uword difference_element_offset;
+    //
+    uword element_type_table;
+}                                          binary_tree_data_header;
 
 typedef struct binary_tree_node {
-    // branch (0) or leaf (1) node
-    ubyte type;
-    ubyte values_length;
-};
+    // |elements| = 2**elements_length
+    ubyte    elements_length;
+    m_object elements;
+} __attribute__((aligned (sizeof(uword)))) binary_tree_node;
 
+/*
+ * Current design notes:
+ * 1. each node is an array of elements
+ * 2. each element can be a value or node m_object
+ * 3. each node m_object is compressed via m_object
+ * 4. each m_object is associated with a pointer_group
+ * 5. each pointer_group is per 256 elements to maximize m_object compression
+ * 6. pointer_group table tracks allocated pointers relative to elements via:
+ *      i. node radix
+ *      ii. elements allocated in entire tree
+ *
+ */
 typedef struct binary_tree {
-    // fixed (0) or arbitrary (1) storage class
-    // fixed: values are stored on the node directly
-    // arbitrary: the node contains a fixed-size pointer to the data
-    ubyte storage_class:1;
-    ubyte data_radix:7;
-} binary_tree;
+    // number of bits a single pair takes up
+    udword           pair_radix;
+    udword           pairs_length;
+    ubyte            *radix_offset_pairs;
+    binary_tree_node *root;
+    ubyte            *data;
+} __attribute__((aligned(32)))             binary_tree;
 
-binary_tree binary_tree_create();
+/*
+ * Collection of states for operating on a binary tree's nodes individually
+ */
+typedef struct binary_tree_node_generator {
+} binary_tree_node_generator;
 
-void binary_tree_destroy();
+/*
+ * Collection of behaviors for operating on a binary tree's nodes individually
+ */
+typedef struct binary_tree_node_interface {
+} binary_tree_node_interface;
 
-binary_tree_state_info binary_tree_linearize();
+void binary_tree_construct(void *memory);
 
-binary_tree_state_info binary_tree_read();
+void binary_tree_get();
 
-binary_tree_state_info binary_tree_write();
+void binary_tree_set();
+
+binary_tree_node_generator binary_tree_goto();
 
 #endif //PROJECT_AQUINAS_BINARY_TREE_H

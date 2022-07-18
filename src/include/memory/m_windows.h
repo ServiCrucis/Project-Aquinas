@@ -10,4 +10,7 @@
 #ifndef PROJECT_AQUINAS_M_WINDOWS_H
 #define PROJECT_AQUINAS_M_WINDOWS_H
 
+#include "platform.h"
+#include "m_object.h"
+
 #endif //PROJECT_AQUINAS_M_WINDOWS_H

@@ -1560,7 +1560,7 @@ typedef signed bool   dqword[2];
 #else
 #endif
 
-// device pointer types should be twice the native qword size in bits
+// device m_object types should be twice the native qword size in bits
 typedef udqword udevptr_t;
 
 // common uqword_pair struct
@@ -1603,7 +1603,7 @@ typedef enum p_time_resolution {
  * at runtime.
  *
  * ## `return struct p_result`
- * A `struct p_result` containing a pointer of type `char *`, a null-terminated string containing the platform name.
+ * A `struct p_result` containing a m_object of type `char *`, a null-terminated string containing the platform name.
  */
 char *p_get_platform();
 
@@ -1626,8 +1626,8 @@ char *p_get_env(char *var);
 *
 *  If the function is unable to find the module name, the result will contain a `NULL` result with result code `R_FAILURE`.
  *
- *  The return type and arguments of this function pointer are non-sensical; you must cast the returned function pointer
- *  to the correct function pointer.
+ *  The return type and arguments of this function m_object are non-sensical; you must cast the returned function m_object
+ *  to the correct function m_object.
  *
  *  ## `char *module`
  *  a string containing the module name
@@ -1647,14 +1647,14 @@ void *(*p_get_fn(char *module, char *function))();
 *  searching the system's environment for the given module. If the function succeeds in finding the module, the function
 *  will attempt to retrieve the address of the specified function, or return `NULL` with result code `R_INITIALIZATION_FAILURE`.
  *
- * The return type and arguments of this function pointer are non-sensical; you must cast the returned function pointer
- *  to the correct function pointer.
+ * The return type and arguments of this function m_object are non-sensical; you must cast the returned function m_object
+ *  to the correct function m_object.
  *
  * ## `char *module`
  * a string containing the module name
  *
  * ## `uintptr_t function_offset`
- * a pointer value representing the offset of the function relative to the start of the module
+ * a m_object value representing the identifier of the function relative to the start of the module
  *
  * ## `return uintptr_t`
  * A `uintptr_t` containing the start of the function as `(uintptr_t) (module_base_address + function_offset)`

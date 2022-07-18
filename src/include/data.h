@@ -84,14 +84,14 @@ void data_byte_order_set(enum data_byte_order);
 /*
  * Writes `elements` elements from `src` start to `dst` start based on the given `alignment`.
  * The byte order of both arrays is determined by the `interpret_mode` (see enum data_interpret_mode).
- * Both `src` and `dst` pointer variables are `restrict`. For writing into shared memory
+ * Both `src` and `dst` m_object variables are `restrict`. For writing into shared memory
  * from distinctly formed pointers, check compiler and runtime output to ensure correct operation.
  */
 void data_write(register uqword const elements, register uqword const alignment, enum data_interpret_mode, void *restrict src, void *restrict dst);
 
 /*
  * Writes `elements` elements from `src` start as `src_byte_order` to `dst` start as
- * `dst_byte_order` based on the given `alignment`. Both `src` and `dst` pointer
+ * `dst_byte_order` based on the given `alignment`. Both `src` and `dst` m_object
  * variables are marked as `restrict`. For writing into shared memory from distinctly
  * formed pointers, check compiler and runtime output to ensure correct operation.
  */

@@ -30,7 +30,7 @@ typedef struct dynamic_array {
 dynarray *dynarray_create(uint32_t data_length);
 
 /*
- * Frees the given dynarray pointer if it is not NULL. If NULL, this function only returns.
+ * Frees the given dynarray m_object if it is not NULL. If NULL, this function only returns.
  */
 void dynarray_free(dynarray *restrict array);
 
@@ -56,7 +56,7 @@ void dynarray_fill(dynarray *restrict dst, ubyte *restrict src, uint32_t srclen)
  * amount of allocated space is
  *      data_length - (data_length % sizeof(uqword)) + sizeof(uqword)
  *
- * The returned pointer is not guaranteed to be the original pointer.
+ * The returned m_object is not guaranteed to be the original m_object.
  */
 dynarray *dynarray_resize(dynarray *restrict array, uint32_t size);
 
