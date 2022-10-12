@@ -21,85 +21,129 @@
 #include "dynarray.h"
 #include "m_object.h"
 
+enum m_object_type {
+    STATE = 0,
+    BEHAVIOR = 1
+};
+
+enum m_state_type {
+    /*
+     * Defines the memory object to be read-only.
+     */
+    READ=1,
+    
+    /*
+     * Defines the memory object to be write-only.
+     */
+    WRITE=2,
+    
+    /*
+     * Defines the memory object to be readable and writable.
+     */
+    READ_WRITE=0,
+    
+    /*
+     * Defines the memory object to be unreadable and unwritable.
+     *
+     * Win32: defines one or more virtual memory pages to be marked as
+     * PAGE_NOACCESS. Attempting to read, write, or execute the committed page(s)
+     * results in EXCEPTION_ACCESS_VIOLATION.
+     * See https://learn.microsoft.com/en-us/windows/win32/memory/memory-protection-constants
+     */
+    NO_READ_NO_WRITE=3
+};
+
 /*
  * A memory interface for partitioning an infinite address space in $[0, +\infty)$.
  */
 typedef struct memory_interface {
     /*
-     * Reserves a memory partition if applicable.
-     * Calling this function tells the memory interface:
-     * "I need this much memory right now."
+     * Reserves a partition to be associated with an integer representing this memory partition.
+     * The m_object_type parameter indicates whether the memory is for state or behavior.
+     * The m_state_type parameter indicates whether the memory can be read and/or written.
      *
-     * See memory.h:m_reserve for more information.
+     * It is maintained that the value returned by this procedure is implementation-defined, but has
+     * a standard interface in BC and AD, therefore its use within a C runtime or similar environment
+     * can be taken as implementation defined.
+     *
+     * In BC, as memory is implicit so as to decouple software from the constraints of finite
+     * memory, these procedures are provided optionally by an allocator language module which
+     * the programmer is free to use or not use for organizing data within a memory context.
+     * Each unique memory context is infinitely addressable from [0, +\infty). Note that
+     * although memory is implicit, the use of such allocators is subject to the same
+     * constraints as that of C's memory model. Furthermore, in such model, one is free
+     * to choose any positive integer address, whereas this restriction present in the C
+     * allocator is only due to C's own memory model.
+     *
+     * In C, this value has a void pointer that may be directly accessed according to the usual pointer
+     * semantics without any special arithmetic.
+     *
+     * As there is no memory resizing in this model, the pointer is guaranteed to not change
+     * throughout its lifetime.
      */
-    m_object *(*m_reserve)(uqword const bits);
+    m_object *(*m_reserve)(uqword const bits, enum m_object_type, enum m_state_type);
     
     /*
-     * Resizes a memory partition if applicable.
-     * Calling this function tells the memory interface:
-     * "I need a different amount of memory right now."
+     * Relinquishes the partition associated with the given m_object. If the m_object
+     * given has no associated memory partition, the procedure will terminate the
+     * program. In C, if the object's pointer is NULL, the procedure returns immediately.
      *
-     * See memory.h:m_resize for more information.
-     */
-    m_object *(*m_resize)(uqword const context, uqword const identifier, udqword const bits);
-    
-    /*
-     * Relinquishes a memory partition if applicable.
-     * Calling this function tells the memory interface:
-     * "I don't need this memory anymore."
+     * In BC, as memory is implicit so as to decouple software from the constraints of finite
+     * memory, these procedures are provided optionally by an allocator language module which
+     * the programmer is free to use or not use for organizing data within a memory context.
+     * Each unique memory context is infinitely addressable from [0, +\infty). Note that
+     * although memory is implicit, the use of such allocators is subject to the same
+     * constraints as that of C's memory model. Furthermore, in such model, one is free
+     * to choose any positive integer address, whereas this restriction present in the C
+     * allocator is only due to C's own memory model.
      *
-     * See memory.h:m_relinquish for more information.
+     * In C, the m_object's pointer is set to NULL.
      */
-    m_object *(*m_relinquish)(uqword const context, uqword const identifier);
+    m_object *(*m_relinquish)(m_object *);
 } memory_interface;
 
 /*
- * Reserves a partition to be associated with the given context and identifier with at least
- * the given number of bits. The given m_object contains the context and identifier pointers
- * per the C memory model and are implementation-defined values. In BC, however, the context
- * with identifier and m_object are one and the same.
+ * Reserves a partition to be associated with an integer representing this memory partition.
+ * The m_object_type parameter indicates whether the memory is for state or behavior.
+ * The m_state_type parameter indicates whether the memory can be read and/or written.
  *
- * With the BC memory model, a valid replacement for garbage collection is viable through
- * facilitated manual memory management: memory is a single, contiguous vector of state
- * with unique, user-defined identifiers. In this way, I can simply refer to state as state,
- * and provide a means to organize it for the sake of software which, by necessity, must
- * _usually_ share a single global address space on modern hardware.
+ * It is maintained that the value returned by this procedure is implementation-defined, but has
+ * a standard interface in BC and AD, therefore its use within a C runtime or similar environment
+ * can be taken as implementation defined.
  *
- * For the C implementation, the returned m_object is guaranteed to have the given context
- * and identifier provided that they were generated with m_push_context() and
- * m_push_identifier(). A void m_object may be formed through the corresponding
- * pointer_reconstruct() function in m_object.h. Note that these functions are only
- * necessary for use in C and will be decoupled from code written in AD.
+ * In BC, as memory is implicit so as to decouple software from the constraints of finite
+ * memory, these procedures are provided optionally by an allocator language module which
+ * the programmer is free to use or not use for organizing data within a memory context.
+ * Each unique memory context is infinitely addressable from [0, +\infty). Note that
+ * although memory is implicit, the use of such allocators is subject to the same
+ * constraints as that of C's memory model. Furthermore, in such model, one is free
+ * to choose any positive integer address, whereas this restriction present in the C
+ * allocator is only due to C's own memory model.
+ *
+ * In C, this value has a void pointer that may be directly accessed according to the usual pointer
+ * semantics without any special arithmetic.
+ *
+ * As there is no memory resizing in this model, the pointer is guaranteed to not change
+ * throughout its lifetime.
  */
-m_object m_reserve(uqword const context, uqword const identifier, udqword const bits);
+m_object m_reserve(udqword const bits, enum m_object_type, enum m_state_type);
 
 /*
- * Resizes the partition associated with the given context and identifier to be at least the number
- * of specified bits. The given m_object contains the context and identifier pointers per the
- * C memory model and are implementation-defined values.
+ * Relinquishes the partition associated with the given m_object. If the m_object
+ * given has no associated memory partition, the procedure will terminate the
+ * program. In C, if the object's pointer is NULL, the procedure returns immediately.
  *
- * With the BC memory model, a valid replacement for garbage collection is viable through
- * facilitated manual memory management: memory is a single, contiguous vector of state
- * with unique, user-defined identifiers. In this way, I can simply refer to state as state,
- * and provide a means to organize it for the sake of software which, by necessity, must
- * _usually_ share a single global address space on modern hardware.
- */
-m_object m_resize(uqword const context, uqword const identifier, udqword const bits);
-
-/*
- * Relinquishes the partition associated with the given context and identifier. The associated
- * m_object does not need to be freed with free(); the m_relinquish implementation handles
- * such calls for you. Note that use of the unmodified m_object after this call is
- * to be considered undefined behavior according to ISO C. In the BC memory model, however,
- * this is impossible since the context with identifier are also the associated numerical variable
- * name.
+ * In BC, as memory is implicit so as to decouple software from the constraints of finite
+ * memory, these procedures are provided optionally by an allocator language module which
+ * the programmer is free to use or not use for organizing data within a memory context.
+ * Each unique memory context is infinitely addressable from [0, +\infty). Note that
+ * although memory is implicit, the use of such allocators is subject to the same
+ * constraints as that of C's memory model. Furthermore, in such model, one is free
+ * to choose any positive integer address, whereas this restriction present in the C
+ * allocator is only due to C's own memory model.
  *
- * With the BC memory model, a valid replacement for garbage collection is viable through
- * facilitated manual memory management: memory is a single, contiguous vector of state
- * with unique, user-defined identifiers. In this way, I can simply refer to state as state,
- * and provide a means to organize it for the sake of software which, by necessity, must
- * _usually_ share a single global address space on modern hardware.
+ * In C, the m_object's pointer is set to NULL.
  */
-void m_relinquish(uqword const context, uqword const identifier);
+void m_relinquish(m_object *);
 
 #endif //PROJECT_AQUINAS_MEMORY_H

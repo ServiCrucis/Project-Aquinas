@@ -19,19 +19,6 @@
 
 #include "platform.h"
 
-// x86 BC pointer composition:
-// [    0,         2]: 3 bits: bit offset
-// [    3,     2 + n]: n bits: byte offset
-// [3 + n, 2 + n + m]: m bits: cache_block offset
-// bits: block_group offset
-
-// 3 bits for element size (2^k)
-// 1 bit for cache_block existence
-// 8 bits for elements used
-
-typedef struct m_object_metadata m_object_metadata;
-typedef struct m_object {
-    m_object_metadata *metadata;
-} m_object;
+typedef struct m_object m_object;
 
 #endif //PROJECT_AQUINAS_M_OBJECT_H
