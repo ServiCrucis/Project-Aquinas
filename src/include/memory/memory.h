@@ -26,19 +26,27 @@ enum m_object_type {
     BEHAVIOR = 1
 };
 
+#define BC_ALLOCATOR BC_GLOBAL_MEMORY_INTERFACE
+
 enum m_state_type {
     /*
      * Defines the memory object to be read-only.
+     *
+     *
      */
     READ=1,
     
     /*
      * Defines the memory object to be write-only.
+     *
+     *
      */
     WRITE=2,
     
     /*
      * Defines the memory object to be readable and writable.
+     *
+     *
      */
     READ_WRITE=0,
     
@@ -81,7 +89,7 @@ typedef struct memory_interface {
      * As there is no memory resizing in this model, the pointer is guaranteed to not change
      * throughout its lifetime.
      */
-    m_object *(*m_reserve)(uqword const bits, enum m_object_type, enum m_state_type);
+    m_object (*m_reserve)(udqword const bits, enum m_object_type, enum m_state_type);
     
     /*
      * Relinquishes the partition associated with the given m_object. If the m_object
@@ -99,7 +107,7 @@ typedef struct memory_interface {
      *
      * In C, the m_object's pointer is set to NULL.
      */
-    m_object *(*m_relinquish)(m_object *);
+    void (*m_relinquish)(m_object *const);
 } memory_interface;
 
 /*
@@ -144,6 +152,6 @@ m_object m_reserve(udqword const bits, enum m_object_type, enum m_state_type);
  *
  * In C, the m_object's pointer is set to NULL.
  */
-void m_relinquish(m_object *);
+void m_relinquish(m_object *const);
 
 #endif //PROJECT_AQUINAS_MEMORY_H

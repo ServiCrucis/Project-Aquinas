@@ -1,13 +1,13 @@
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "performance-no-int-to-ptr"
 /*
-* Module: tests
-* File: tests.h
-* Created:
-* November 08, 2020
-* Author: Andrew Porter [<caritasdedeus@gmail.com>](mailto:caritasdedeus@gmail.com)
-* License: See LICENSE.txt
-*/
+ * Module: tests
+ * File: tests.h
+ * Created:
+ * November 08, 2020
+ * Author: Andrew Porter [<caritasdedeus@gmail.com>](mailto:caritasdedeus@gmail.com)
+ * License: See LICENSE.txt
+ */
 
 #pragma clang diagnostic push
 //#pragma ide diagnostic ignored "IncompatibleTypes"
@@ -182,27 +182,27 @@ static void test_pointer() {
         fatalf(__func__, "insufficient memory for test; could not allocate %llu bytes", sizeof(test_ptr_heap));
     test_ptr_stack = alloca(sizeof(test_ptr_heap));
     // test pointers
-    auto volatile m_object test_relptr_auto  = pointer_deconstruct(&test_ptr_auto, 1);
-    volatile m_object      test_relptr_heap  = pointer_deconstruct(test_ptr_heap, 3);
-    auto volatile m_object test_relptr_stack = pointer_deconstruct(test_ptr_stack, 5);
-    info(__func__, "beginning m_object deconstruction test\n");
-    infof(__func__, "\t&test_ptr_auto: %p\n", &test_ptr_auto);
-    infof(__func__, "\ttest_ptr_heap: %p\n", test_ptr_heap);
-    infof(__func__, "\ttest_ptr_stack: %p\n", test_ptr_stack);
-    infof(__func__, "\n");
-    infof(__func__, "\ttest_relptr_auto identifier: %p\n", test_relptr_auto.identifier);
-    infof(__func__, "\test_relptr_heap identifier: %p\n", test_relptr_heap.identifier);
-    infof(__func__, "\ttest_relptr_stack identifier: %p\n", test_relptr_stack.identifier);
-    infof(__func__, "\n");
-    infof(__func__, "\ttest_relptr_auto context: %p\n", test_relptr_auto.context);
-    infof(__func__, "\ttest_relptr_heap context: %p\n", test_relptr_heap.context);
-    infof(__func__, "\ttest_relptr_stack context: %p\n", test_relptr_stack.context);
-    infof(__func__, "\n");
-    infof(__func__, "\ttest_relptr_auto reconstruction: %p\n", pointer_reconstruct(test_relptr_auto));
-    infof(__func__, "\ttest_relptr_heap reconstruction: %p\n", pointer_reconstruct(test_relptr_heap));
-    infof(__func__, "\ttest_relptr_stack reconstruction: %p\n", pointer_reconstruct(test_relptr_stack));
-    info(__func__, "m_object deconstruction test complete");
-    
+//    auto volatile m_object test_relptr_auto  = pointer_deconstruct(&test_ptr_auto, 1);
+//    volatile m_object      test_relptr_heap  = pointer_deconstruct(test_ptr_heap, 3);
+//    auto volatile m_object test_relptr_stack = pointer_deconstruct(test_ptr_stack, 5);
+//    info(__func__, "beginning m_object deconstruction test\n");
+//    infof(__func__, "\t&test_ptr_auto: %p\n", &test_ptr_auto);
+//    infof(__func__, "\ttest_ptr_heap: %p\n", test_ptr_heap);
+//    infof(__func__, "\ttest_ptr_stack: %p\n", test_ptr_stack);
+//    infof(__func__, "\n");
+//    infof(__func__, "\ttest_relptr_auto identifier: %p\n", test_relptr_auto.identifier);
+//    infof(__func__, "\test_relptr_heap identifier: %p\n", test_relptr_heap.identifier);
+//    infof(__func__, "\ttest_relptr_stack identifier: %p\n", test_relptr_stack.identifier);
+//    infof(__func__, "\n");
+//    infof(__func__, "\ttest_relptr_auto context: %p\n", test_relptr_auto.context);
+//    infof(__func__, "\ttest_relptr_heap context: %p\n", test_relptr_heap.context);
+//    infof(__func__, "\ttest_relptr_stack context: %p\n", test_relptr_stack.context);
+//    infof(__func__, "\n");
+//    infof(__func__, "\ttest_relptr_auto reconstruction: %p\n", pointer_reconstruct(test_relptr_auto));
+//    infof(__func__, "\ttest_relptr_heap reconstruction: %p\n", pointer_reconstruct(test_relptr_heap));
+//    infof(__func__, "\ttest_relptr_stack reconstruction: %p\n", pointer_reconstruct(test_relptr_stack));
+//    info(__func__, "m_object deconstruction test complete");
+//
     free(test_ptr_heap);
 }
 
