@@ -23,7 +23,7 @@ typedef struct binary_tree_data_header {
 typedef struct binary_tree_node {
     // |elements| = 2**elements_length
     ubyte    elements_length;
-    m_object elements;
+//    m_object elements;
 } __attribute__((aligned (sizeof(uword)))) binary_tree_node;
 
 /*

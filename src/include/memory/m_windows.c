@@ -49,6 +49,7 @@ w32_m_object w32_m_reserve(udqword const bits, enum m_object_type object_type, e
         case WRITE:
             switch (object_type) {
                 case STATE:
+                    // FIXME find and implement write-only access context for pages
                     page_protections |= PAGE_READWRITE;
                     break;
                 case BEHAVIOR:
@@ -95,6 +96,7 @@ w32_m_object w32_m_reserve(udqword const bits, enum m_object_type object_type, e
 
 __attribute__((always_inline))
 void w32_m_relinquish(w32_m_object *const object) {
+    VirtualFree(object->pointer, 0, MEM_RELEASE);
 }
 
 struct memory_interface const GLOBAL_WIN32_MEMORY_INTERFACE = {
