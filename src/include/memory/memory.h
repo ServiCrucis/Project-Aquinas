@@ -22,7 +22,7 @@
 #include "m_object.h"
 
 enum m_object_type {
-    STATE = 0,
+    STATE    = 0,
     BEHAVIOR = 1
 };
 
@@ -34,21 +34,21 @@ enum m_state_type {
      *
      *
      */
-    READ=1,
+    READ = 1,
     
     /*
      * Defines the memory object to be write-only.
      *
      *
      */
-    WRITE=2,
+    WRITE = 2,
     
     /*
      * Defines the memory object to be readable and writable.
      *
      *
      */
-    READ_WRITE=0,
+    READ_WRITE = 0,
     
     /*
      * Defines the memory object to be unreadable and unwritable.
@@ -58,7 +58,7 @@ enum m_state_type {
      * results in EXCEPTION_ACCESS_VIOLATION.
      * See https://learn.microsoft.com/en-us/windows/win32/memory/memory-protection-constants
      */
-    NO_READ_NO_WRITE=3
+    NO_READ_NO_WRITE = 3
 };
 
 /*
@@ -89,7 +89,7 @@ typedef struct memory_interface {
      * As there is no memory resizing in this model, the pointer is guaranteed to not change
      * throughout its lifetime.
      */
-    m_object (*m_reserve)(udqword const bits, enum m_object_type, enum m_state_type);
+    m_object (*m_reserve)(udqword const bits, enum m_object_type const, enum m_state_type const);
     
     /*
      * Relinquishes the partition associated with the given m_object. If the m_object
@@ -108,7 +108,7 @@ typedef struct memory_interface {
      * In C, the m_object's pointer is set to NULL.
      */
     void (*m_relinquish)(m_object *const);
-} memory_interface;
+} __attribute__((aligned(16))) memory_interface;
 
 /*
  * Reserves a partition to be associated with an integer representing this memory partition.
@@ -134,7 +134,7 @@ typedef struct memory_interface {
  * As there is no memory resizing in this model, the pointer is guaranteed to not change
  * throughout its lifetime.
  */
-m_object m_reserve(udqword const bits, enum m_object_type, enum m_state_type);
+m_object m_reserve(udqword const bits, enum m_object_type const, enum m_state_type const);
 
 /*
  * Relinquishes the partition associated with the given m_object. If the m_object
@@ -153,5 +153,37 @@ m_object m_reserve(udqword const bits, enum m_object_type, enum m_state_type);
  * In C, the m_object's pointer is set to NULL.
  */
 void m_relinquish(m_object *const);
+
+#if PLATFORM == P_WINDOWS
+  #include "m_windows.h"
+#elif PLATFORM == P_LINUX
+  #include "m_linux.h"
+#elif PLATFORM == P_UNIX
+  #include "m_unix.h"
+#elif PLATFORM == P_MACINTOSH
+  #include "m_macintosh.h"
+#elif PLATFORM == P_BSD_ENVIRONMENT
+  #include "m_bsd.h"
+#elif PLATFORM == P_ANDROID
+  #include "m_android.h"
+#elif PLATFORM == P_GNU
+  #include "m_gnu.h"
+#elif PLATFORM == P_CYGWIN
+  #include "m_cygwin.h"
+#elif PLATFORM == P_MINGW
+  #include "m_mingw.h"
+#elif PLATFORM == P_EMX
+  #include "m_emx.h"
+#elif PLATFORM == P_INTERIX
+  #include "m_interix.h"
+#elif PLATFORM == P_WINDU
+  #include "m_windu.h"
+#else
+  #error [memory.h] Unrecognized platform
+#endif
+
+#ifndef BC_GLOBAL_MEMORY_INTERFACE
+  #warning BC_GLOBAL_MEMORY_INTERFACE undefined
+#endif
 
 #endif //PROJECT_AQUINAS_MEMORY_H

@@ -7,7 +7,7 @@
  * License: See LICENSE.txt
  *
  * A stupidly simple pointer compression implementation that supports this incredibly
- * revolutionary new concept known as compressed pointers (m_object offsets) because
+ * revolutionary new concept known as compressed pointers (pointer offsets) because
  * this has definitely never been thought of before and is of course used ubiquitously
  * to save every bit. /s
  */

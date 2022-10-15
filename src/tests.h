@@ -182,27 +182,27 @@ static void test_pointer() {
         fatalf(__func__, "insufficient memory for test; could not allocate %llu bytes", sizeof(test_ptr_heap));
     test_ptr_stack = alloca(sizeof(test_ptr_heap));
     // test pointers
-//    auto volatile m_object test_relptr_auto  = pointer_deconstruct(&test_ptr_auto, 1);
-//    volatile m_object      test_relptr_heap  = pointer_deconstruct(test_ptr_heap, 3);
-//    auto volatile m_object test_relptr_stack = pointer_deconstruct(test_ptr_stack, 5);
-//    info(__func__, "beginning m_object deconstruction test\n");
-//    infof(__func__, "\t&test_ptr_auto: %p\n", &test_ptr_auto);
-//    infof(__func__, "\ttest_ptr_heap: %p\n", test_ptr_heap);
-//    infof(__func__, "\ttest_ptr_stack: %p\n", test_ptr_stack);
-//    infof(__func__, "\n");
-//    infof(__func__, "\ttest_relptr_auto identifier: %p\n", test_relptr_auto.identifier);
-//    infof(__func__, "\test_relptr_heap identifier: %p\n", test_relptr_heap.identifier);
-//    infof(__func__, "\ttest_relptr_stack identifier: %p\n", test_relptr_stack.identifier);
-//    infof(__func__, "\n");
-//    infof(__func__, "\ttest_relptr_auto context: %p\n", test_relptr_auto.context);
-//    infof(__func__, "\ttest_relptr_heap context: %p\n", test_relptr_heap.context);
-//    infof(__func__, "\ttest_relptr_stack context: %p\n", test_relptr_stack.context);
-//    infof(__func__, "\n");
-//    infof(__func__, "\ttest_relptr_auto reconstruction: %p\n", pointer_reconstruct(test_relptr_auto));
-//    infof(__func__, "\ttest_relptr_heap reconstruction: %p\n", pointer_reconstruct(test_relptr_heap));
-//    infof(__func__, "\ttest_relptr_stack reconstruction: %p\n", pointer_reconstruct(test_relptr_stack));
-//    info(__func__, "m_object deconstruction test complete");
-//
+    //    auto volatile m_object test_relptr_auto  = pointer_deconstruct(&test_ptr_auto, 1);
+    //    volatile m_object      test_relptr_heap  = pointer_deconstruct(test_ptr_heap, 3);
+    //    auto volatile m_object test_relptr_stack = pointer_deconstruct(test_ptr_stack, 5);
+    //    info(__func__, "beginning m_object deconstruction test\n");
+    //    infof(__func__, "\t&test_ptr_auto: %p\n", &test_ptr_auto);
+    //    infof(__func__, "\ttest_ptr_heap: %p\n", test_ptr_heap);
+    //    infof(__func__, "\ttest_ptr_stack: %p\n", test_ptr_stack);
+    //    infof(__func__, "\n");
+    //    infof(__func__, "\ttest_relptr_auto identifier: %p\n", test_relptr_auto.identifier);
+    //    infof(__func__, "\test_relptr_heap identifier: %p\n", test_relptr_heap.identifier);
+    //    infof(__func__, "\ttest_relptr_stack identifier: %p\n", test_relptr_stack.identifier);
+    //    infof(__func__, "\n");
+    //    infof(__func__, "\ttest_relptr_auto context: %p\n", test_relptr_auto.context);
+    //    infof(__func__, "\ttest_relptr_heap context: %p\n", test_relptr_heap.context);
+    //    infof(__func__, "\ttest_relptr_stack context: %p\n", test_relptr_stack.context);
+    //    infof(__func__, "\n");
+    //    infof(__func__, "\ttest_relptr_auto reconstruction: %p\n", pointer_reconstruct(test_relptr_auto));
+    //    infof(__func__, "\ttest_relptr_heap reconstruction: %p\n", pointer_reconstruct(test_relptr_heap));
+    //    infof(__func__, "\ttest_relptr_stack reconstruction: %p\n", pointer_reconstruct(test_relptr_stack));
+    //    info(__func__, "m_object deconstruction test complete");
+    //
     free(test_ptr_heap);
 }
 
@@ -239,6 +239,46 @@ static void test_data_byte_order() {
                   test_unaligned, BYTE_ORDER_LITERAL_HI_AT_LO);
     infof(__func__, "\ttest_unaligned after: %#16llx\n", *(uqword *) &test_unaligned[0]);
 }
+  
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wincompatible-pointer-types-discards-qualifiers"
+
+static void test_w32_memory_allocator() {
+    volatile m_object test_state_read           = NULL;
+    volatile m_object test_state_write          = NULL;
+    volatile m_object test_state_read_write     = NULL;
+    volatile m_object test_state_noread_nowrite = NULL;
+    
+    info(__func__, "beginning Win32 memory allocator test\n");
+    info(__func__, "pre-init state:\n");
+    infof(__func__, "test_state_read = %p\n", test_state_read);
+    infof(__func__, "test_state_write = %p (FIXME)\n", test_state_write);
+    infof(__func__, "test_state_read_write = %p\n", test_state_read_write);
+    infof(__func__, "test_state_noread_nowrite = %p\n", test_state_noread_nowrite);
+    
+    test_state_read_write = m_reserve(255, STATE, READ);
+    infof(__func__, "test_state_read = %p\n", test_state_read);
+    test_state_read_write = m_reserve(255, STATE, WRITE);
+    infof(__func__, "test_state_write = %p (FIXME)\n", test_state_write);
+    test_state_read_write = m_reserve(255, STATE, READ_WRITE);
+    infof(__func__, "test_state_read_write = %p\n", test_state_read_write);
+    test_state_read_write = m_reserve(255, STATE, NO_READ_NO_WRITE);
+    infof(__func__, "test_state_noread_nowrite = %p\n", test_state_noread_nowrite);
+    
+    info(__func__, "freeing pointers\n");
+    m_relinquish(&test_state_read);
+    m_relinquish(&test_state_write);
+    m_relinquish(&test_state_read_write);
+    m_relinquish(&test_state_noread_nowrite);
+    
+    info(__func__, "pointers freed\n");
+    infof(__func__, "test_state_read = %p\n", test_state_read);
+    infof(__func__, "test_state_write = %p (FIXME)\n", test_state_write);
+    infof(__func__, "test_state_read_write = %p\n", test_state_read_write);
+    infof(__func__, "test_state_noread_nowrite = %p\n", test_state_noread_nowrite);
+}
+  
+  #pragma clang diagnostic pop
   
   #pragma GCC diagnostic pop
 

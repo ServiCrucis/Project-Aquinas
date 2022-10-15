@@ -12,19 +12,13 @@
  */
 
 
-#include <malloc.h>
 #include "m_windows.h"
 #include "m_object.h"
-#include "platform.h"
 #include "memory.h"
 #include "state.h"
 #include "bit_math.h"
 
 #include <memoryapi.h>
-
-typedef struct m_object {
-    void *pointer;
-} __attribute__((aligned(8))) w32_m_object;
 
 __attribute__((always_inline))
 w32_m_object w32_m_reserve(udqword const bits, enum m_object_type object_type, enum m_state_type state_type) {
@@ -90,13 +84,14 @@ w32_m_object w32_m_reserve(udqword const bits, enum m_object_type object_type, e
     }
     
     // init object pointer
-    object.pointer = VirtualAlloc(NULL, (DWORD) (bits >> floor_log2i(8)), page_options, page_protections);
+    object = VirtualAlloc(NULL, (DWORD) (bits >> floor_log2i(8)), page_options, page_protections);
     return object;
 }
 
 __attribute__((always_inline))
 void w32_m_relinquish(w32_m_object *const object) {
-    VirtualFree(object->pointer, 0, MEM_RELEASE);
+    VirtualFree(*object, 0, MEM_RELEASE);
+    *object = NULL;
 }
 
 struct memory_interface const GLOBAL_WIN32_MEMORY_INTERFACE = {
@@ -104,15 +99,10 @@ struct memory_interface const GLOBAL_WIN32_MEMORY_INTERFACE = {
         m_relinquish: &w32_m_relinquish
 };
 
-#ifndef BC_GLOBAL_MEMORY_INTERFACE
-  #define BC_GLOBAL_MEMORY_INTERFACE GLOBAL_WIN32_MEMORY_INTERFACE
-
-m_object m_reserve(udqword bits, enum m_object_type object_type, enum m_state_type state_type) {
+m_object m_reserve(udqword const bits, enum m_object_type const object_type, enum m_state_type const state_type) {
     return w32_m_reserve(bits, object_type, state_type);
 }
 
-void m_relinquish(m_object *object) {
+void m_relinquish(m_object *const object) {
     w32_m_relinquish(object);
 }
-
-#endif

@@ -19,6 +19,6 @@
 
 #include "platform.h"
 
-typedef struct m_object m_object;
+typedef void *m_object;
 
 #endif //PROJECT_AQUINAS_M_OBJECT_H
