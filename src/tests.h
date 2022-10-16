@@ -256,14 +256,23 @@ static void test_w32_memory_allocator() {
     infof(__func__, "test_state_read_write = %p\n", test_state_read_write);
     infof(__func__, "test_state_noread_nowrite = %p\n", test_state_noread_nowrite);
     
-    test_state_read_write = m_reserve(255, STATE, READ);
+    info(__func__, "\n");
+    
+    info(__func__, "post-init state:\n");
+    
+    test_state_read = m_reserve(255, STATE, READ);
     infof(__func__, "test_state_read = %p\n", test_state_read);
-    test_state_read_write = m_reserve(255, STATE, WRITE);
+    
+    test_state_write = m_reserve(256, STATE, WRITE);
     infof(__func__, "test_state_write = %p (FIXME)\n", test_state_write);
-    test_state_read_write = m_reserve(255, STATE, READ_WRITE);
+    
+    test_state_read_write = m_reserve(257, STATE, READ_WRITE);
     infof(__func__, "test_state_read_write = %p\n", test_state_read_write);
-    test_state_read_write = m_reserve(255, STATE, NO_READ_NO_WRITE);
+    
+    test_state_noread_nowrite = m_reserve(258, STATE, NO_READ_NO_WRITE);
     infof(__func__, "test_state_noread_nowrite = %p\n", test_state_noread_nowrite);
+    
+    info(__func__, "\n");
     
     info(__func__, "freeing pointers\n");
     m_relinquish(&test_state_read);

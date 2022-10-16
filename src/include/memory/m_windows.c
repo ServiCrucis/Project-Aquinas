@@ -84,7 +84,8 @@ w32_m_object w32_m_reserve(udqword const bits, enum m_object_type object_type, e
     }
     
     // init object pointer
-    object = VirtualAlloc(NULL, (DWORD) (bits >> floor_log2i(8)), page_options, page_protections);
+    const uqword bytes = ((bits >> 3) + ((bits & 0b111) > 0));
+    object = VirtualAlloc(NULL, (DWORD) bytes, page_options, page_protections);
     return object;
 }
 
