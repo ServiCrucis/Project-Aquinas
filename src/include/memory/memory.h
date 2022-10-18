@@ -72,7 +72,7 @@ typedef struct memory_interface {
      *
      * It is maintained that the value returned by this procedure is implementation-defined, but has
      * a standard interface in BC and AD, therefore its use within a C runtime or similar environment
-     * can be taken as implementation defined.
+     * can be taken as implementation defined but with predictable outcomes.
      *
      * In BC, as memory is implicit so as to decouple software from the constraints of finite
      * memory, these procedures are provided optionally by an allocator language module which
@@ -90,6 +90,23 @@ typedef struct memory_interface {
      * throughout its lifetime.
      */
     m_object (*m_reserve)(udqword const bits, enum m_object_type const, enum m_state_type const);
+    
+    /*
+     * Modifies the nature of read/write operations to the given memory object.
+     *
+     * This procedure can be used for changing the purpose and memory protections of the data
+     * associated with this memory object.
+     *
+     * In BC, as memory is implicit so as to decouple software from the constraints of finite
+     * memory, these procedures are provided optionally by an allocator language module which
+     * the programmer is free to use or not use for organizing data within a memory context.
+     * Each unique memory context is infinitely addressable from [0, +\infty). Note that
+     * although memory is implicit, the use of such allocators is subject to the same
+     * constraints as that of C's memory model. Furthermore, in such model, one is free
+     * to choose any positive integer address, whereas this restriction present in the C
+     * allocator is only due to C's own memory model.
+     */
+    void (*m_transmute)(m_object, enum m_object_type const, enum m_state_type const);
     
     /*
      * Relinquishes the partition associated with the given m_object. If the m_object
@@ -117,7 +134,7 @@ typedef struct memory_interface {
  *
  * It is maintained that the value returned by this procedure is implementation-defined, but has
  * a standard interface in BC and AD, therefore its use within a C runtime or similar environment
- * can be taken as implementation defined.
+ * can be taken as implementation defined but with predictable outcomes.
  *
  * In BC, as memory is implicit so as to decouple software from the constraints of finite
  * memory, these procedures are provided optionally by an allocator language module which
@@ -135,6 +152,23 @@ typedef struct memory_interface {
  * throughout its lifetime.
  */
 m_object m_reserve(udqword const bits, enum m_object_type const, enum m_state_type const);
+
+/*
+     * Modifies the nature of read/write operations to the given memory object.
+     *
+     * This procedure can be used for changing the purpose and memory protections of the data
+     * associated with this memory object.
+     *
+     * In BC, as memory is implicit so as to decouple software from the constraints of finite
+     * memory, these procedures are provided optionally by an allocator language module which
+     * the programmer is free to use or not use for organizing data within a memory context.
+     * Each unique memory context is infinitely addressable from [0, +\infty). Note that
+     * although memory is implicit, the use of such allocators is subject to the same
+     * constraints as that of C's memory model. Furthermore, in such model, one is free
+     * to choose any positive integer address, whereas this restriction present in the C
+     * allocator is only due to C's own memory model.
+     */
+void (*m_transmute)(m_object, enum m_object_type const, enum m_state_type const);
 
 /*
  * Relinquishes the partition associated with the given m_object. If the m_object
