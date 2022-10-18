@@ -15,6 +15,7 @@
   #define PROJECT_AQUINAS_TESTS_H
   
   #include <dynarray.h>
+  #include <errhandlingapi.h>
   #include "state.h"
   #include "compiler.h"
   #include "bit_math.h"
@@ -24,19 +25,19 @@
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wunused-function"
 
-static void test_expi() {
+static void test_expi(void) {
     for (ubyte i = 0; i < 45; i++) {
         infof(__func__, "expi(%llu): %llu\n", i, expi(i));
     }
 }
 
-static void test_lni() {
+static void test_lni(void) {
     for (ubyte i = 0; i < 45; i++) {
         infof(__func__, "floor_lni(%llu): %llu\n", expi(i), floor_lni(expi(i)));
     }
 }
 
-static void test_log10i() {
+static void test_log10i(void) {
     infof(__func__, "Digits: value=%llu, digits()=%llu\n", 1ull, floor_log10i(1ull));
     infof(__func__, "Digits: value=%llu, digits()=%llu\n", 10ull, floor_log10i(10ull));
     infof(__func__, "Digits: value=%llu, digits()=%llu\n", 100ull, floor_log10i(100ull));
@@ -59,13 +60,13 @@ static void test_log10i() {
     infof(__func__, "Digits: value=%llu, digits()=%llu\n", 10000000000000000000ull, floor_log10i(10000000000000000000ull));
 }
 
-static void test_sigbits() {
+static void test_sigbits(void) {
     for (uqword i = 0; i < 256; i++) {
         infof(__func__, "sigbits(%llu): %llu\n", i, sigbits(i));
     }
 }
 
-static void test_digits() {
+static void test_digits(void) {
     infof(__func__, "Digits: value=%llu, digits()=%llu\n", 1ull, digits(1ull));
     infof(__func__, "Digits: value=%llu, digits()=%llu\n", 10ull, digits(10ull));
     infof(__func__, "Digits: value=%llu, digits()=%llu\n", 100ull, digits(100ull));
@@ -88,7 +89,7 @@ static void test_digits() {
     infof(__func__, "Digits: value=%llu, digits()=%llu\n", 10000000000000000000ull, digits(10000000000000000000ull));
 }
 
-static void test_to_digits() {
+static void test_to_digits(void) {
     uqword     value = UINT64_MAX;
     ubyte      digits[20];
     for (ubyte i     = 19; i < 20; i--) {
@@ -97,7 +98,7 @@ static void test_to_digits() {
     }
 }
 
-static void test_cpuid() {
+static void test_cpuid(void) {
     #if DATA_MODEL == LP64 || DATA_MODEL == ILP64 || DATA_MODEL == LLP64 || DATA_MODEL == SILP64
     if (!__x64_cpuid_supported())
             #elif DATA_MODEL == LP32 || DATA_MODEL == ILP32
@@ -110,13 +111,13 @@ static void test_cpuid() {
     info(__func__, "CPUID is supported on this platform\n");
 }
 
-static void test_dynarray() {
+static void test_dynarray(void) {
 }
 
-static void test_map() {
+static void test_map(void) {
 }
 
-static void test_square_wave() {
+static void test_square_wave(void) {
     info(__func__, "beginning test of square_wave()\n");
     
     for (ubyte i = 0; i < 32; i++) {
@@ -132,7 +133,7 @@ static void test_square_wave() {
     info(__func__, "square_wave() test complete\n");
 }
 
-static void test_udiv() {
+static void test_udiv(void) {
     info(__func__, "beginning unsigned integer division test\n");
     
     infof(__func__, "udiv(): %u / %u = %u\n", 0xFFFFFFFFFFFFFFFF, 3, udivq(0xFFFFFFFFFFFFFFFF, 3));
@@ -151,7 +152,7 @@ static void test_udiv() {
     info(__func__, "unsigned integer division test complete\n");
 }
 
-static void test_umod() {
+static void test_umod(void) {
     info(__func__, "beginning unsigned integer modulus test\n");
     
     for (uword i = 1; i < 257; i++) {
@@ -169,10 +170,10 @@ static void test_umod() {
     info(__func__, "unsigned integer modulus test complete\n");
 }
 
-static void test_fp_math() {
+static void test_fp_math(void) {
 }
 
-static void test_pointer() {
+static void test_pointer(void) {
     auto volatile uintptr_t test_ptr_auto;
     volatile void           *test_ptr_heap;
     auto volatile void      *test_ptr_stack;
@@ -206,7 +207,7 @@ static void test_pointer() {
     free(test_ptr_heap);
 }
 
-static void test_data_byte_order() {
+static void test_data_byte_order(void) {
     info(__func__, "beginning byte order write test\n");
     uqword test_lo_to_hi = 0x0000AABBCCDDEEFF;
     uqword test_hi_to_lo = 0xFFEEDDCCBBAA0000;
@@ -243,7 +244,11 @@ static void test_data_byte_order() {
   #pragma clang diagnostic push
   #pragma clang diagnostic ignored "-Wincompatible-pointer-types-discards-qualifiers"
 
-static void test_w32_memory_allocator() {
+static void test_w32_memory_allocator(void) {
+    // defined in m_windows.c
+    extern m_object w32_m_reserve(udqword const bits, enum m_object_type const, enum m_state_type const);
+    extern void w32_m_relinquish(m_object *const);
+    
     volatile m_object test_state_read           = NULL;
     volatile m_object test_state_write          = NULL;
     volatile m_object test_state_read_write     = NULL;
@@ -260,25 +265,83 @@ static void test_w32_memory_allocator() {
     
     info(__func__, "post-init state:\n");
     
-    test_state_read = m_reserve(255, STATE, READ);
+    test_state_read = w32_m_reserve(255, STATE, READ);
+    DWORD ERROR_CODE = GetLastError();
     infof(__func__, "test_state_read = %p\n", test_state_read);
+    infof(__func__, "last error code: %i\n", ERROR_CODE);
     
-    test_state_write = m_reserve(256, STATE, WRITE);
+    test_state_write = w32_m_reserve(256, STATE, WRITE);
+    ERROR_CODE = GetLastError();
     infof(__func__, "test_state_write = %p (FIXME)\n", test_state_write);
+    infof(__func__, "last error code: %i\n", ERROR_CODE);
     
-    test_state_read_write = m_reserve(257, STATE, READ_WRITE);
+    test_state_read_write = w32_m_reserve(257, STATE, READ_WRITE);
+    ERROR_CODE = GetLastError();
     infof(__func__, "test_state_read_write = %p\n", test_state_read_write);
+    infof(__func__, "last error code: %i\n", ERROR_CODE);
     
-    test_state_noread_nowrite = m_reserve(258, STATE, NO_READ_NO_WRITE);
+    test_state_noread_nowrite = w32_m_reserve(258, STATE, NO_READ_NO_WRITE);
+    ERROR_CODE = GetLastError();
     infof(__func__, "test_state_noread_nowrite = %p\n", test_state_noread_nowrite);
+    infof(__func__, "last error code: %i\n", ERROR_CODE);
     
     info(__func__, "\n");
     
+    info(__func__,"beginning write test\n");
+    
+    ((word *) test_state_read)[0] = 0x0123;
+    DWORD read_error_code = GetLastError();
+    info(__func__, "test_state_read[?] = 0x0123;\n");
+    infof(__func__, "last error code: %i\n", read_error_code);
+    
+    ((word *) test_state_write)[0] = 0x4567;
+    DWORD write_error_code = GetLastError();
+    info(__func__, "test_state_write[?] = 0x4567; (FIXME) \n");
+    infof(__func__, "last error code: %i\n", write_error_code);
+    
+    ((word *) test_state_read_write)[0] = 0x89AB;
+    DWORD read_write_error_code = GetLastError();
+    info(__func__, "test_state_read_write[?] = 0x89AB;\n");
+    infof(__func__, "last error code: %i\n", read_write_error_code);
+    
+    ((word *) test_state_noread_nowrite)[0] = 0xCDEF;
+    DWORD noread_nowrite_error_code = GetLastError();
+    info(__func__, "test_state_noread_nowrite[?] = 0xCDEF;\n");
+    infof(__func__, "last error code: %i\n", noread_nowrite_error_code);
+    
+    info(__func__, "\n");
+    
+    info(__func__, "beginning read test\n");
+    
+    infof(__func__, "test_state_read value: %u", ((word *) test_state_read)[0]);
+    read_error_code = GetLastError();
+    infof(__func__, "last error code: %i", read_error_code);
+    
+    infof(__func__, "test_state_write value: %u", ((word *) test_state_write)[0]);
+    write_error_code = GetLastError();
+    infof(__func__, "last error code: %i", write_error_code);
+    
+    infof(__func__, "test_state_read_write value: %u", ((word *) test_state_read_write)[0]);
+    read_write_error_code = GetLastError();
+    infof(__func__, "last error code: %i", read_write_error_code);
+    
+    infof(__func__, "test_state_noread_nowrite value: %u", ((word *) test_state_noread_nowrite)[0]);
+    noread_nowrite_error_code = GetLastError();
+    infof(__func__, "last error code: %i", noread_nowrite_error_code);
+    
+    
     info(__func__, "freeing pointers\n");
-    m_relinquish(&test_state_read);
-    m_relinquish(&test_state_write);
-    m_relinquish(&test_state_read_write);
-    m_relinquish(&test_state_noread_nowrite);
+    w32_m_relinquish(&test_state_read);
+    read_error_code = GetLastError();
+    
+    w32_m_relinquish(&test_state_write);
+    write_error_code = GetLastError();
+    
+    w32_m_relinquish(&test_state_read_write);
+    read_write_error_code = GetLastError();
+    
+    w32_m_relinquish(&test_state_noread_nowrite);
+    noread_nowrite_error_code = GetLastError();
     
     info(__func__, "pointers freed\n");
     infof(__func__, "test_state_read = %p\n", test_state_read);
