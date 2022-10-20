@@ -40,7 +40,7 @@ void run_tests() {
 //    test_fp_math();
 //    test_pointer();
 //    test_data_byte_order();
-    test_w32_memory_allocator();
+//    test_w32_memory_allocator();
 }
 
 

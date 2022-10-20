@@ -106,7 +106,7 @@ typedef struct memory_interface {
      * to choose any positive integer address, whereas this restriction present in the C
      * allocator is only due to C's own memory model.
      */
-    void (*m_transmute)(m_object, enum m_object_type const, enum m_state_type const);
+    void (*m_transmute)(m_object const, enum m_object_type const, enum m_state_type const);
     
     /*
      * Relinquishes the partition associated with the given m_object. If the m_object
@@ -168,7 +168,7 @@ m_object m_reserve(udqword const bits, enum m_object_type const, enum m_state_ty
      * to choose any positive integer address, whereas this restriction present in the C
      * allocator is only due to C's own memory model.
      */
-void (*m_transmute)(m_object, enum m_object_type const, enum m_state_type const);
+void m_transmute(m_object const, enum m_object_type const, enum m_state_type const);
 
 /*
  * Relinquishes the partition associated with the given m_object. If the m_object

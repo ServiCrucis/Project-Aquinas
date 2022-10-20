@@ -262,33 +262,33 @@ static void test_w32_memory_allocator(void) {
     infof(__func__, "test_state_noread_nowrite = %p\n", test_state_noread_nowrite);
     
     info(__func__, "\n");
-    
     info(__func__, "post-init state:\n");
     
-    test_state_read = w32_m_reserve(255, STATE, READ);
+    // initialize as write-only first
+    test_state_read = w32_m_reserve(255, STATE, WRITE);
     DWORD ERROR_CODE = GetLastError();
     infof(__func__, "test_state_read = %p\n", test_state_read);
     infof(__func__, "last error code: %i\n", ERROR_CODE);
     
     test_state_write = w32_m_reserve(256, STATE, WRITE);
-    ERROR_CODE = GetLastError();
+    ERROR_CODE       = GetLastError();
     infof(__func__, "test_state_write = %p (FIXME)\n", test_state_write);
     infof(__func__, "last error code: %i\n", ERROR_CODE);
     
     test_state_read_write = w32_m_reserve(257, STATE, READ_WRITE);
-    ERROR_CODE = GetLastError();
+    ERROR_CODE            = GetLastError();
     infof(__func__, "test_state_read_write = %p\n", test_state_read_write);
     infof(__func__, "last error code: %i\n", ERROR_CODE);
     
     test_state_noread_nowrite = w32_m_reserve(258, STATE, NO_READ_NO_WRITE);
-    ERROR_CODE = GetLastError();
+    ERROR_CODE                = GetLastError();
     infof(__func__, "test_state_noread_nowrite = %p\n", test_state_noread_nowrite);
     infof(__func__, "last error code: %i\n", ERROR_CODE);
     
     info(__func__, "\n");
+    info(__func__, "beginning write test\n");
     
-    info(__func__,"beginning write test\n");
-    
+    // set as read-only before writing
     ((word *) test_state_read)[0] = 0x0123;
     DWORD read_error_code = GetLastError();
     info(__func__, "test_state_read[?] = 0x0123;\n");
@@ -304,33 +304,34 @@ static void test_w32_memory_allocator(void) {
     info(__func__, "test_state_read_write[?] = 0x89AB;\n");
     infof(__func__, "last error code: %i\n", read_write_error_code);
     
+    m_transmute(test_state_noread_nowrite, STATE, READ);
     ((word *) test_state_noread_nowrite)[0] = 0xCDEF;
     DWORD noread_nowrite_error_code = GetLastError();
     info(__func__, "test_state_noread_nowrite[?] = 0xCDEF;\n");
     infof(__func__, "last error code: %i\n", noread_nowrite_error_code);
     
     info(__func__, "\n");
-    
     info(__func__, "beginning read test\n");
     
-    infof(__func__, "test_state_read value: %u", ((word *) test_state_read)[0]);
+    infof(__func__, "test_state_read value: %u\n", ((word *) test_state_read)[0]);
     read_error_code = GetLastError();
-    infof(__func__, "last error code: %i", read_error_code);
+    infof(__func__, "last error code: %i\n", read_error_code);
     
-    infof(__func__, "test_state_write value: %u", ((word *) test_state_write)[0]);
+    infof(__func__, "test_state_write value: %u\n", ((word *) test_state_write)[0]);
     write_error_code = GetLastError();
-    infof(__func__, "last error code: %i", write_error_code);
+    infof(__func__, "last error code: %i\n", write_error_code);
     
-    infof(__func__, "test_state_read_write value: %u", ((word *) test_state_read_write)[0]);
+    infof(__func__, "test_state_read_write value: %u\n", ((word *) test_state_read_write)[0]);
     read_write_error_code = GetLastError();
-    infof(__func__, "last error code: %i", read_write_error_code);
+    infof(__func__, "last error code: %i\n", read_write_error_code);
     
-    infof(__func__, "test_state_noread_nowrite value: %u", ((word *) test_state_noread_nowrite)[0]);
+    infof(__func__, "test_state_noread_nowrite value: %u\n", ((word *) test_state_noread_nowrite)[0]);
     noread_nowrite_error_code = GetLastError();
-    infof(__func__, "last error code: %i", noread_nowrite_error_code);
+    infof(__func__, "last error code: %i\n", noread_nowrite_error_code);
     
-    
+    info(__func__, "\n");
     info(__func__, "freeing pointers\n");
+    
     w32_m_relinquish(&test_state_read);
     read_error_code = GetLastError();
     
@@ -345,9 +346,16 @@ static void test_w32_memory_allocator(void) {
     
     info(__func__, "pointers freed\n");
     infof(__func__, "test_state_read = %p\n", test_state_read);
+    infof(__func__, "last error code: %i", read_error_code);
+    
     infof(__func__, "test_state_write = %p (FIXME)\n", test_state_write);
+    infof(__func__, "last error code: %i", write_error_code);
+    
     infof(__func__, "test_state_read_write = %p\n", test_state_read_write);
+    infof(__func__, "last error code: %i", read_write_error_code);
+    
     infof(__func__, "test_state_noread_nowrite = %p\n", test_state_noread_nowrite);
+    infof(__func__, "last error code: %i\n", noread_nowrite_error_code);
 }
   
   #pragma clang diagnostic pop
