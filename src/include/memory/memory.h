@@ -216,8 +216,4 @@ void m_relinquish(m_object *const);
   #error [memory.h] Unrecognized platform
 #endif
 
-#ifndef BC_GLOBAL_MEMORY_INTERFACE
-  #warning BC_GLOBAL_MEMORY_INTERFACE undefined
-#endif
-
 #endif //PROJECT_AQUINAS_MEMORY_H
