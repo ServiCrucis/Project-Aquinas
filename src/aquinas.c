@@ -15,8 +15,6 @@
 #define MEMORY_MALLOC_OVERWRITE false
 // enable debug message printing
 #define R_DEBUG true
-// set memory unit to use dynamic allocations instead of a single static allocation
-#define DYNAMIC_HEAP true
 
 #include "state.h"
 #include "tests.h"
