@@ -102,6 +102,16 @@ __attribute__((always_inline)) static inline uint64_t __x64_popcnt(uint64_t valu
     return value;
 }
 
+__attribute__((always_inline)) static inline uint64_t __x64_rol(uint64_t value, uint64_t shift_count) {
+    asm("rolq %1, %0" : "+X" (value) : "X" (value), "X" (shift_count));
+    return value;
+}
+
+__attribute__((always_inline)) static inline uint64_t __x64_ror(uint64_t value, uint64_t shift_count) {
+    asm("rorq %1, %0" : "+X" (value) : "X" (value), "X" (shift_count));
+    return value;
+}
+
 __attribute__((always_inline)) static inline uint64_t __x64_tzcnt(uint64_t value) {
     asm("tzcntq %0, %0" : "+X" (value) : "X" (value));
     return value;
@@ -194,6 +204,16 @@ __attribute__((always_inline)) static inline uint32_t __x86_lzcnt(uint32_t value
 
 __attribute__((always_inline)) static inline uint32_t __x86_popcnt(uint32_t value) {
     asm("popcntl %0, %0" : "+X" (value) : "X" (value));
+    return value;
+}
+
+__attribute__((always_inline)) static inline uint32_t __x86_rol(uint32_t value, uint32_t shift_count) {
+    asm("roll %1, %0" : "+X" (value) : "X" (value), "X" (shift_count));
+    return value;
+}
+
+__attribute__((always_inline)) static inline uint32_t __x86_ror(uint32_t value, uint32_t shift_count) {
+    asm("rorl %1, %0" : "+X" (value) : "X" (value), "X" (shift_count));
     return value;
 }
 

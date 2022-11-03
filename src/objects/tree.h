@@ -12,23 +12,36 @@
 
 #include "platform.h"
 #include "bit_math.h"
+#include "memory/memory.h"
 
-typedef struct tree_node_member {
-} tree_node_member;
+typedef uqword tree_node_value;
+typedef void   *tree_node_pointer;
+
+/*
+ * A convenient data interface
+ */
+union tree_node_member {
+    tree_node_value   value;
+    tree_node_pointer pointer;
+};
 
 typedef struct tree_node {
-    // to what base does this belong? (number of elements)
-    // value = order + 1
-    // order = value - 1
-    uqword order;
+    // pointer = base_pointer | pointer_offset;
+    // sigbits(pointer) = base_pointer_size + pointer_offset_size;
+    ubyte  base_pointer_size;
+    ubyte  *base_pointers;
     // elements: either pointer_offset or data value
     // sizeof(*elements) is at most sizeof(void *)
-    void   *elements;
-} __attribute__((aligned(16))) tree_node;
+    // number of elements in tree_node.elements
+    // value = order + 1
+    // order = value - 1
+    uqword elements_size;
+    ubyte  *elements;
+}              tree_node;
 
 typedef struct tree {
-    // in bits
-    uqword  element_size:6;
+    // size in bits of a tree node element
+    ubyte     element_size:6;
     // unary coding designating separations between each level of the tree
     //
     // For each occurrence of zero or more zeroes followed by a one, the
@@ -40,16 +53,23 @@ typedef struct tree {
     // including the one itself. Any consecutive sequence of ones means that the
     // succeeding ones are distinct levels of one bit indices.
     //
-    uqword  address_transform;
+    uqword    address_transform;
     tree_node root;
-} __attribute__((aligned(32))) tree;
+}              tree;
 
-typedef struct tree_result {
+enum tree_status {
+    TREE_SUCCESS = 0,
+    
+};
 
-} tree_result;
+tree tree_construct(ubyte element_size);
 
-void tree_get(uqword address, tree_result *);
+tree_node_value tree_get(uqword address, enum tree_status *);
 
-void tree_set(uqword address, uword value_length, void *value);
+void tree_set(uqword address, tree_node_value, enum tree_status *);
+
+void tree_expand();
+
+void tree_compress();
 
 #endif //PROJECT_AQUINAS_TREE_H

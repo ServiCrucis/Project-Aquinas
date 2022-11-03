@@ -169,7 +169,7 @@ void w32_m_relinquish(w32_m_object *const object) {
     *object = NULL;
 }
 
-struct memory_interface const GLOBAL_WIN32_MEMORY_INTERFACE = {
+struct memory_interface const GLOBAL_MEMORY_INTERFACE = {
         m_reserve: &w32_m_reserve,
         m_transmute: &w32_m_transmute,
         m_relinquish: &w32_m_relinquish

@@ -68,6 +68,28 @@ typedef struct pair {
  */
 #define shift(value, a) ( (a < 0 ? value >> a : value << a) )
 
+__attribute__((hot))
+static inline uqword rol(uqword value, uqword bits) {
+    #if ARCH == ARCH_X86_64
+    return __x64_ror(value, bits);
+    #elif ARCH == ARCH_X86_32
+    return __x86_ror(value, bits);
+    #else
+    return (value << bits) | (value >> (bitwidth(value) - bits));
+    #endif
+}
+
+__attribute__((hot, const))
+static inline uqword ror(uqword value, uqword bits) {
+    #if ARCH == ARCH_X86_64
+    return __x64_ror(value, bits);
+    #elif ARCH == ARCH_X86_32
+    return __x86_ror(value, bits);
+    #else
+    return (value >> bits) | (value << (bitwidth(value) - bits));
+    #endif
+}
+
 /*
  * Checks if two types are equivalent. Requires GCC.
  */
@@ -358,7 +380,7 @@ static inline ubyte cmp2pN8(register ubyte exp, register uqword value) {
  */
 __attribute__((hot, const))
 static inline udqword umod2pN8(register sbyte sign, register ubyte exp, register uqword modulus) {
-//    uqword a
+    //    uqword a
 }
 
 /*
@@ -422,7 +444,6 @@ static inline ubyte square_wave_ext_infty(register udqword period, register udqw
  */
 __attribute__((noinline))
 static inline uqword urcpq(register uqword divisor) {
-
 }
 
 #ifndef BIT_MATH_USE_HW_MUL
@@ -485,12 +506,8 @@ static inline udqword umulq(register uqword multiplicand, register uqword multip
  */
 static inline udqword euclid_udivq(register uqword dividend, register uqword divisor) {
     // 64.64 fixed-point register
-   register udqword quotient = dividend;
-   register uqword remainder;
-   
-   
-   
-   
+    register udqword quotient = dividend;
+    register uqword  remainder;
 }
 
 static inline uqword udivq(register uqword dividend, register uqword divisor) {
