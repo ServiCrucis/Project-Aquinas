@@ -115,7 +115,7 @@ static inline void zero(uqword *restrict in) {
 //}
 
 /*
- * Generates a mersenne number and shifts by `identifier` bits relative to the lsb using the `shift` macro function.
+ * Generates a mersenne number and shifts by `offset` bits relative to the lsb using the `shift` macro function.
  */
 __attribute__((hot, const))
 static inline uqword mask(register uqword bits, register qword offset) {

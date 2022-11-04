@@ -175,6 +175,18 @@ static void test_fp_math(void) {
 
 static void test_m_pointer_offset(void) {
     info(__func__, "beginning pointer offset test\n");
+    info(__func__, "m_compute_required_space(address_bits=64, offset_bits=63, elements=0xFFFFFFFFFFFFFFFF): \n");
+    
+    udqword result = m_compute_required_space(64, 63, 0xFFFFFFFFFFFFFFFF);
+    infof(__func__, "\thi 64: %llX\n", (uqword) (result >> 64));
+    infof(__func__, "\tlo 64: %llX\n", (uqword) (result & 0xFFFFFFFFFFFFFFFF));
+    
+    udqword expected = ((udqword)0x3E << 64) | 0xFFFFFFFFFFFFFFC3;
+    
+    if (abs_diff(expected, result) != 0) {
+        warnf(__func__, "pointer offset test failed: expected does not match result:\n");
+        warnf(__func__, "difference: %llX\n", (uqword) abs_diff(expected, result));
+    }
     
 }
 

@@ -43,7 +43,7 @@ void run_tests(void) {
 
 
 int main(int argc, char **argv) {
-    info(__func__, "Running.\n");
+    info(__func__, "Running\n");
     
     run_tests();
     

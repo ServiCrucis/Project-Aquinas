@@ -27,7 +27,7 @@
  *
  *  See https://www.desmos.com/calculator/jjdq9w8ofs
  */
-static inline uqword m_compute_optimal_offset_size(uqword elements) {
+static inline uqword m_compute_optimal_offset_size(uqword const elements) {
     register ubyte const order  = sigbits(elements);
     register ubyte const addend = (order >= 3) + (order >= 6) + (order >= 11) + (order >= 20);
     return floor_log2i(order - addend);
@@ -39,25 +39,42 @@ static inline uqword m_compute_optimal_offset_size(uqword elements) {
  *
  * See https://www.desmos.com/calculator/jjdq9w8ofs
  */
-static inline udqword m_compute_required_space(register ubyte address_bits, register ubyte offset_bits, register uqword elements) {
-    offset_bits &= 0x3Full;
-    address_bits -= offset_bits;
+static inline udqword m_compute_required_space(ubyte address_bits, ubyte offset_bits, uqword elements) {
+    // filter to permit values in [0, 2**7)
+    address_bits &= 0x7f;
+    // filter to permit values in [0, 2**6)
+    offset_bits &= 0x3f;
     
-    // full 65.63 fixed point value
-    register udqword a;
-    // full 65.63 fixed point value
-    register udqword b;
-    // normalize to 65.63 fixed point and then multiply by 2**(-offset_bits)
-    a            = ((udqword) address_bits << 63) >> offset_bits;
-    // normalize to 65.63 fixed point
-    a += (udqword) offset_bits << 63;
-    // reduces the multiply to prevent overflow in a 128-bit multiply
-    address_bits = cnttz((uqword) (a & (udqword)0xEFFFFFFFFFFFFFFF));
-    // multiply by elements
-    b            = (a >> 63) * elements + ((udqword) (((a & (udqword)0xEFFFFFFFFFFFFFFF) >> address_bits) * elements) << address_bits);
-    // compute final ceiled integer result which is at most bitwidth(elements) + 6 = 70
-    // ceil(x) = integer_part(x) + (fraction_part(x) > 0)
-    b = (b >> 63) + ((a & (udqword)0xEFFFFFFFFFFFFFFF) > 0);
+    register udqword a = 0;
+    register udqword b = 0;
+    
+    // b_address - b_offset
+    a = address_bits - offset_bits;
+    // normalize to 64.64 fixed point
+    a <<= 64;
+    // multiply by 2**(-b_offset)
+    a >>= offset_bits;
+    // add b_offset
+    a += (udqword) offset_bits << 64;
+    
+    // multiply integer part by elements
+    b           = (a >> 64) * elements;
+    
+    // filter fraction part
+    a &= 0xFFFFFFFFFFFFFFFF;
+    // compute exponent of the fraction part
+    offset_bits = 65 - sigbits((uqword) a);
+    // reduce fraction part
+    a >>= cnttz((uqword) a);
+    
+    // multiply fraction part by elements
+    a *= ((udqword) elements);
+    
+    // combine integer and fraction parts and put in b
+    b += a >> offset_bits;
+    
+    // compute ceiled integer result
+    b += filter((uqword) a, offset_bits, 0) != 0;
     
     return b;
 }
