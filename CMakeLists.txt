@@ -7,7 +7,7 @@ if (CYGWIN OR MINGW OR MSYS OR UNIX)
     # set C standard to C23 revision for GNU C
     add_compile_options(-std=gnu2x)
     # set warnings
-    add_compile_options(-Wall -Wfatal-errors -Wextra -Wno-unknown-pragmas)
+    add_compile_options(-Wall -Wfatal-errors -Wextra -Wno-unknown-pragmas --param max-unroll-times=4)
     # ubsan (undefined, address, m_object-compare, m_object-subtract, leak)
     #add_compile_options(-fsanitize=undefined -fsanitize=address -fsanitize=m_object-compare -fsanitize=m_object-subtract -fsanitize=leak)
     #add_link_options(-fsanitize=undefined -fsanitize=address -fsanitize=m_object-compare -fsanitize=m_object-subtract -fsanitize=leak)
