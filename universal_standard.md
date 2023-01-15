@@ -8,12 +8,14 @@
    2. Numerical values shall be representable in any user-defined format.
 
 3. Everything must be readable:
-   1. Everything must be sufficiently documented such that one could, from the documentation alone, reproduce the procedure. This includes the interface's documentation which usually immediately precedes a procedure's header `<return-type> <procedure-name>(<arguments>)`, as well as the comments within the body of the procedure. A line or set of lines requires a comment to explain it if the line(s) do not directly model in themselves some particular behavior at that point in execution, for example: `return x << n; // multiply by power of two`.
+   1. Everything must be sufficiently documented such that one could, from the documentation alone, reproduce the procedure. This includes the interface's documentation which usually immediately precedes a procedure's header `<return-type> <procedure-name>(<arguments>)`, as well as the comments within the body of the procedure. A line or set of lines requires a comment to explain it if the line(s) do not directly model in themselves some particular behavior at that point in execution, for example: `return x << n; // 2**n * x`.
    2. Extending the documentation rules, everything must be well-named: a procedure should be named according to its purpose; state construct definitions should be named according to their essences rather than purpose; and state construct utilizations should be defined according to their purpose according to the context. In order to be readable to anyone who understands English sufficiently, it must be free grammatical errors; free of abbrvs. and a.c.r.o.n.y.m.s.; it must be succinct; should be in the imperative mood; free of articles like 'the', 'a', or 'an'; and have no conjunctions. This ensures that anyone who has proficiency of English is capable of reading the code while minimizing the time spent figuring out what the meaning of the name is.
    3. A single standard must be universally adopted amongst all programmers over permitting varied conventions regardless of historical significance:
       1. State construct names shall use UpperCamelCase.
       2. State construct members and utilizations shall use lowerCamelCase.
       3. Behavior construct definitions and pointers shall use snake_case.
+      4. A construct is to be named in the singular unless the construct's essence is plural in nature.
+      5. An array of constructs of the same type is to be named in the plural regardless of element count.
 
 ## Justifications
 _All three rules guarantee optimal productivity by reducing, where possible, all possibilities for human mistakes to occur while facilitating their identification and removal when they occur._
