@@ -19,7 +19,7 @@
 #include "platform.h"
 #include <stdalign.h>
 #include "dynarray.h"
-#include "m_object.h"
+#include "m_context.h"
 
 enum m_object_type {
     STATE    = 0,
@@ -89,7 +89,7 @@ typedef struct memory_interface {
      * As there is no memory resizing in this model, the pointer is guaranteed to not change
      * throughout its lifetime.
      */
-    m_object (*m_reserve)(udqword const bits, enum m_object_type const, enum m_state_type const);
+    m_context (*m_reserve)(udqword const bits, enum m_object_type const, enum m_state_type const);
     
     /*
      * Modifies the nature of read/write operations to the given memory object.
@@ -106,10 +106,10 @@ typedef struct memory_interface {
      * to choose any positive integer address, whereas this restriction present in the C
      * allocator is only due to C's own memory model.
      */
-    void (*m_transmute)(m_object const, enum m_object_type const, enum m_state_type const);
+    void (*m_transmute)(m_context const, enum m_object_type const, enum m_state_type const);
     
     /*
-     * Relinquishes the partition associated with the given m_object. If the m_object
+     * Relinquishes the partition associated with the given m_context. If the m_context
      * given has no associated memory partition, the procedure will terminate the
      * program. In C, if the object's pointer is NULL, the procedure returns immediately.
      *
@@ -122,9 +122,9 @@ typedef struct memory_interface {
      * to choose any positive integer address, whereas this restriction present in the C
      * allocator is only due to C's own memory model.
      *
-     * In C, the m_object's pointer is set to NULL.
+     * In C, the m_context's pointer is set to NULL.
      */
-    void (*m_relinquish)(m_object *const);
+    void (*m_relinquish)(m_context *const);
 } memory_interface;
 
 /*
@@ -151,7 +151,7 @@ typedef struct memory_interface {
  * As there is no memory resizing in this model, the pointer is guaranteed to not change
  * throughout its lifetime.
  */
-m_object m_reserve(udqword const bits, enum m_object_type const, enum m_state_type const);
+m_context m_reserve(udqword const bits, enum m_object_type const, enum m_state_type const);
 
 /*
  * Modifies the nature of read/write operations to the given memory object.
@@ -168,10 +168,10 @@ m_object m_reserve(udqword const bits, enum m_object_type const, enum m_state_ty
  * to choose any positive integer address, whereas this restriction present in the C
  * allocator is only due to C's own memory model.
  */
-void m_transmute(m_object const, enum m_object_type const, enum m_state_type const);
+void m_transmute(m_context const, enum m_object_type const, enum m_state_type const);
 
 /*
- * Relinquishes the partition associated with the given m_object. If the m_object
+ * Relinquishes the partition associated with the given m_context. If the m_context
  * given has no associated memory partition, the procedure will terminate the
  * program. In C, if the object's pointer is NULL, the procedure returns immediately.
  *
@@ -184,9 +184,9 @@ void m_transmute(m_object const, enum m_object_type const, enum m_state_type con
  * to choose any positive integer address, whereas this restriction present in the C
  * allocator is only due to C's own memory model.
  *
- * In C, the m_object's pointer is set to NULL.
+ * In C, the m_context's pointer is set to NULL.
  */
-void m_relinquish(m_object *const);
+void m_relinquish(m_context *const);
 
 // utility functions useful for manipulating memory
 

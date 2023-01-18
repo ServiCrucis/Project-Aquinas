@@ -43,7 +43,7 @@ char *p_get_env(char *var) {
 }
 
 #pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wincompatible-m_object-types"
+#pragma clang diagnostic ignored "-Wincompatible-m_context-types"
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-function-type"
 void *(*p_get_fn(char *module, char *function))() {
@@ -59,7 +59,7 @@ void *(*p_get_fn(char *module, char *function))() {
 #pragma GCC diagnostic pop
 
 #pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wincompatible-m_object-types"
+#pragma clang diagnostic ignored "-Wincompatible-m_context-types"
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-function-type"
 void *(*p_get_fn_offset(char *module, uintptr_t function_offset))() {

@@ -229,13 +229,13 @@ static void test_data_byte_order(void) {
 
 static void test_w32_memory_allocator(void) {
     // defined in m_windows.c
-    extern m_object w32_m_reserve(udqword const bits, enum m_object_type const, enum m_state_type const);
-    extern void w32_m_relinquish(m_object *const);
+    extern m_context w32_m_reserve(udqword const bits, enum m_object_type const, enum m_state_type const);
+    extern void w32_m_relinquish(m_context *const);
     
-    volatile m_object test_state_read           = NULL;
-    volatile m_object test_state_write          = NULL;
-    volatile m_object test_state_read_write     = NULL;
-    volatile m_object test_state_noread_nowrite = NULL;
+    volatile m_context test_state_read           = NULL;
+    volatile m_context test_state_write          = NULL;
+    volatile m_context test_state_read_write     = NULL;
+    volatile m_context test_state_noread_nowrite = NULL;
     
     info(__func__, "beginning Win32 memory allocator test\n");
     info(__func__, "pre-init state:\n");

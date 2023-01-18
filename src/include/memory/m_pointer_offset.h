@@ -16,7 +16,7 @@
 #define PROJECT_AQUINAS_M_POINTER_OFFSET_H
 
 #include "platform.h"
-#include "m_object.h"
+#include "m_context.h"
 #include "bit_math.h"
 
 /*
