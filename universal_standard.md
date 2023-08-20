@@ -1,11 +1,11 @@
 # Universal Polymorphic Proceduralism
 
 ## Practical Principles
-1. Every procedure has one purpose: if it fulfills multiple purposes, the procedure is evil and must be continuously bifurcated until we are left with a set of procedures that have a single purpose. For example: a procedure that adds two numbers of any kind (real, complex, IEEE754 float, etc.) is single-purpose, but a procedure that adds and subtracts is multi-purpose because subtraction has a different end than addition.
+1. Every procedure must fulfill one objective purpose: if it fulfills multiple purposes, the procedure is evil and must be continuously bifurcated until we are left with a set of procedures that have a single purpose. For example: a procedure that adds two numbers of any kind (real, complex, IEEE754 float, etc.) is single-purpose, but a procedure that adds and subtracts is multi-purpose because subtraction has a different end than addition.
 
-2. The data model is thoroughly and fundamentally numerical: everything is a construct, and a construct contains one or more constructs. A construct contains state, behavior, or both, but not neither; and these constructs are constructed via atomic constructs provided by the language itself. All state is numerical in nature, as are the behaviors which can be applied to state.
-   1. The memory model shall consist of memory contexts with numerical addressing in [0, +\infty) and a unique numerical identifier relative to another memory context except for the global memory context which refers to itself as its parent.
-   2. Numerical values shall be representable in any user-defined format.
+2. The data model is thoroughly and fundamentally symbolic: everything is a symbol, and a symbol contains one or more symbols. A symbol contains state, action, or both, but not neither; and these symbols are constructed via base symbols provided by the language itself. All state is symbolic in nature, as are the actions which can be applied to state. For implementation in numerical contexts, the following rules shall apply:
+   1. The memory model shall consist of memory contexts with numerical addressing in [0, N) (N is determined by the objective purpose) and a unique numerical identifier relative to another memory context except for the global memory context which refers to itself as its parent.
+   2. Numerical values shall be representable in any numerical base or user-defined format.
 
 3. Everything must be readable:
    1. Everything must be sufficiently documented such that one could, from the documentation alone, reproduce the procedure. This includes the interface's documentation which usually immediately precedes a procedure's header `<return-type> <procedure-name>(<arguments>)`, as well as the comments within the body of the procedure. A line or set of lines requires a comment to explain it if the line(s) do not directly model in themselves some particular behavior at that point in execution, for example: `return x << n; // 2**n * x`.
