@@ -349,9 +349,10 @@ static void test_w32_memory_allocator(void) {
 
 static void test_w32_stack_allocator(void) {
     info(__func__, "Beginning Win32 ImperfectUnitStackAllocator test\n");
+
     register machine_operand const heap_size = 4096 * bitwidth(ubyte) + 255;
-    w32_stack_create(heap_size);
     ImperfectUnitStackAllocator unit_stack = M_WINDOWS_WIN32_GLOBAL_IMPERFECT_UNIT_STACK_ALLOCATOR;
+    w32_stack_create(heap_size);
 
     infof(__func__, "\tinitial stack end=%llX%llX\n",
             (uqword) (unit_stack.end() >> 64),
@@ -368,7 +369,8 @@ static void test_w32_stack_allocator(void) {
     info(__func__, "\n");
 
     // test allocate_all()
-    m_windows_stack_pointer allocate_all_allocation = unit_stack.allocate_all(4096 * bitwidth(ubyte));
+    register machine_operand const allocate_all_allocation_size = 4096 * bitwidth(ubyte);
+    m_windows_stack_pointer allocate_all_allocation = unit_stack.allocate_all(allocate_all_allocation_size);
     infof(__func__, "allocate_all() succeeded; allocate_all_allocation=%llX%llX\n",
           (uqword) (allocate_all_allocation >> 64),
           (uqword) (allocate_all_allocation));
@@ -396,7 +398,7 @@ static void test_w32_stack_allocator(void) {
 
     // test deallocate_all()
     info(__func__, "\tdeallocate_all()\n");
-    unit_stack.deallocate_all(allocate_allocation, allocate_all_allocation);
+    unit_stack.deallocate_all(allocate_all_allocation, allocate_all_allocation + allocate_all_allocation_size);
     infof(__func__, "\tstack end=%llX%llX\n",
           (uqword) (unit_stack.end() >> 64),
           (uqword) (unit_stack.end()));
@@ -405,14 +407,19 @@ static void test_w32_stack_allocator(void) {
 
     info(__func__, "Attempting controlled failure condition:\n");
     // this should fail by allocating just 1 greater than the size of the heap
-    m_windows_stack_pointer should_fail_allocation = unit_stack.allocate_all(heap_size + 1);
+    register machine_operand const should_fail_allocation_size = heap_size + 1;
+    m_windows_stack_pointer should_fail_allocation = unit_stack.allocate_all(should_fail_allocation_size);
     // if the above doesn't fail, then something should happen here:
-    unit_stack.deallocate_all(unit_stack.start(), should_fail_allocation);
+    unit_stack.deallocate_all(should_fail_allocation, should_fail_allocation + should_fail_allocation_size);
 
     info(__func__, "ImperfectUnitStackAllocator test complete\n");
 
     // final cleanup
     w32_stack_destroy();
+}
+
+static void test_ImperfectUnitAllocator(void) {
+
 }
 
 #pragma clang diagnostic pop

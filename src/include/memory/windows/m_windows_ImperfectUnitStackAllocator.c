@@ -14,7 +14,6 @@
 #include <errhandlingapi.h>
 #include <winerror.h>
 #include "m_windows_ImperfectUnitStackAllocator.h"
-#include "platform.h"
 #include "bit_math.h"
 
 typedef struct {
@@ -59,8 +58,7 @@ static inline m_windows_stack_pointer m_windows_compute_pointer_from_offset(udqw
     return (m_windows_stack_pointer) ((((udqword) m_windows_stack_info_offset()) << bitwidth(ubyte)) + bit_offset);
 }
 
-//__attribute__((always_inline))
-static uqword local_compute_required_bytes_for_stack(udqword program_lifetime_bit_quantity) {
+static inline uqword local_compute_required_bytes_for_stack(udqword program_lifetime_bit_quantity) {
     uqword const allocation_count_size = sizeof( ((m_windows_stack_info*) 0)->allocation_count_part0 );
     uqword const required_bytes_integer_part = (program_lifetime_bit_quantity >> floor_log2i(bitwidth(ubyte)));
     uqword const required_bytes_fraction_part = filter(program_lifetime_bit_quantity, floor_log2i(bitwidth(ubyte)), 0);
@@ -161,10 +159,12 @@ m_windows_stack_pointer w32_stack_allocate_all(udqword const bits) {
         fatalf(__func__, "M_WINDOWS_PAGING_STATEHOLDS_STACK is NULL; unable to allocate\n");
 
     w32_stack_ensure_sufficient_space(bits);
+    // compute stack pointer of first allocated unit
+    register udqword const first_element = w32_stack_end();
     // add bits onto allocation count
     m_windows_stack_info_offset()->allocation_count_part0 += bits;
-    // compute stack pointer and return it
-    return w32_stack_end();
+
+    return first_element;
 }
 
 void w32_stack_deallocate() {
