@@ -18,7 +18,7 @@
 #include "bit_math.h"
 
 typedef struct {
-    udqword actually_allocated_bits;
+    udqword allocatable_bits;
 } m_windows_selflike_page_list_info;
 
 typedef struct {
@@ -67,6 +67,9 @@ static uqword local_compute_required_bytes_for_stack(udqword program_lifetime_bi
     return  allocation_count_size + required_bytes_integer_part + (0 != required_bytes_fraction_part);
 }
 
+m_windows_stack_pointer w32_stack_start(void);
+m_windows_stack_pointer w32_stack_end(void);
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wshift-count-overflow"
 void w32_stack_create(udqword program_lifetime_bit_quantity) {
@@ -109,8 +112,10 @@ void w32_stack_create(udqword program_lifetime_bit_quantity) {
             fatalf(__func__, "Failed to commit first page for stack: GetLastError()=%X\n", last_error);
         }
 
+        // restore logical heap size
+        program_lifetime_bit_quantity -= bitwidth(m_windows_selflike_page_list_info) + bitwidth(m_windows_stack_info);
         // write program_lifetime_bit_quantity to first address
-        m_windows_selflike_page_list_info_offset()->actually_allocated_bits = program_lifetime_bit_quantity;
+        m_windows_selflike_page_list_info_offset()->allocatable_bits = program_lifetime_bit_quantity;
         // initialize number of stack allocations to 0
         m_windows_stack_info_offset()->allocation_count_part0 = (udqword) 0;
         // initialization successful
@@ -129,9 +134,9 @@ void w32_stack_destroy(void) {
         fatalf(__func__, "M_WINDOWS_PAGING_STATEHOLDS_STACK is NULL");
 }
 
-void w32_stack_ensure_sufficient_space(udqword bits_to_allocate) {
+static inline void w32_stack_ensure_sufficient_space(udqword bits_to_allocate) {
     if ((m_windows_stack_info_offset()->allocation_count_part0 + bits_to_allocate) >
-        m_windows_selflike_page_list_info_offset()->actually_allocated_bits
+        m_windows_selflike_page_list_info_offset()->allocatable_bits
             ) {
         fatalf(__func__, "insufficient space to allocate %llX%llX bits\n",
                (uqword)(bits_to_allocate >> 64),
@@ -148,7 +153,7 @@ m_windows_stack_pointer w32_stack_allocate(void) {
     // increment allocation count
     m_windows_stack_info_offset()->allocation_count_part0++;
     // compute stack pointer and return it
-    return m_windows_compute_pointer_from_offset(m_windows_stack_info_offset()->allocation_count_part0);
+    return w32_stack_end();
 }
 
 m_windows_stack_pointer w32_stack_allocate_all(udqword const bits) {
@@ -159,34 +164,42 @@ m_windows_stack_pointer w32_stack_allocate_all(udqword const bits) {
     // add bits onto allocation count
     m_windows_stack_info_offset()->allocation_count_part0 += bits;
     // compute stack pointer and return it
-    return m_windows_compute_pointer_from_offset(m_windows_stack_info_offset()->allocation_count_part0);
+    return w32_stack_end();
 }
 
 void w32_stack_deallocate() {
     if (!M_WINDOWS_PAGING_STATEHOLDS_STACK)
         fatalf(__func__, "M_WINDOWS_PAGING_STATEHOLDS_STACK is NULL; unable to deallocate\n");
-
-//    // check if the given pointer points to the last allocation on the stack
-//    m_windows_stack_pointer last_allocation = m_windows_compute_pointer_from_offset(m_windows_stack_info_offset()->allocation_count_part0);
-//    if (last_allocation != allocation)
-//        fatalf(__func__, "the allocation pointer is not the head of the stack; unable to deallocate\n");
-
+    // check that allocations exist first
+    if (m_windows_stack_info_offset()->allocation_count_part0 == 0)
+        fatalf(__func__, "nothing is allocated in the internal stack allocator; unable to deallocate\n");
     // deallocate the allocation
     m_windows_stack_info_offset()->allocation_count_part0 -= 1;
 }
 
-void w32_stack_deallocate_all(m_windows_stack_pointer starting_allocation, m_windows_stack_pointer most_recent_allocation) {
+void w32_stack_deallocate_all(m_windows_stack_pointer from_allocation, m_windows_stack_pointer most_recent_allocation) {
     if (!M_WINDOWS_PAGING_STATEHOLDS_STACK)
         fatalf(__func__, "M_WINDOWS_PAGING_STATEHOLDS_STACK is NULL; unable to deallocate\n");
+    // check that allocations exist first
+    if (m_windows_stack_info_offset()->allocation_count_part0 == 0)
+        fatalf(__func__, "nothing is allocated in the internal stack allocator; unable to deallocate\n");
     // verify that most_recent_allocation points to the last allocation on the stack
-    m_windows_stack_pointer last_allocation = m_windows_compute_pointer_from_offset(m_windows_stack_info_offset()->allocation_count_part0);
+    m_windows_stack_pointer last_allocation = w32_stack_end();
     if (last_allocation != most_recent_allocation)
-        fatalf(__func__, "most_recent_allocation is not the head of the stack; unable to deallocate\n");
-    // verify that starting_allocation is in the allocation bounds for the stack itself
-    if ((starting_allocation <= m_windows_compute_pointer_from_offset(0))
+        fatalf(__func__, "most_recent_allocation is not the end of the stack; unable to deallocate\n");
+    // verify that from_allocation is in the allocation bounds for the stack itself
+    if ((from_allocation <= m_windows_compute_pointer_from_offset(0))
         ||
-        (starting_allocation > last_allocation))
-        fatalf(__func__, "starting_allocation was not allocated in the allocation boundary of the internal stack allocator\n");
+        (from_allocation > last_allocation))
+        fatalf(__func__, "from_allocation was not allocated in the allocation boundary of the internal stack allocator\n");
     // deallocate the allocation
-    m_windows_stack_info_offset()->allocation_count_part0 -= abs_diff(m_windows_stack_info_offset()->allocation_count_part0, starting_allocation);
+    m_windows_stack_info_offset()->allocation_count_part0 -= abs_diff(last_allocation, from_allocation) + 1;
+}
+
+m_windows_stack_pointer w32_stack_start(void) {
+    return m_windows_compute_pointer_from_offset(1);
+}
+
+m_windows_stack_pointer w32_stack_end(void) {
+    return m_windows_compute_pointer_from_offset(m_windows_stack_info_offset()->allocation_count_part0);
 }

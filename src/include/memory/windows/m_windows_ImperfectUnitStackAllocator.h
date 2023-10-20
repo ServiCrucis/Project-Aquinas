@@ -7,6 +7,8 @@
  * License: See LICENSE.txt
  *
  * Defines the ImperfectUnitStackAllocator implementation for Win32.
+ *
+ * See documentation/Allocator/ImperfectAllocator/ImperfectUnitAllocator for documentation.
  */
 
 #ifndef PROJECT_AQUINAS_M_WINDOWS_IMPERFECTUNITSTACKALLOCATOR_H
@@ -21,14 +23,20 @@ typedef struct {
     m_windows_stack_pointer (*allocate_all)(udqword bits);
     void (*deallocate)();
     void (*deallocate_all)(m_windows_stack_pointer from, m_windows_stack_pointer to);
+
+    m_windows_stack_pointer (*start)(void);
+    m_windows_stack_pointer (*end)(void);
 } ImperfectUnitStackAllocator;
 
 void w32_stack_create(udqword program_lifetime_bit_quantity);
 void w32_stack_destroy(void);
+m_windows_stack_pointer w32_stack_start(void);
+m_windows_stack_pointer w32_stack_end(void);
 
 m_windows_stack_pointer w32_stack_allocate(void);
 m_windows_stack_pointer w32_stack_allocate_all(udqword const bits);
 void w32_stack_deallocate();
-void w32_stack_deallocate_all(m_windows_stack_pointer from, m_windows_stack_pointer to);
+void w32_stack_deallocate_all(m_windows_stack_pointer from_allocation, m_windows_stack_pointer to);
+
 
 #endif //PROJECT_AQUINAS_M_WINDOWS_IMPERFECTUNITSTACKALLOCATOR_H

@@ -26,7 +26,9 @@ ImperfectUnitStackAllocator const M_WINDOWS_WIN32_GLOBAL_IMPERFECT_UNIT_STACK_AL
     allocate: &w32_stack_allocate,
     allocate_all: &w32_stack_allocate_all,
     deallocate: &w32_stack_deallocate,
-    deallocate_all: &w32_stack_deallocate_all
+    deallocate_all: &w32_stack_deallocate_all,
+    start: &w32_stack_start,
+    end: &w32_stack_end
 };
 
 ImperfectUnitAllocator const M_WINDOWS_WIN32_GLOBAL_PERFECT_UNIT_ALLOCATOR = {
