@@ -14,14 +14,43 @@ Well that would be correcting your software's definition;
 and that, for the most part, is on you! It'll be facilitated
 by the project of course&mdash;don't worry.
 
-Demo you ask? Either 
-before August 2023 ends, or 
-September 2023, barring life happening, there will be a
-metacompiler demo! It will showcase the most basic features
-of the metacompiler and programming language up to its most
-advanced. The execution environment is a bit more of a pain
-and will come later, so for now, we'll use what already exists.
+Demo you ask? Well it's coming out when it's coming out 
+I'm afraid. My life is too insane right now for any
+consistent schedules and time estimates. In other words:
+it's coming out on God's time.
 
-Discussion & Hangouts! 
+# Demo Progress as of October 19th, 2023:
+
+## What remains before a demo can be released:
+
+### Allocators (foundation of all state):
+
+1. [x] ~~ImperfectStackUnitAllocator~~
+2. [ ] ImperfectUnitAllocator (uses ImperfectStackUnitAllocator, ExistenceTree)
+3. [ ] ImperfectCompositeAllocator (uses ImperfectUnitAllocator, ExistenceTree)
+4. [ ] PerfectCompositeAllocator (uses ImperfectCompositeAllocator, PerfectMap)
+
+### State Constructs:
+
+1. [ ] BinaryTree
+2. [ ] ExistenceTree (uses BinaryTree)
+3. [ ] DifferenceTree (uses BinaryTree)
+4. [ ] Map, PerfectMap (uses DifferenceTree)
+5. [ ] ConversionTree (uses Map)
+6. [ ] Idea (a definition entry in a Dictionary)
+7. [ ] Object (an instance of a being extending an Idea)
+8. [ ] essential ideas (foundation of the Master Dictionary)
+9. [ ] MasterDictionary and Dictionary
+10. [ ] Language (Idea)
+11. [ ] Metalanguage (Idea, species of Language)
+12. [ ] ProgrammingLanguage (Idea, species of Language)
+
+### Executors:
+
+1. [ ] Metacompiler (uses everything above)
+
+
+
+# Discussion & Hangouts! 
 (Complete degenerates will not be tolerated 
 and promptly banned!): https://discord.gg/9HzjW85
