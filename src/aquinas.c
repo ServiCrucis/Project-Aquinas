@@ -38,13 +38,14 @@ void run_tests(void) {
 //    test_fp_math();
 //    test_data_byte_order();
 //    test_w32_memory_allocator();
-    test_m_pointer_offset();
+//    test_m_pointer_offset();
+    test_w32_stack_allocator();
 }
 
 
 int main(int argc, char **argv) {
     info(__func__, "Running\n");
-    
+#define PROJECT_AQUINAS_TEST_WIN32_MEMORY_ALLOCATOR 0
     run_tests();
     
     return R_SUCCESS;
@@ -66,16 +67,25 @@ int main(int argc, char **argv) {
 //[0110][1110]
 //
 //// binary transform (maps two arbitrary values to an order):
-//0110 = floor(in * 2**(-N));
-//1110 = floor(in * 2**(-N));
+//0110 -> 0: 0110 >> 3 = floor(0110 * 2**(-shift_offset));
+//1110 -> 1: 1110 >> 3 = floor(1110 * 2**(-shift_offset));
 //
 //// arbitrary order normalization: normalize x from order 2**(floor(lg(x))+1) to 2**m
 //// bintree compression:
-//// 1. determine order of values: lg of largest value in the set.
-//// 2. determine order of number of values: lg of number of values in the set.
-//// 3. create binary tree of binary transforms as described above.
+//// 1. determine binary order of values: lg of largest value in the set.
+//// 2. determine binary order of number of values: lg of number of values in the set.
+//// 3. create binary tree of binary transforms using transform described above
 //
-//// binary_tree
+/* bit analysis algorithm for sameness and difference along bit columns for prefix tree construction:
+ * 1110
+ * xor -> 1000
+ * 0110
+ *
+ * 1111
+ * xor -> 1111
+ * 0000
+ */
+
 //
 //// 0: 2^0 nodes
 //// 1: 2^1 nodes
