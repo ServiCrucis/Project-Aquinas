@@ -30,7 +30,12 @@ typedef struct pair {
 /*
  * Gets the minimum number of bits required to represent the given type on the native architecture
  */
-#define bitwidth(Type) (sizeof(Type) * MIN_BITS)
+#define bitwidth(Type) ( sizeof(Type) * MIN_BITS )
+
+/*
+ * Gets the largest value holdable by the given Type
+ */
+#define max_value(Type) ( (Type) ( ((uintmax_t)0) - (uintmax_t)1 ) )
 
 /*
  * Gets the number of bits for a given array

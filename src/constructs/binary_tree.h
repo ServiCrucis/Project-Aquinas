@@ -11,7 +11,6 @@
 #ifndef PROJECT_AQUINAS_BINARY_TREE_H
 #define PROJECT_AQUINAS_BINARY_TREE_H
 
-#include "memory/m_object.h"
 #include "memory/m_pointer_offset.h"
 
 typedef struct binary_tree_member {
