@@ -6,7 +6,7 @@
  * Author: Andrew Porter [<caritasdedeus@gmail.com>](mailto:caritasdedeus@gmail.com)
  * License: See LICENSE.txt
  *
- * Implements the memory model on the Windows platform (Microsoft Windows).
+ * Implements the state model on the Windows platform (Microsoft Windows).
  * Where possible, the Win32 API is used directly.
  *
  */
@@ -122,11 +122,11 @@ PerfectAllocator const M_WINDOWS_WIN32_GLOBAL_IMPERFECT_ALLOCATOR = {
 //    DWORD page_protections = 0;
 //    MEMORY_BASIC_INFORMATION *m_info = alloca(sizeof(*m_info));
 //
-//    // used to get memory size (RegionSize) and to determine object type (
+//    // used to get state size (RegionSize) and to determine object type (
 //    VirtualQuery(object, (PMEMORY_BASIC_INFORMATION) m_info, sizeof(*m_info));
 //
 //    if (!m_info->AllocationProtect)
-//        fatalf(__func__, "memory cannot be transmuted from this context (no access); "
+//        fatalf(__func__, "state cannot be transmuted from this context (no access); "
 //                         "allocation base: %p\n", m_info->AllocationBase);
 //
 //    switch (state_type) {

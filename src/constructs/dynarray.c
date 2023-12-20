@@ -62,7 +62,7 @@ dynarray *dynarray_resize(dynarray *restrict array, uint32_t size) {
     array = realloc(array, size);
     
     if (!array)
-        fatalf(__func__, "failed to reallocate memory to resize array\n");
+        fatalf(__func__, "failed to reallocate state to resize array\n");
     
     array->data_length = size;
     return array;

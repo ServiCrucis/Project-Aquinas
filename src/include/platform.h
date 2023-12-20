@@ -1177,13 +1177,13 @@
   #define ARCHITECTURE ARCH_X86_32
   #define ARCHITECTURE_NAME "Intel x86"
   #define ARCH_BYTE_ORDER BYTE_ORDER_LO_TO_HI
-  typedef uint_fast32_t machine_operand;
+  typedef uint_fast32_t machine_workeld;
 #endif
 
 #if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64) || defined(_M_AMD64)
   #define ARCH ARCH_AMD64
   #define ARCH_BYTE_ORDER BYTE_ORDER_LO_TO_HI
-  typedef uint_fast64_t machine_operand;
+  typedef uint_fast64_t machine_workeld;
 #endif
 
 #if defined (__arm__) || defined(__thumb__) || defined(__TARGET_ARCH_ARM) || defined(__TARGET_ARCH_THUMB) || defined(_ARM) || defined(_M_ARM) || defined(_M_ARMT) || defined(__arm)
@@ -1192,7 +1192,7 @@
   #define ARCHITECTURE_NAME "ARM"
   #define ARCH_BYTE_ORDER BYTE_ORDER_INVARIANT
   #define ARCH_DEFAULT_BYTE_ORDER BYTE_ORDER_LO_TO_HI
-  typedef uint_fast32_t machine_operand;
+  typedef uint_fast32_t machine_workeld;
 #endif
 
 #if defined(__aarch64__)
@@ -1201,7 +1201,7 @@
   #define ARCHITECTURE_NAME "ARM64"
   #define ARCH_BYTE_ORDER BYTE_ORDER_INVARIANT
   #define ARCH_DEFAULT_BYTE_ORDER BYTE_ORDER_LO_TO_HI
-  typedef uint_fast64_t machine_operand;
+  typedef uint_fast64_t machine_workeld;
 #endif
 
 #if defined(__ia64__) || defined(_IA64) || defined(__IA64__) || defined(__ia64) || defined(_M_IA64) || defined (__itanium__)
@@ -1209,7 +1209,7 @@
   #define ARCHITECTURE_NAME "Intel Itanium"
   #define ARCH_BYTE_ORDER BYTE_ORDER_INVARIANT
   #define ARCH_DEFAULT_BYTE_ORDER BYTE_ORDER_LO_TO_HI
-  typedef uint_fast64_t machine_operand;
+  typedef uint_fast64_t machine_workeld;
 #endif
 
 #if defined(__powerpc) || defined(__powerpc__) || defined(__powerpc64__) || defined(__POWERPC__) || defined(__ppc__) || defined(__ppc64__) || defined(__PPC__) || defined(__PPC64__) || defined(_ARCH_PPC) || defined(_ARCH_PPC64) || defined(_M_PPC) || defined(__PCGEKKO__) || defined(__PPCBROADWAY__) || defined(_XENON) || defined(__ppc)
@@ -1218,9 +1218,9 @@
   #define ARCH_BYTE_ORDER BYTE_ORDER_INVARIANT
   #define ARCH_DEFAULT_BYTE_ORDER BYTE_ORDER_HI_TO_LO
 #if defined(__powerpc64__) || defined(__ppc64__) || defined(__PPC64__) || defined(_ARCH_PPC64)
-  typedef uint_fast64_t machine_operand;
+  typedef uint_fast64_t machine_workeld;
 #else
-  typedef uint_fast32_t machine_operand;
+  typedef uint_fast32_t machine_workeld;
 #endif
 #endif
 
@@ -1229,19 +1229,19 @@
   #if defined(_R3000)
     #define ARCHITECTURE_VARIANT ARCH_MIPS_R3000
     #define ARCHITECTURE_NAME "MIPS R3000"
-    typedef uint_fast32_t machine_operand;
+    typedef uint_fast32_t machine_workeld;
   #elif defined(_R4000)
     #define ARCHITECTURE_VARIANT ARCH_MIPS_R4000
     #define ARCHITECTURE_NAME "MIPS R4000"
-    typedef uint_fast64_t machine_operand;
+    typedef uint_fast64_t machine_workeld;
   #elif defined(_R5900)
     #define ARCHITECTURE_VARIANT ARCH_MIPS_R5900
     #define ARCHITECTURE_NAME "MIPS R5900"
-    typedef uint_fast64_t machine_operand;
+    typedef uint_fast64_t machine_workeld;
   #endif
   #ifndef ARCHITECTURE_NAME
     #define ARCHITECTURE_NAME "MIPS"
-    typedef uint_fast32_t machine_operand;
+    typedef uint_fast32_t machine_workeld;
   #endif
   #define ARCH_BYTE_ORDER BYTE_ORDER_INVARIANT
   #define ARCH_DEFAULT_BYTE_ORDER BYTE_ORDER_LO_TO_HI
@@ -1251,7 +1251,7 @@
   #define ARCHITECTURE ARCH_HPPA_RISC
   #define ARCHITECTURE_NAME "HP/PA RISC"
   #define ARCH_BYTE_ORDER BYTE_ORDER_HI_TO_LO
-  typedef uint_fast32_t machine_operand;
+  typedef uint_fast32_t machine_workeld;
 #endif
 
 #if defined(__alpha__) || defined(__alpha) || defined(_M_ALPHA)
@@ -1259,28 +1259,28 @@
   #define ARCHITECTURE_NAME "Alpha AXP"
   #define ARCH_BYTE_ORDER BYTE_ORDER_INVARIANT
   #define ARCH_DEFAULT_BYTE_ORDER BYTE_ORDER_LITTLE_ENDIAN
-  typedef uint_fast64_t machine_operand;
+  typedef uint_fast64_t machine_workeld;
 #endif
 
 #if defined(__convex__)
   #define ARCHITECTURE ARCH_CONVEX
   #define ARCHITECTURE_NAME "Convex"
   #define ARCH_BYTE_ORDER BYTE_ORDER_UNKNOWN
-  typedef uint_fast64_t machine_operand;
+  typedef uint_fast64_t machine_workeld;
 #endif
 
 #if defined(__epiphany__)
   #define ARCHITECTURE ARCH_EPIPHANY
   #define ARCHITECTURE_NAME "Epiphany"
   #define ARCH_BYTE_ORDER BYTE_ORDER_UNKNOWN
-  typedef uint_fast32_t machine_operand;
+  typedef uint_fast32_t machine_workeld;
 #endif
 
 #if defined (__bfin) || defined(__BFIN__)
   #define ARCHITECTURE ARCH_BLACKFIN
   #define ARCHITECTURE_NAME "Blackfin"
   #define ARCH_BYTE_ORDER BYTE_ORDER_LO_TO_HI
-  typedef uint_fast16_t machine_operand;
+  typedef uint_fast16_t machine_workeld;
 #endif
 
 #if defined(__sparc__) || defined(__sparc)
@@ -1288,15 +1288,15 @@
   #if defined(__sparc_v8__) || defined(__sparcv8)
     #define ARCHITECTURE_VARIANT ARCH_SPARC_V8
     #define ARCHITECTURE_NAME "SPARC v8"
-    typedef uint_fast32_t machine_operand;
+    typedef uint_fast32_t machine_workeld;
   #elif defined(__sparc_v9__) || defined(__sparcv9)
     #define ARCHITECTURE_VARIANT ARCH_SPARC_V9
     #define ARCHITECTURE_NAME "SPARC v9"
-    typedef uint_fast64_t machine_operand;
+    typedef uint_fast64_t machine_workeld;
   #endif
   #ifndef ARCHITECTURE_NAME
     #define ARCHITECTURE_NAME "SPARC"
-    typedef uint_fast32_t machine_operand;
+    typedef uint_fast32_t machine_workeld;
   #endif
   #define ARCH_BYTE_ORDER BYTE_ORDER_INVARIANT
   #define ARCH_DEFAULT_BYTE_ORDER BYTE_ORDER_HI_TO_LO
@@ -1307,9 +1307,9 @@
   #define ARCHITECTURE_NAME "SystemZ"
   #define ARCH_BYTE_ORDER BYTE_ORDER_UNKNOWN
 #if defined(__370__) || defined(__THW_370__) || defined(__s390__) || defined(__s390x__)
-    typedef uint_fast32_t machine_operand;
+    typedef uint_fast32_t machine_workeld;
 #elif defined(__zarch__) || defined(__SYSC_ZARCH__)
-    typedef uint_fast64_t machine_operand;
+    typedef uint_fast64_t machine_workeld;
 #endif
 #endif
 
@@ -1318,28 +1318,28 @@
   #if defined(__sh1__)
     #define ARCHITECTURE_VARIANT ARCH_SUPERH1
     #define ARCHITECTURE_NAME "SuperH v1"
-    typedef uint_fast32_t machine_operand;
+    typedef uint_fast32_t machine_workeld;
   #elif defined(__sh2__)
     #define ARCHITECTURE_VARIANT ARCH_SUPERH2
     #define ARCHITECTURE_NAME "SuperH v2"
-    typedef uint_fast32_t machine_operand;
+    typedef uint_fast32_t machine_workeld;
   #elif defined(__sh3__) || defined(__SH3__)
     #define ARCHITECTURE_VARIANT ARCH_SUPERH3
     #define ARCHITECTURE_NAME "SuperH v3"
-    typedef uint_fast32_t machine_operand;
+    typedef uint_fast32_t machine_workeld;
   #elif defined(__SH4__)
     #define ARCHITECTURE_VARIANT ARCH_SUPERH4
     #define ARCHITECTURE_NAME "SuperH v4"
-    typedef uint_fast32_t machine_operand;
+    typedef uint_fast32_t machine_workeld;
   #elif defined(__SH5__)
     #define ARCHITECTURE_VARIANT ARCH_SUPERH5
     #define ARCHITECTURE_NAME "SuperH v5"
-    typedef uint_fast64_t machine_operand;
+    typedef uint_fast64_t machine_workeld;
   #endif
 
   #ifndef ARCHITECTURE_NAME
     #define ARCHITECTURE_NAME "SuperH"
-    typedef uint_fast32_t machine_operand;
+    typedef uint_fast32_t machine_workeld;
   #endif
 
   #define ARCH_BYTE_ORDER BYTE_ORDER_INVARIANT
@@ -1351,23 +1351,23 @@
   #if defined(_ARCH_PWR)
     #define ARCHITECTURE_VARIANT ARCH_RS6000_PWR
     #define ARCHITECTURE_NAME "RS/6000 Power 1"
-    typedef uint_fast32_t machine_operand;
+    typedef uint_fast32_t machine_workeld;
   #elif defined(_ARCH_PWR2)
     #define ARCHITECTURE_VARIANT ARCH_RS6000_PWR2
     #define ARCHITECTURE_NAME "RS/6000 Power 2"
-    typedef uint_fast32_t machine_operand;
+    typedef uint_fast32_t machine_workeld;
   #elif defined(_ARCH_PWR3)
     #define ARCHITECTURE_VARIANT ARCH_RS6000_PWR3
     #define ARCHITECTURE_NAME "RS/6000 Power 3"
-    typedef uint_fast64_t machine_operand;
+    typedef uint_fast64_t machine_workeld;
   #elif defined(_ARCH_PWR4)
     #define ARCHITECTURE_VARIANT ARCH_RS6000_PWR4
     #define ARCHITECTURE_NAME "RS/6000 Power 4"
-    typedef uint_fast64_t machine_operand;
+    typedef uint_fast64_t machine_workeld;
   #endif
   #ifndef ARCHITECTURE_NAME
     #define ARCHITECTURE_NAME "RS/6000"
-    typedef uint_fast32_t machine_operand;
+    typedef uint_fast32_t machine_workeld;
   #endif
 
   #define ARCH_BYTE_ORDER BYTE_ORDER_UNKNOWN
@@ -1378,27 +1378,27 @@
   #if defined(__mc68010__)
     #define ARCHITECTURE_VARIANT ARCH_MOTOROLA_68010
     #define ARCHITECTURE_NAME "Motorola 68010"
-    typedef uint_fast32_t machine_operand;
+    typedef uint_fast32_t machine_workeld;
   #elif defined(__mc68020__) || defined(__MC68020__)
     #define ARCHITECTURE_VARIANT ARCH_MOTOROLA_68020
     #define ARCHITECTURE_NAME "Motorola 68020"
-    typedef uint_fast32_t machine_operand;
+    typedef uint_fast32_t machine_workeld;
   #elif defined(__mc68030__) || defined(__MC68030__)
     #define ARCHITECTURE_VARIANT ARCH_MOTOROLA_68030
     #define ARCHITECTURE_NAME "Motorola 68030"
-    typedef uint_fast32_t machine_operand;
+    typedef uint_fast32_t machine_workeld;
   #elif defined(__mc68040__)
     #define ARCHITECTURE_VARIANT ARCH_MOTOROLA_68040
     #define ARCHITECTURE_NAME "Motorola 68040"
-    typedef uint_fast32_t machine_operand;
+    typedef uint_fast32_t machine_workeld;
   #elif defined(__mc68050__)
     #define ARCHITECTURE_VARIANT ARCH_MOTOROLA_68060
     #define ARCHITECTURE_NAME "Motorola 68060"
-    typedef uint_fast32_t machine_operand;
+    typedef uint_fast32_t machine_workeld;
   #endif
   #ifndef ARCHITECTURE_NAME
     #define ARCHITECTURE_NAME "Motorola 68000"
-    typedef uint_fast32_t machine_operand;
+    typedef uint_fast32_t machine_workeld;
   #endif
 
   #define ARCH_BYTE_ORDER BYTE_ORDER_HI_TO_LO
@@ -1409,47 +1409,47 @@
   #if defined(_TMS320C28X)
     #define ARCHITECTURE_VARIANT ARCH_TMS320_C2800
     #define ARCHITECTURE_NAME "TMS320 C2800"
-    typedef uint_fast32_t machine_operand;
+    typedef uint_fast32_t machine_workeld;
   #elif defined(_TMS320C5XX)
     #define ARCHITECTURE_VARIANT ARCH_TMS320_C5400
     #define ARCHITECTURE_NAME "TMS320 C5400"
-    typedef uint_fast16_t machine_operand;
+    typedef uint_fast16_t machine_workeld;
   #elif defined(__TMS320C55X__)
     #define ARCHITECTURE_VARIANT ARCH_TMS320_C5500
     #define ARCHITECTURE_NAME "TMS320 C5500"
-    typedef uint_fast16_t machine_operand;
+    typedef uint_fast16_t machine_workeld;
   #elif defined(_TMS320C6200)
     #define ARCHITECTURE_VARIANT ARCH_TMS320_C6200
     #define ARCHITECTURE_NAME "TMS320 C6200"
-    typedef uint_fast16_t machine_operand;
+    typedef uint_fast16_t machine_workeld;
   #elif defined(_TMS320C6400)
     #define ARCHITECTURE_VARIANT ARCH_TMS320_C6400
     #define ARCHITECTURE_NAME "TMS320 C6400"
-    typedef uint_fast16_t machine_operand;
+    typedef uint_fast16_t machine_workeld;
   #elif defined(_TMS320C6400_PLUS)
     #define ARCHITECTURE_VARIANT ARCH_TMS320_C6400_PLUS
     #define ARCHITECTURE_NAME "TMS320 C6400+"
-    typedef uint_fast16_t machine_operand;
+    typedef uint_fast16_t machine_workeld;
   #elif defined(_TMS320C6600)
     #define ARCHITECTURE_VARIANT ARCH_TMS320_C6600
     #define ARCHITECTURE_NAME "TMS320 C6600"
-    typedef uint_fast16_t machine_operand;
+    typedef uint_fast16_t machine_workeld;
   #elif defined(_TMS320C6700)
     #define ARCHITECTURE_VARIANT ARCH_TMS320_C6700
     #define ARCHITECTURE_NAME "TMS320 C6700"
-    typedef uint_fast16_t machine_operand;
+    typedef uint_fast16_t machine_workeld;
   #elif defined(_TMS320C6700_PLUS)
     #define ARCHITECTURE_VARIANT ARCH_TMS320_C6700_PLUS
     #define ARCHITECTURE_NAME "TMS320 C6700+"
-    typedef uint_fast16_t machine_operand;
+    typedef uint_fast16_t machine_workeld;
   #elif defined(_TMS320C6740)
     #define ARCHITECTURE_VARIANT ARCH_TMS320_C6740
     #define ARCHITECTURE_NAME "TMS320 C6740"
-    typedef uint_fast16_t machine_operand;
+    typedef uint_fast16_t machine_workeld;
   #endif
   #ifndef ARCHITECTURE_NAME
     #define ARCHITECTURE_NAME "TMS320 C????"
-    typedef uint_fast16_t machine_operand;
+    typedef uint_fast16_t machine_workeld;
   #endif
 
   #define ARCH_BYTE_ORDER BYTE_ORDER_UNKNOWN
@@ -1459,14 +1459,14 @@
   #define ARCHITECTURE ARCH_TMS470
   #define ARCHITECTURE_NAME "TMS470"
   #define ARCH_BYTE_ORDER BYTE_ORDER_HI_TO_LO
-  typedef uint_fast32_t machine_operand;
+  typedef uint_fast32_t machine_workeld;
 #endif
 
 #if defined(pyr) || defined(__pyr) || defined(__pyr__)
   #define ARCHITECTURE ARCH_PYRAMID_9810
   #define ARCHITECTURE_NAME "Pyramid 9810"
   #define ARCH_BYTE_ORDER BYTE_ORDER_UNKNOWN
-  typedef uint_fast32_t machine_operand;
+  typedef uint_fast32_t machine_workeld;
 #endif
 
 // RISC-V detection
@@ -1475,7 +1475,7 @@
   #define ARCHITECTURE_NAME "RISC-V"
   #define ARCH_BYTE_ORDER BYTE_ORDER_INVARIANT
   #define ARCH_DEFAULT_BYTE_ORDER BYTE_ORDER_LO_TO_HI
-  typedef uintmax_t machine_operand;
+  typedef uintmax_t machine_workeld;
 #endif
 
 // TODO find a better name for the abstract ISA

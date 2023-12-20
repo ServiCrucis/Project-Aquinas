@@ -12,7 +12,7 @@
 
 #include "platform.h"
 #include "bit_math.h"
-#include "memory/memory.h"
+#include "state/allocating.h"
 
 typedef uqword tree_node_value;
 typedef void   *tree_node_pointer;

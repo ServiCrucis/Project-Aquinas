@@ -1,6 +1,6 @@
 /*
- * Module: memory
- * File: memory.h
+ * Module: allocating
+ * File: allocating.h
  * Created:
  * May 03, 2021
  * Author: Andrew Porter [<caritasdedeus@gmail.com>](mailto:caritasdedeus@gmail.com)
@@ -9,36 +9,35 @@
  *
  * License: See LICENSE.txt
  *
- * A robust and efficient BC memory model implementation.
+ * Provides interfaces and utility procedures for allocating.
  */
 
 
-#ifndef PROJECT_AQUINAS_MEMORY_H
-#define PROJECT_AQUINAS_MEMORY_H
+#ifndef PROJECT_AQUINAS_ALLOCATING_H
+#define PROJECT_AQUINAS_ALLOCATING_H
 
 #include "platform.h"
 #include <stdalign.h>
 #include "dynarray.h"
-#include "m_context.h"
 
 /*
- * A memory allocator
+ * A state allocator
  */
-typedef struct Allocator {
+typedef struct {
     /*
      * Allocates an allocation of `bits` bits with a unique identifier.
      */
     void *(*allocate)(udqword const bits);
 } Allocator;
 
-typedef struct Deallocator {
+typedef struct {
     /*
      * Deallocates the allocation associated with the given identifier if it exists.
      */
     void (*deallocate)(void *const allocation);
 } Deallocator;
 
-typedef struct Reallocator {
+typedef struct {
     /*
      * Reallocates the allocation associated with the given identifier if it exists.
      */
@@ -46,7 +45,7 @@ typedef struct Reallocator {
 } Reallocator;
 
 
-typedef struct PerfectAllocator {
+typedef struct {
     /*
      * Allocates an allocation of `bits` bits with a unique identifier.
      */
@@ -58,11 +57,11 @@ typedef struct PerfectAllocator {
     void (*deallocate)(void *const partition);
 } ImperfectAllocator;
 
-typedef struct ImperfectAllocator ImperfectUnitAllocator;
+typedef ImperfectAllocator ImperfectUnitAllocator;
 
-typedef struct ImperfectAllocator PerfectCompositeAllocator;
+typedef ImperfectAllocator PerfectCompositeAllocator;
 
-typedef struct ImperfectAllocator {
+typedef struct {
     /*
      * Allocates an allocation of `bits` bits with a unique identifier.
      */
@@ -79,7 +78,7 @@ typedef struct ImperfectAllocator {
     void *(*reallocate)(void *const allocation, udqword const bits);
 } PerfectAllocator;
 
-// utility functions useful for manipulating memory
+// utility functions useful for manipulating state
 
 /*
  * Computes the index of an element from the given bit_index into an array of length array_length and which array
@@ -98,12 +97,12 @@ static inline uqword m_compute_relative_bit_index(uqword bit_index, uqword stora
     return bit_index % storage_width;
 }
 
-// the global memory interface (defined through headers below)
-extern struct Allocator const GlobalAllocator;
+// the global state interface (defined through headers below)
+extern PerfectAllocator const GlobalAllocator;
 
 #if PLATFORM == P_WINDOWS
 
-#include "memory/windows/m_windows.h"
+#include "state/windows/m_windows.h"
 
 #elif PLATFORM == P_LINUX
 #include "m_linux.h"
@@ -128,7 +127,7 @@ extern struct Allocator const GlobalAllocator;
 #elif PLATFORM == P_WINDU
 #include "m_windu.h"
 #else
-#error [memory.h] Unrecognized platform
+#error [state.h] Unrecognized platform
 #endif
 
-#endif //PROJECT_AQUINAS_MEMORY_H
+#endif //PROJECT_AQUINAS_ALLOCATING_H

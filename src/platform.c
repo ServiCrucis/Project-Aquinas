@@ -19,7 +19,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "memory/memory.h"
+#include "state/allocating.h"
 #include "platform.h"
 
 char *p_get_platform() {

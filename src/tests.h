@@ -19,8 +19,11 @@
 #include "state.h"
 #include "compiler.h"
 #include "bit_math.h"
-#include "memory/memory.h"
+#include "state/allocating.h"
 #include "data.h"
+#include "state/windows/m_windows_ImperfectUnitStackAllocator.h"
+#include "state/m_pointer_offset.h"
+#include "state/windows/m_windows.h"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-function"
@@ -350,7 +353,7 @@ static void test_w32_memory_allocator(void) {
 static void test_w32_stack_allocator(void) {
     info(__func__, "Beginning Win32 ImperfectUnitStackAllocator test\n");
 
-    register machine_operand const heap_size = 4096 * bitwidth(ubyte) + 255;
+    register machine_workeld const heap_size = 4096 * bitwidth(ubyte) + 255;
     ImperfectUnitStackAllocator unit_stack = M_WINDOWS_WIN32_GLOBAL_IMPERFECT_UNIT_STACK_ALLOCATOR;
     w32_stack_create(heap_size);
 
@@ -369,7 +372,7 @@ static void test_w32_stack_allocator(void) {
     info(__func__, "\n");
 
     // test allocate_all()
-    register machine_operand const allocate_all_allocation_size = 4096 * bitwidth(ubyte);
+    register machine_workeld const allocate_all_allocation_size = 4096 * bitwidth(ubyte);
     m_windows_stack_pointer allocate_all_allocation = unit_stack.allocate_all(allocate_all_allocation_size);
     infof(__func__, "allocate_all() succeeded; allocate_all_allocation=%llX%llX\n",
           (uqword) (allocate_all_allocation >> 64),
@@ -407,7 +410,7 @@ static void test_w32_stack_allocator(void) {
 
     info(__func__, "Attempting controlled failure condition:\n");
     // this should fail by allocating just 1 greater than the size of the heap
-    register machine_operand const should_fail_allocation_size = heap_size + 1;
+    register machine_workeld const should_fail_allocation_size = heap_size + 1;
     m_windows_stack_pointer should_fail_allocation = unit_stack.allocate_all(should_fail_allocation_size);
     // if the above doesn't fail, then something should happen here:
     unit_stack.deallocate_all(should_fail_allocation, should_fail_allocation + should_fail_allocation_size);
@@ -418,7 +421,30 @@ static void test_w32_stack_allocator(void) {
     w32_stack_destroy();
 }
 
-static void test_ImperfectUnitAllocator(void) {
+#define kin enum
+#define manyfold_fare struct
+#define nameas typedef
+
+kin FareKin {
+    FIRST,
+    OTHER,
+    THIRD,
+    FOURTH
+};
+
+typedef machine_workeld Fare;
+
+static void test_faring(void) {
+    // a way of being
+    Fare fare;
+    // a thing that holds one or more fares
+    manyfold_fare Farer farer;
+    // producer of farers
+    Ferera farera;
+    // supplier of fareras (and farers by extension)
+    FareraFruma fareraFruma;
+    // supplier of giving meanings, aka context object or qualifier
+    Beyameanelda beyameanelda;
 
 }
 

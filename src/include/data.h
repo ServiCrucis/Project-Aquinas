@@ -23,7 +23,7 @@
 #include <stdalign.h>
 #include "platform.h"
 
-// Method of mapping reads and writes regarding the order in which bytes are stored in memory.
+// Method of mapping reads and writes regarding the order in which bytes are stored in state.
 //
 // Do we really need such esoteric jargon for mere _byte order_?
 // No, we don't; and if you say otherwise, you're part of the problem. :)
@@ -39,7 +39,7 @@
 // If you want to access all data as though it were hi to lo or lo to hi, use virtual;
 //
 // If the hardware supports a change in byte order, then the hardware state will be updated
-// according to what is optimal for that hardware. For example, if a memory module supports
+// according to what is optimal for that hardware. For example, if a state module supports
 // hard-boot configuration data, this will not be updated; but if a processor supports changing
 // byte processing order on the fly, this will be updated if possible, but may fail if, for example,
 // there are insufficient permissions.
@@ -61,7 +61,7 @@ enum data_interpret_mode {
 };
 
 // If the hardware supports a change in byte order, then the hardware state will be updated
-// according to what is optimal for that hardware. For example, if a memory module supports
+// according to what is optimal for that hardware. For example, if a state module supports
 // boot configuration data, this will not be updated, but if a processor supports changing
 // byte processing order on the fly, this will be updated if possible.
 //
@@ -84,7 +84,7 @@ void data_byte_order_set(enum data_byte_order);
 /*
  * Writes `elements` elements from `src` start to `dst` start based on the given `alignment`.
  * The byte order of both arrays is determined by the `interpret_mode` (see enum data_interpret_mode).
- * Both `src` and `dst` m_context variables are `restrict`. For writing into shared memory
+ * Both `src` and `dst` m_context variables are `restrict`. For writing into shared state
  * from distinctly formed pointers, check compiler and runtime output to ensure correct operation.
  */
 void data_write(register uqword const elements, register uqword const alignment, enum data_interpret_mode, void *restrict src, void *restrict dst);
@@ -92,7 +92,7 @@ void data_write(register uqword const elements, register uqword const alignment,
 /*
  * Writes `elements` elements from `src` start as `src_byte_order` to `dst` start as
  * `dst_byte_order` based on the given `alignment`. Both `src` and `dst` m_context
- * variables are marked as `restrict`. For writing into shared memory from distinctly
+ * variables are marked as `restrict`. For writing into shared state from distinctly
  * formed pointers, check compiler and runtime output to ensure correct operation.
  */
 void data_write_as(register uqword const elements, register uqword const alignment, void *restrict const src, enum data_byte_order, void *restrict const dst, enum data_byte_order);

@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <platform.h>
 
-// make other libraries use our memory manager (overwrites free as well)
+// make other libraries use our state manager (overwrites free as well)
 #define MEMORY_MALLOC_OVERWRITE false
 // enable debug message printing
 #define R_DEBUG true
