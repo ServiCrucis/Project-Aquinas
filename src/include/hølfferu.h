@@ -1,20 +1,19 @@
 /*
- * # modulus.h
- * ## Created:
- * August 19th, A.D. 2019
- * ## Author:
- * Andrew Thomas Porter [<caritasdedeus@gmail.com>](mailto:caritasdedeus@gmail.com)
- *
- * Copyright &copy; 2019 Christi Crucifixi, LLC. All rights reserved.
+ * Module: hølfferu
+ * File: hølfferu.h
+ * Created:
+ * December 20, 2023
+ * Author: Andrew Porter [<caritasdedeus@gmail.com>](mailto:caritasdedeus@gmail.com)
+ * License: See LICENSE.txt
  */
-#ifndef PROJECT_AQUINAS_DEBUG_H
-#define PROJECT_AQUINAS_DEBUG_H
 
-#include <stdlib.h>
-#include <stdbool.h>
-#include <platform.h>
+#ifndef PROJECT_AQUINAS_HØLFFERU_H
+#define PROJECT_AQUINAS_HØLFFERU_H
 
 // a macro to be used by programs to determine whether or not the build is debug (default: false
+#include <stdlib.h>
+#include "platform.h"
+
 #ifndef R_DEBUG
 #define R_DEBUG false
 #endif
@@ -58,13 +57,4 @@ static inline void clear_context() {
     _global_context = _global_previous_context;
 }
 
-void info(char const *restrict fn_name, char const *information, ...);
-
-void infof(char const *restrict fn_name, char const *restrict information, ...);
-
-void warnf(char const *restrict fn_name, char const *restrict warning, ...);
-
-__attribute__((noreturn))
-void fatalf(char const *restrict fn_name, char const *restrict error_message, ...);
-
-#endif /* PROJECT_AQUINAS_DEBUG_H */
+#endif //PROJECT_AQUINAS_HØLFFERU_H

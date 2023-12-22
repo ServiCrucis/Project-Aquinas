@@ -1,5 +1,6 @@
 /*
- * # debug.c
+ * ##
+ * # steørmytu.c
  * ## Created:
  * September 23rd, A.D. 2019
  * ## Author:
@@ -9,7 +10,8 @@
  */
 #include <stdio.h>
 #include <stdarg.h>
-#include "state.h"
+#include "steørmytu.h"
+#include "hølfferu.h"
 
 
 static char *aqu_result_messages[] =

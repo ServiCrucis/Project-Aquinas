@@ -18,66 +18,6 @@
 
 #include "platform.h"
 #include <stdalign.h>
-#include "dynarray.h"
-#include "m_context.h"
-
-/*
- * A memory allocator
- */
-typedef struct Allocator {
-    /*
-     * Allocates an allocation of `bits` bits with a unique identifier.
-     */
-    void *(*allocate)(udqword const bits);
-} Allocator;
-
-typedef struct Deallocator {
-    /*
-     * Deallocates the allocation associated with the given identifier if it exists.
-     */
-    void (*deallocate)(void *const allocation);
-} Deallocator;
-
-typedef struct Reallocator {
-    /*
-     * Reallocates the allocation associated with the given identifier if it exists.
-     */
-    void *(*reallocate)(void *const allocation, udqword const bits);
-} Reallocator;
-
-
-typedef struct PerfectAllocator {
-    /*
-     * Allocates an allocation of `bits` bits with a unique identifier.
-     */
-    void *(*allocate)(udqword const bits);
-
-    /*
-     * Deallocates the allocation associated with the given identifier if it exists.
-     */
-    void (*deallocate)(void *const partition);
-} ImperfectAllocator;
-
-typedef struct ImperfectAllocator ImperfectUnitAllocator;
-
-typedef struct ImperfectAllocator PerfectCompositeAllocator;
-
-typedef struct ImperfectAllocator {
-    /*
-     * Allocates an allocation of `bits` bits with a unique identifier.
-     */
-    void *(*allocate)(udqword const bits);
-
-    /*
-     * Deallocates the allocation associated with the given identifier if it exists.
-     */
-    void (*deallocate)(void *const allocation);
-
-    /*
-     * Reallocates the allocation associated with the given identifier if it exists.
-     */
-    void *(*reallocate)(void *const allocation, udqword const bits);
-} PerfectAllocator;
 
 // utility functions useful for manipulating memory
 
@@ -98,12 +38,10 @@ static inline uqword m_compute_relative_bit_index(uqword bit_index, uqword stora
     return bit_index % storage_width;
 }
 
-// the global memory interface (defined through headers below)
-extern struct Allocator const GlobalAllocator;
 
 #if PLATFORM == P_WINDOWS
 
-#include "memory/windows/m_windows.h"
+// TODO include windows header here for win32 implementation
 
 #elif PLATFORM == P_LINUX
 #include "m_linux.h"

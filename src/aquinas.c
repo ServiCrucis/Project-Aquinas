@@ -16,7 +16,8 @@
 // enable debug message printing
 #define R_DEBUG true
 
-#include "state.h"
+#include "steørmytu.h"
+#include "hølfferu.h"
 #include "tests.h"
 
 void run_tests(void) {
@@ -39,13 +40,11 @@ void run_tests(void) {
 //    test_data_byte_order();
 //    test_w32_memory_allocator();
 //    test_m_pointer_offset();
-    test_w32_stack_allocator();
 }
 
 
 int main(int argc, char **argv) {
     info(__func__, "Running\n");
-#define PROJECT_AQUINAS_TEST_WIN32_MEMORY_ALLOCATOR 0
     run_tests();
     
     return R_SUCCESS;

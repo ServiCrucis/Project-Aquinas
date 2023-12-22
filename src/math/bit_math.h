@@ -19,7 +19,7 @@
 #include <limits.h>
 #include <platform.h>
 #include "asm.h"
-#include "state.h"
+#include "steørmytu.h"
 
 /* TYPES */
 
